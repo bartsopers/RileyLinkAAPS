@@ -6,9 +6,9 @@ import com.gxwtech.roundtrip2.ServiceData.ReadPumpClockResult;
 
 import org.joda.time.LocalDateTime;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.PumpTask;
-import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.PumpTask;
+import info.nightscout.androidaps.plugins.pump.medtronic.service.RileyLinkMedtronicService;
 
 /**
  * Created by geoff on 7/9/16.

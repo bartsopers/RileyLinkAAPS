@@ -6,7 +6,7 @@ import org.joda.time.LocalDateTime;
 
 import java.util.UUID;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceCommand;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceCommand;
 
 /**
  * Created by geoff on 6/25/16.

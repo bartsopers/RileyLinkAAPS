@@ -51,14 +51,14 @@ import com.gxwtech.roundtrip2.ServiceMessageViewActivity.ServiceMessageViewListA
 import com.gxwtech.roundtrip2.util.tools;
 
 import info.nightscout.androidaps.interfaces.PumpDescription;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceNotification;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
-import info.nightscout.androidaps.plugins.PumpMedtronic.driver.MedtronicPumpStatus;
-import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService;
-import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
-import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkConst;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceNotification;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
+import info.nightscout.androidaps.plugins.pump.medtronic.driver.MedtronicPumpStatus;
+import info.nightscout.androidaps.plugins.pump.medtronic.service.RileyLinkMedtronicService;
+import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicConst;
+import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
 import info.nightscout.utils.SP;
 
 public class MainActivity extends AppCompatActivity {

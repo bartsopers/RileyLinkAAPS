@@ -5,8 +5,8 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.List;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceResult;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.Page;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceResult;
+import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.Page;
 
 /**
  * Created by geoff on 7/16/16.

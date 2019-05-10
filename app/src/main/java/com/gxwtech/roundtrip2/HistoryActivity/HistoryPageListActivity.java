@@ -27,8 +27,8 @@ import com.gxwtech.roundtrip2.R;
 import com.gxwtech.roundtrip2.RT2Const;
 import com.gxwtech.roundtrip2.ServiceData.RetrieveHistoryPageResult;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceResult;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceResult;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
 
 /**
  * An activity representing a list of HistoryPages. This activity

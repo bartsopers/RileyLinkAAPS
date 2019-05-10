@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <info.nightscout.androidaps.plugins.PumpCommon.ui.RileyLinkSelectPreference
+    <info.nightscout.androidaps.plugins.pump.common.ui.RileyLinkSelectPreference
         android:id="@+id/rileylink_mac_address_mdt"
         android:enabled="true"
         android:summary=""

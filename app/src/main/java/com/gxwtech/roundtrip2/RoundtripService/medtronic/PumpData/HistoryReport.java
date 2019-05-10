@@ -5,7 +5,7 @@ import com.gxwtech.roundtrip2.RoundtripService.medtronic.TempBasalEvent;
 
 import java.util.ArrayList;
 
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.record.BolusWizardBolusEstimatePumpEvent;
+import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.history_old.record.BolusWizardBolusEstimatePumpEvent;
 
 /**
  * Created by geoff on 6/5/15.

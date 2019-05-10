@@ -2,7 +2,7 @@ package com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData;
 
 import org.joda.time.LocalDateTime;
 
-import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
+import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 
 /**
  * Created by geoff on 7/2/16.

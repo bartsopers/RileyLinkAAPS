@@ -1,8 +1,8 @@
 package com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData;
 
-import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
-import info.nightscout.androidaps.plugins.PumpCommon.utils.CRC;
-import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
+import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
+import info.nightscout.androidaps.plugins.pump.common.utils.CRC;
+import info.nightscout.androidaps.plugins.pump.medtronic.defs.MedtronicDeviceType;
 
 /**
  * Created by geoff on 6/18/16.

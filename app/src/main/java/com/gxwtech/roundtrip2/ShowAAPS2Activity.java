@@ -23,18 +23,18 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.MedtronicCommunicationManager;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.pump.PumpHistoryEntry;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.pump.PumpHistoryResult;
-import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BasalProfile;
-import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BasalProfileEntry;
-import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BatteryStatusDTO;
-import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpSettingDTO;
-import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.TempBasalPair;
-import info.nightscout.androidaps.plugins.PumpMedtronic.defs.BatteryType;
-import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
-import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
+import info.nightscout.androidaps.plugins.pump.medtronic.comm.MedtronicCommunicationManager;
+import info.nightscout.androidaps.plugins.pump.medtronic.comm.history.pump.PumpHistoryEntry;
+import info.nightscout.androidaps.plugins.pump.medtronic.comm.history.pump.PumpHistoryResult;
+import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.BasalProfile;
+import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.BasalProfileEntry;
+import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.BatteryStatusDTO;
+import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.PumpSettingDTO;
+import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.TempBasalPair;
+import info.nightscout.androidaps.plugins.pump.medtronic.defs.BatteryType;
+import info.nightscout.androidaps.plugins.pump.medtronic.defs.MedtronicDeviceType;
+import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
 
 public class ShowAAPS2Activity extends AppCompatActivity {
 

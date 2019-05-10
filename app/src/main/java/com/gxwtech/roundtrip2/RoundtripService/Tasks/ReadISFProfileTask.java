@@ -1,7 +1,7 @@
 package com.gxwtech.roundtrip2.RoundtripService.Tasks;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.PumpTask;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.PumpTask;
 
 /**
  * Created by geoff on 7/10/16.

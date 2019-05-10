@@ -15,8 +15,8 @@ import com.gxwtech.roundtrip2.RT2Const;
 
 import java.util.HashMap;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceNotification;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceNotification;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
 
 /**
  * Created by geoff on 6/11/16.

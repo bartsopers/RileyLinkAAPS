@@ -2,7 +2,7 @@ package com.gxwtech.roundtrip2.ServiceData;
 
 import android.os.Bundle;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceResult;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceResult;
 
 /**
  * Created by geoff on 7/2/16.

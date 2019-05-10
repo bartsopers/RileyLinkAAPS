@@ -6,10 +6,10 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.PumpTimeStamp;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.TimeFormat;
-import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
+import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
+import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.history_old.PumpTimeStamp;
+import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.history_old.TimeFormat;
+import info.nightscout.androidaps.plugins.pump.medtronic.defs.MedtronicDeviceType;
 
 /**
  * Created by geoff on 6/18/16.

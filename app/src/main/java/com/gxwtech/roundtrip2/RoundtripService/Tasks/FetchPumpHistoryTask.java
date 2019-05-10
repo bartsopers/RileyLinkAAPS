@@ -4,10 +4,10 @@ import com.gxwtech.roundtrip2.ServiceData.FetchPumpHistoryResult;
 
 import java.util.ArrayList;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.PumpTask;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.Page;
-import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.PumpTask;
+import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.Page;
+import info.nightscout.androidaps.plugins.pump.medtronic.service.RileyLinkMedtronicService;
 
 /**
  * Created by geoff on 7/16/16.

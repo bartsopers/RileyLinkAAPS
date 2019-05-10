@@ -10,8 +10,8 @@ import com.gxwtech.roundtrip2.ServiceData.ServiceClientActions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceCommand;
-import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceCommand;
+import info.nightscout.androidaps.plugins.pump.medtronic.service.RileyLinkMedtronicService;
 
 /**
  * Created by Tim on 27/06/2016.

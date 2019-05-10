@@ -7,7 +7,7 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceResult;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceResult;
 
 /**
  * Created by geoff on 6/25/16.

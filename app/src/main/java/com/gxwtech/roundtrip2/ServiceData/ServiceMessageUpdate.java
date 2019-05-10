@@ -1,6 +1,6 @@
 package com.gxwtech.roundtrip2.ServiceData;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceMessage;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceMessage;
 
 /**
  * Created by geoff on 7/4/16.
