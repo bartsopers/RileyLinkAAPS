@@ -39,5 +39,13 @@
         android:singleLine="true"
         android:title="@string/medtronic_pump_frequency" />
 
+    <ListPreference
+        android:defaultValue="@string/medtronic_pump_encoding_4b6b_rileylink"
+        android:entries="@array/medtronicEncoding"
+        android:entryValues="@array/medtronicEncoding"
+        android:key="pref_medtronic_encoding"
+        android:selectable="true"
+        android:title="@string/medtronic_pump_encoding" />
+
 
 </PreferenceScreen>

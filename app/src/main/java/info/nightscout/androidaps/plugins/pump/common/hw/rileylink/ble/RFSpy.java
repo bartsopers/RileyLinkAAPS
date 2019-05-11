@@ -8,6 +8,9 @@ import org.slf4j.LoggerFactory;
 import android.os.SystemClock;
 
 
+import com.gxwtech.roundtrip2.MainApp;
+import com.gxwtech.roundtrip2.R;
+
 import info.nightscout.androidaps.logging.L;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
@@ -33,6 +36,8 @@ import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.common.utils.HexDump;
 import info.nightscout.androidaps.plugins.pump.common.utils.StringUtil;
 import info.nightscout.androidaps.plugins.pump.common.utils.ThreadUtil;
+import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicConst;
+import info.nightscout.androidaps.utils.SP;
 
 
 /**
@@ -53,8 +58,6 @@ public class RFSpy {
     private UUID responseCountUUID = UUID.fromString(GattAttributes.CHARA_RADIO_RESPONSE_COUNT);
     private RileyLinkFirmwareVersion firmwareVersion;
     private String bleVersion; // We don't use it so no need of sofisticated logic
-
-    private boolean isHardwareEncoding = false;
 
 
     public RFSpy(RileyLinkBLE rileyLinkBle) {
@@ -288,7 +291,7 @@ public class RFSpy {
         updateRegister(CC111XRegister.freq0, (byte)(value & 0xff));
         updateRegister(CC111XRegister.freq1, (byte)((value >> 8) & 0xff));
         updateRegister(CC111XRegister.freq2, (byte)((value >> 16) & 0xff));
-        LOG.info("Set frequency to {}", freqMHz);
+        LOG.info("Set frequency to {} MHz", freqMHz);
 
         configureRadioForRegion(RileyLinkUtil.getRileyLinkTargetFrequency());
     }
@@ -350,14 +353,14 @@ public class RFSpy {
                 r = updateRegister(CC111XRegister.sync1, 0xA5);
                 r = updateRegister(CC111XRegister.sync0, 0x5A);
 
-                r = setSoftwareEncoding(RileyLinkEncodingType.Manchester);
+                r = setRileyLinkEncoding(RileyLinkEncodingType.Manchester);
                 // RileyLinkUtil.setEncoding(RileyLinkEncodingType.Manchester);
                 r = setPreamble(0x6665);
 
             }
                 break;
             default:
-                LOG.debug("No region configuration for RfSpy and {}", frequency.name());
+                LOG.warn("No region configuration for RfSpy and {}", frequency.name());
                 break;
 
         }
@@ -367,17 +370,17 @@ public class RFSpy {
 
 
     private void setMedtronicEncoding() {
+        RileyLinkEncodingType encoding = RileyLinkEncodingType.FourByteSixByteLocal;
+
         if (RileyLinkFirmwareVersion.isSameVersion(this.firmwareVersion, RileyLinkFirmwareVersion.Version2AndHigher)) {
-
-            //if (SP.getString(MedtronicConst.Prefs.Encoding, "None").equals(MainApp.gs(R.string.medtronic_pump_encoding_4b6b_rileylink))) {
-            if (isHardwareEncoding) {
-
-                setSoftwareEncoding(RileyLinkEncodingType.FourByteSixByteRileyLink);
-                RileyLinkUtil.setEncoding(RileyLinkEncodingType.FourByteSixByteRileyLink);
+            if (SP.getString(MedtronicConst.Prefs.Encoding, "None").equals(MainApp.gs(R.string.medtronic_pump_encoding_4b6b_rileylink))) {
+                encoding = RileyLinkEncodingType.FourByteSixByteRileyLink;
             }
         }
 
-        LOG.debug("Set Encoding for Medtronic: " + RileyLinkUtil.getEncoding().name());
+        setRileyLinkEncoding(encoding);
+
+        LOG.debug("Set Encoding for Medtronic: " + encoding.name());
     }
 
 
@@ -392,8 +395,14 @@ public class RFSpy {
     }
 
 
-    private RFSpyResponse setSoftwareEncoding(RileyLinkEncodingType encoding) {
+    private RFSpyResponse setRileyLinkEncoding(RileyLinkEncodingType encoding) {
         RFSpyResponse resp = writeToData(new SetHardwareEncoding(encoding), EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+
+        if (resp.isOK()) {
+            reader.setRileyLinkEncodingType(encoding);
+            RileyLinkUtil.setEncoding(encoding);
+        }
+
         return resp;
     }
 

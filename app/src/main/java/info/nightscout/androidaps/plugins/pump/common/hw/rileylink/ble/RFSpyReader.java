@@ -31,6 +31,7 @@ public class RFSpyReader {
     private LinkedBlockingQueue<byte[]> mDataQueue = new LinkedBlockingQueue<>();
     private int acquireCount = 0;
     private int releaseCount = 0;
+    private boolean stopAtNull = true;
 
 
     public RFSpyReader(RileyLinkBLE rileyLinkBle) {
@@ -48,6 +49,11 @@ public class RFSpyReader {
             readerTask.cancel(true);
         }
         this.rileyLinkBle = rileyLinkBle;
+    }
+
+    public void setRileyLinkEncodingType(RileyLinkEncodingType encodingType) {
+        stopAtNull = !(encodingType == RileyLinkEncodingType.Manchester || //
+                encodingType == RileyLinkEncodingType.FourByteSixByteRileyLink);
     }
 
 
@@ -98,9 +104,6 @@ public class RFSpyReader {
                 UUID serviceUUID = UUID.fromString(GattAttributes.SERVICE_RADIO);
                 UUID radioDataUUID = UUID.fromString(GattAttributes.CHARA_RADIO_DATA);
                 BLECommOperationResult result;
-                boolean stopAtNull = true;
-                if (RileyLinkUtil.getEncoding() == RileyLinkEncodingType.Manchester)
-                    stopAtNull = false;
                 while (true) {
                     try {
                         acquireCount++;

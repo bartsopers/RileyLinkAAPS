@@ -84,8 +84,8 @@ public abstract class RileyLinkCommunicationManager {
             rememberLastGoodDeviceCommunicationTime();
         } else {
             if (isLogEnabled())
-                LOG.warn("Response is invalid ! [interrupted={}, timeout={}]", rfSpyResponse.wasInterrupted(),
-                rfSpyResponse.wasTimeout());
+                LOG.warn("Response is invalid ! [interrupted={}, timeout={}, unknownCommand={}, invalidParam={}]", rfSpyResponse.wasInterrupted(),
+                rfSpyResponse.wasTimeout(), rfSpyResponse.isUnknownCommand(), rfSpyResponse.isInvalidParam());
 
             if (rfSpyResponse.wasTimeout()) {
                 timeoutCount++;

@@ -63,7 +63,6 @@ public class MainApp extends Application {
 
         migrateSettings();
 
-
         String freq = SP.getString(MedtronicConst.Prefs.PumpFrequency, gs(R.string.medtronic_pump_frequency_us_ca));
         RileyLinkTargetFrequency targetFrequency = (gs(R.string.medtronic_pump_frequency_us_ca).equals(freq)) ? RileyLinkTargetFrequency.Medtronic_US : RileyLinkTargetFrequency.Medtronic_WorldWide;
 
@@ -77,10 +76,17 @@ public class MainApp extends Application {
         if ("US (916 MHz)".equals(SP.getString(MedtronicConst.Prefs.PumpFrequency, null))) {
             SP.putString(MedtronicConst.Prefs.PumpFrequency, MainApp.gs(R.string.medtronic_pump_frequency_us_ca));
         }
+
+        String encoding = SP.getString(MedtronicConst.Prefs.Encoding, null);
+
+        if (encoding==null)  {
+            SP.putString(MedtronicConst.Prefs.Encoding, MainApp.gs(R.string.medtronic_pump_encoding_4b6b_local));
+        }
+
     }
 
 
-        public static MainApp instance() {
+    public static MainApp instance() {
         return sInstance;
     }
 

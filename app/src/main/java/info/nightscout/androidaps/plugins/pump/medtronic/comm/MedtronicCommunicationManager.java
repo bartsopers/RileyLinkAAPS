@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import android.content.Context;
 import android.os.SystemClock;
 
+import info.nightscout.androidaps.logging.L;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RFSpy;
@@ -60,7 +61,7 @@ import info.nightscout.androidaps.utils.SP;
  */
 public class MedtronicCommunicationManager extends RileyLinkCommunicationManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MedtronicCommunicationManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(L.PUMPCOMM);
     private static final int MAX_COMMAND_TRIES = 3;
     private static final int DEFAULT_TIMEOUT = 2000;
     private static final long RILEYLINK_TIMEOUT = 15 * 60 * 1000; // 15 min
@@ -164,8 +165,14 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
             (byte)0, (byte)0, 25000, (byte)0);
         LOG.info("wakeup: raw response is " + ByteUtil.shortHexString(rfSpyResponse.getRaw()));
 
-        if (rfSpyResponse.wasTimeout()) {
-            LOG.error("isDeviceReachable. Failed to find pump (timeout).");
+        if (rfSpyResponse.isOK()) {
+
+            LOG.debug("isDeviceReachable. rfSpyResponse.isOK");
+            return true;
+
+        } else if (rfSpyResponse.wasTimeout() || rfSpyResponse.isUnknownCommand() || rfSpyResponse.isInvalidParam() || rfSpyResponse.wasInterrupted()) {
+            LOG.warn("isDeviceReachable. Response is invalid ! [interrupted={}, timeout={}, unknownCommand={}, invalidParam={}]", rfSpyResponse.wasInterrupted(),
+                    rfSpyResponse.wasTimeout(), rfSpyResponse.isUnknownCommand(), rfSpyResponse.isInvalidParam());
         } else if (rfSpyResponse.looksLikeRadioPacket()) {
             RadioResponse radioResponse = new RadioResponse();
 

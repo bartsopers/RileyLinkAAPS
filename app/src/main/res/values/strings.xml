@@ -201,6 +201,9 @@
     <string name="rileylink_last_used_frequency">Last used frequency</string>
     <string name="rileylink_last_device_contact">Last device contact</string>
 
+    <string name="medtronic_pump_encoding">Medtronic Encoding</string>
+    <string name="medtronic_pump_encoding_4b6b_local">Software 4b6b Encoding</string>
+    <string name="medtronic_pump_encoding_4b6b_rileylink">Hardware 4b6b Encoding</string>
 
     <string name="rileylink_settings_tab1">Settings</string>
     <string name="rileylink_settings_tab2">History</string>
