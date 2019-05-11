@@ -3,6 +3,10 @@ package com.gxwtech.roundtrip2;
 import android.app.Application;
 import android.content.res.Resources;
 
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
+import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicConst;
+import info.nightscout.androidaps.utils.SP;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -56,10 +60,27 @@ public class MainApp extends Application {
         // SP.remove(RileyLinkConst.Prefs.LastGoodDeviceFrequency);
         // SP.putDouble(RileyLinkConst.Prefs.LastGoodDeviceFrequency, lastGoodFrequency2);
 
+
+        migrateSettings();
+
+
+        String freq = SP.getString(MedtronicConst.Prefs.PumpFrequency, gs(R.string.medtronic_pump_frequency_us_ca));
+        RileyLinkTargetFrequency targetFrequency = (gs(R.string.medtronic_pump_frequency_us_ca).equals(freq)) ? RileyLinkTargetFrequency.Medtronic_US : RileyLinkTargetFrequency.Medtronic_WorldWide;
+
+        RileyLinkUtil.setRileyLinkTargetFrequency(targetFrequency);
+
     }
 
 
-    public static MainApp instance() {
+    private void migrateSettings() {
+
+        if ("US (916 MHz)".equals(SP.getString(MedtronicConst.Prefs.PumpFrequency, null))) {
+            SP.putString(MedtronicConst.Prefs.PumpFrequency, MainApp.gs(R.string.medtronic_pump_frequency_us_ca));
+        }
+    }
+
+
+        public static MainApp instance() {
         return sInstance;
     }
 

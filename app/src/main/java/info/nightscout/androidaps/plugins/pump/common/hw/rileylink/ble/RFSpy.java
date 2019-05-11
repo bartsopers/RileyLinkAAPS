@@ -7,13 +7,16 @@ import org.slf4j.LoggerFactory;
 
 import android.os.SystemClock;
 
+
+import info.nightscout.androidaps.logging.L;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.command.Reset;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.command.ResetRadioConfig;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.command.RileyLinkCommand;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.command.SendAndListen;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.command.SetHardwareEncoding;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.command.SetPreamble;
-
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.command.UpdateRegister;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.GattAttributes;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.RFSpyResponse;
@@ -31,6 +34,7 @@ import info.nightscout.androidaps.plugins.pump.common.utils.HexDump;
 import info.nightscout.androidaps.plugins.pump.common.utils.StringUtil;
 import info.nightscout.androidaps.plugins.pump.common.utils.ThreadUtil;
 
+
 /**
  * Created by geoff on 5/26/16.
  */
@@ -38,7 +42,7 @@ public class RFSpy {
 
     public static final long RILEYLINK_FREQ_XTAL = 24000000;
     public static final int EXPECTED_MAX_BLUETOOTH_LATENCY_MS = 7500; // 1500
-    private static final Logger LOG = LoggerFactory.getLogger(RFSpy.class);
+    private static final Logger LOG = LoggerFactory.getLogger(L.PUMPBTCOMM);
     public int notConnectedCount = 0;
     private RileyLinkBLE rileyLinkBle;
     private RFSpyReader reader;
@@ -249,35 +253,6 @@ public class RFSpy {
     }
 
 
-    // public RFSpyResponse transmit(RadioPacket radioPacket) {
-    //
-    // return transmit(radioPacket, (byte) 0, (byte) 0, (byte) 0xFF);
-    // }
-    //
-    //
-    // public RFSpyResponse transmit(RadioPacket radioPacket, byte sendChannel, byte repeatCount, byte delay_ms) {
-    // // append checksum, encode data, send it.
-    // byte[] fullPacket = ByteUtil.concat(getByteArray(sendChannel, repeatCount, delay_ms), radioPacket.getEncoded());
-    // RFSpyResponse response = writeToData(RileyLinkCommandType.Send, fullPacket, delay_ms +
-    // EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
-    // return response;
-    // }
-
-    // public RFSpyResponse receive(byte listenChannel, int timeout_ms, byte retryCount) {
-    // int receiveDelay = timeout_ms * (retryCount + 1);
-    // byte[] listen = getByteArray(listenChannel, (byte) ((timeout_ms >> 24) & 0x0FF), (byte) ((timeout_ms >> 16) &
-    // 0x0FF), (byte) ((timeout_ms >> 8) & 0x0FF), (byte) (timeout_ms & 0x0FF), retryCount);
-    // return writeToData(RileyLinkCommandType.GetPacket, listen, receiveDelay);
-    // }
-
-    // public RFSpyResponse transmitThenReceive(RadioPacket pkt, int timeout_ms) {
-    // return transmitThenReceive(pkt, (byte) 0, (byte) 0, (byte) 0, (byte) 0, timeout_ms, (byte) 0);
-    // }
-    // public RFSpyResponse transmitThenReceive(RadioPacket pkt, int timeout_ms, int repeatCount, int extendPreamble_ms)
-    // {
-    // return transmitThenReceive(pkt, (byte) 0, (byte) repeatCount, (byte) 0, (byte) 0, timeout_ms, (byte) 0);
-    // }
-
     public RFSpyResponse transmitThenReceive(RadioPacket pkt, byte sendChannel, byte repeatCount, byte delay_ms,
             byte listenChannel, int timeout_ms, byte retryCount) {
         return transmitThenReceive(pkt, sendChannel, repeatCount, delay_ms, listenChannel, timeout_ms, retryCount, null);
@@ -295,16 +270,15 @@ public class RFSpy {
         int sendDelay = repeatCount * delay_ms;
         int receiveDelay = timeout_ms * (retryCount + 1);
 
-        SendAndListen command = new SendAndListen(firmwareVersion, sendChannel, repeatCount, delay_ms, listenChannel,
-            timeout_ms, retryCount, extendPreamble_ms, pkt);
+        SendAndListen command = new SendAndListen(sendChannel, repeatCount, delay_ms, listenChannel, timeout_ms,
+            retryCount, extendPreamble_ms, pkt);
 
         return writeToData(command, sendDelay + receiveDelay + EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
     }
 
 
     public RFSpyResponse updateRegister(CC111XRegister reg, int val) {
-        RFSpyResponse resp = writeToData(new UpdateRegister(firmwareVersion, reg, (byte)val),
-            EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+        RFSpyResponse resp = writeToData(new UpdateRegister(reg, (byte)val), EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
         return resp;
     }
 
@@ -314,7 +288,7 @@ public class RFSpy {
         updateRegister(CC111XRegister.freq0, (byte)(value & 0xff));
         updateRegister(CC111XRegister.freq1, (byte)((value >> 8) & 0xff));
         updateRegister(CC111XRegister.freq2, (byte)((value >> 16) & 0xff));
-        LOG.warn("Set frequency to {}", freqMHz);
+        LOG.info("Set frequency to {}", freqMHz);
 
         configureRadioForRegion(RileyLinkUtil.getRileyLinkTargetFrequency());
     }
@@ -323,8 +297,6 @@ public class RFSpy {
     private void configureRadioForRegion(RileyLinkTargetFrequency frequency) {
 
         // we update registers only on first run, or if region changed
-        //if (selectedTargetFrequency == frequency)
-        //    return;
 
         switch (frequency) {
             case Medtronic_WorldWide: {
@@ -394,7 +366,6 @@ public class RFSpy {
     }
 
 
-
     private void setMedtronicEncoding() {
         if (RileyLinkFirmwareVersion.isSameVersion(this.firmwareVersion, RileyLinkFirmwareVersion.Version2AndHigher)) {
 
@@ -413,7 +384,7 @@ public class RFSpy {
     private RFSpyResponse setPreamble(int preamble) {
         RFSpyResponse resp = null;
         try {
-            resp = writeToData(new SetPreamble(firmwareVersion, preamble), EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+            resp = writeToData(new SetPreamble(preamble), EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
         } catch (Exception e) {
             e.toString();
         }
@@ -422,8 +393,7 @@ public class RFSpy {
 
 
     private RFSpyResponse setSoftwareEncoding(RileyLinkEncodingType encoding) {
-        RFSpyResponse resp = writeToData(new SetHardwareEncoding(firmwareVersion, encoding),
-            EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+        RFSpyResponse resp = writeToData(new SetHardwareEncoding(encoding), EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
         return resp;
     }
 
@@ -440,7 +410,7 @@ public class RFSpy {
 	    // FIXME not working correctly yet
         RFSpyResponse resp = null;
         try {
-            resp = writeToData(new Reset(RileyLinkUtil.getFirmwareVersion()), EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+            resp = writeToData(new Reset(), EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
             if (isLogEnabled())
                 LOG.debug("Reset command send, response: {}", resp);
         } catch (Exception e) {
@@ -450,6 +420,6 @@ public class RFSpy {
     }
 
     private boolean isLogEnabled() {
-        return true;
+        return L.isEnabled(L.PUMPBTCOMM);
     }
 }

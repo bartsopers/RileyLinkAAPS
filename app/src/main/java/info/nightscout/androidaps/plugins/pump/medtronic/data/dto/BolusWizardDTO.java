@@ -1,8 +1,6 @@
 package info.nightscout.androidaps.plugins.pump.medtronic.data.dto;
 
-import org.joda.time.LocalDateTime;
-
-import info.nightscout.androidaps.plugins.pump.common.utils.StringUtil;
+import info.nightscout.androidaps.plugins.pump.common.utils.DateTimeUtil;
 
 /**
  * Created by andy on 18.05.15.
@@ -22,8 +20,10 @@ public class BolusWizardDTO extends PumpTimeStampedRecord {
     public Float correctionEstimate = 0.0f;
     public Float foodEstimate = 0.0f;
     public Float unabsorbedInsulin = 0.0f;
-    public LocalDateTime localDateTime;
 
+
+    // public LocalDateTime localDateTime;
+    // public long atechDateTime;
 
     public String getValue() {
         return String.format("BG=%d;CH=%d;CH_UNIT=%s;CH_INS_RATIO=%5.3f;BG_INS_RATIO=%5.3f;"
@@ -33,8 +33,16 @@ public class BolusWizardDTO extends PumpTimeStampedRecord {
             bgTargetHigh, bolusTotal, correctionEstimate, foodEstimate, unabsorbedInsulin);
     }
 
+    public String getDisplayableValue() {
+        return String.format("Bg=%d, CH=%d %s, Ch/Ins Ratio=%5.3f, Bg/Ins Ratio=%5.3f;"
+                        + "Bg Target(L/H)=%d/%d, Bolus: Total=%5.3f, "
+                        + "Correction=%5.3f, Food=%5.3f, IOB=%5.3f", //
+                bloodGlucose, carbs, chUnit, carbRatio, insulinSensitivity, bgTargetLow, //
+                bgTargetHigh, bolusTotal, correctionEstimate, foodEstimate, unabsorbedInsulin);
+    }
+
 
     public String toString() {
-        return "BolusWizardDTO [dateTime=" + StringUtil.toDateTimeString(localDateTime) + ", " + getValue() + "]";
+        return "BolusWizardDTO [dateTime=" + DateTimeUtil.toString(atechDateTime) + ", " + getValue() + "]";
     }
 }

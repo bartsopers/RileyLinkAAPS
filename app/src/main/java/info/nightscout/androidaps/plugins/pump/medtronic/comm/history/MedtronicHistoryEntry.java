@@ -4,8 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.gson.annotations.Expose;
+
+import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
+import info.nightscout.androidaps.plugins.pump.common.utils.DateTimeUtil;
 import info.nightscout.androidaps.plugins.pump.common.utils.HexDump;
 import info.nightscout.androidaps.plugins.pump.common.utils.StringUtil;
 
@@ -34,16 +39,48 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
 
     protected List<Byte> rawData;
 
+    public static final Logger LOG = LoggerFactory.getLogger(MedtronicHistoryEntry.class);
+
     protected int[] sizes = new int[3];
 
     protected byte[] head;
     protected byte[] datetime;
     protected byte[] body;
 
-    protected LocalDateTime dateTime;
-    // protected PumpTimeStampedRecord historyEntryDetails;
+    // protected LocalDateTime dateTime;
 
+    @Expose
+    public String DT;
+
+    @Expose
+    public Long atechDateTime;
+
+    @Expose
     protected Map<String, Object> decodedData;
+
+    public long phoneDateTime; // time on phone
+
+    /**
+     * Pump id that will be used with AAPS object (time * 1000 + historyType (max is FF = 255)
+     */
+    protected Long pumpId;
+
+    /**
+     * if history object is already linked to AAPS object (either Treatment, TempBasal or TDD (tdd's are not actually
+     * linked))
+     */
+    public boolean linked = false;
+
+    /**
+     * Linked object, see linked
+     */
+    public Object linkedObject = null;
+
+
+    public void setLinkedObject(Object linkedObject) {
+        this.linked = true;
+        this.linkedObject = linkedObject;
+    }
 
 
     public void setData(List<Byte> listRawData, boolean doNotProcess) {
@@ -80,7 +117,12 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
     }
 
 
-    public String getDecodedData() {
+    public String getDateTimeString() {
+        return this.DT == null ? "Unknown" : this.DT;
+    }
+
+
+    public String getDecodedDataAsString() {
         if (decodedData == null)
             if (isNoDataEntry())
                 return "No data";
@@ -98,6 +140,11 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
 
     public boolean isNoDataEntry() {
         return (sizes[0] == 2 && sizes[1] == 5 && sizes[2] == 0);
+    }
+
+
+    public Map<String, Object> getDecodedData() {
+        return this.decodedData;
     }
 
 
@@ -125,10 +172,12 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
+        if (this.DT == null) {
+            LOG.error("DT is null. RawData={}", ByteUtil.getHex(this.rawData));
+        }
+
         sb.append(getToStringStart());
-        sb.append(", DT: "
-            + StringUtil.getStringInLength((this.dateTime == null) ? "x" : StringUtil.toDateTimeString(this.dateTime),
-                19));
+        sb.append(", DT: " + (this.DT == null ? "null" : StringUtil.getStringInLength(this.DT, 19)));
         sb.append(", length=");
         sb.append(getHeadLength());
         sb.append(",");
@@ -142,7 +191,7 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
         boolean hasData = hasData();
 
         if (hasData) {
-            sb.append(", data=" + getDecodedData());
+            sb.append(", data=" + getDecodedDataAsString());
         }
 
         if (hasData && !showRaw()) {
@@ -189,6 +238,16 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
     }
 
 
+    public byte getRawDataByIndex(int index) {
+        return rawData.get(index);
+    }
+
+
+    public int getUnsignedRawDataByIndex(int index) {
+        return ByteUtil.convertUnsignedByteToInt(rawData.get(index));
+    }
+
+
     public void setRawData(List<Byte> rawData) {
         this.rawData = rawData;
     }
@@ -224,13 +283,19 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
     }
 
 
-    public LocalDateTime getLocalDateTime() {
-        return this.dateTime;
-    }
+    // public LocalDateTime getLocalDateTime() {
+    // return this.dateTime;
+    // }
+    //
+    //
+    // public void setLocalDateTime(LocalDateTime atdate) {
+    // this.dateTime = atdate;
+    // // this.DT = atdate.toString(dateTimeFormatter);
+    // }
 
-
-    public void setLocalDateTime(LocalDateTime atdate) {
-        this.dateTime = atdate;
+    public void setAtechDateTime(long dt) {
+        this.atechDateTime = dt;
+        this.DT = DateTimeUtil.toString(this.atechDateTime);
     }
 
 
@@ -248,6 +313,13 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
         } else {
             return "HistoryRecord: head=[" + HexDump.toHexStringDisplayable(this.head) + "]";
         }
+    }
+
+    public boolean containsDecodedData(String key) {
+        if (decodedData == null)
+            return false;
+
+        return decodedData.containsKey(key);
     }
 
     // if we extend to CGMS this need to be changed back

@@ -17,6 +17,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.gxwtech.roundtrip2.RT2Const;
 import com.gxwtech.roundtrip2.RoundtripService.RileyLinkIPCConnection;
 
+import info.nightscout.androidaps.logging.L;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RileyLinkBLE;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.encoding.Encoding4b6b;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.encoding.Encoding4b6bGeoff;
@@ -35,6 +36,7 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.ServiceTask;
 import info.nightscout.androidaps.plugins.pump.common.ui.RileyLinkSelectPreference;
+
 
 /**
  * Created by andy on 17/05/2018.
@@ -116,7 +118,7 @@ public class RileyLinkUtil {
             RileyLinkUtil.rileyLinkServiceData.serviceState = newState;
             RileyLinkUtil.rileyLinkServiceData.errorCode = errorCode;
 
-            //if (L.isEnabled(L.PUMP))
+            if (L.isEnabled(L.PUMP))
                 LOG.warn("RileyLink State Changed: {} {}", newState, errorCode == null ? "" : " - Error State: "
                     + errorCode.name());
 

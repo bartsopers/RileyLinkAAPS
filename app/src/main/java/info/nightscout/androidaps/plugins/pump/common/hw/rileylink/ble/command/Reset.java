@@ -1,12 +1,11 @@
 package info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.command;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkCommandType;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
 
 public class Reset extends RileyLinkCommand {
 
-    public Reset(RileyLinkFirmwareVersion version) {
-        super(version);
+    public Reset() {
+        super();
     }
 
 

@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.gxwtech.roundtrip2.RT2Const;
 
+import info.nightscout.androidaps.logging.L;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.GattAttributes;
@@ -42,7 +43,8 @@ import info.nightscout.androidaps.plugins.pump.common.utils.ThreadUtil;
  */
 public class RileyLinkBLE {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RileyLinkBLE.class);
+    private static final Logger LOG = LoggerFactory.getLogger(L.PUMPBTCOMM);
+
     private final Context context;
     public boolean gattDebugEnabled = true;
     boolean manualDisconnect = false;
@@ -385,7 +387,8 @@ public class RileyLinkBLE {
         bluetoothConnectionGatt = rileyLinkDevice.connectGatt(context, true, bluetoothGattCallback);
         // , BluetoothDevice.TRANSPORT_LE
         if (bluetoothConnectionGatt == null) {
-            LOG.error("Failed to connect to Bluetooth Low Energy device at " + bluetoothAdapter.getAddress());
+            if (isLogEnabled())
+                LOG.error("Failed to connect to Bluetooth Low Energy device at " + bluetoothAdapter.getAddress());
             Toast.makeText(context, "No Rileylink at " + bluetoothAdapter.getAddress(), Toast.LENGTH_SHORT).show();
         } else {
             if (gattDebugEnabled) {
@@ -405,8 +408,6 @@ public class RileyLinkBLE {
             // Not sure if to disconnect or to close first..
             bluetoothConnectionGatt.disconnect();
             manualDisconnect = true;
-            // bluetoothConnectionGatt.close();
-            // bluetoothConnectionGatt = null;
         }
     }
 
@@ -584,7 +585,7 @@ public class RileyLinkBLE {
     }
 
     private boolean isLogEnabled() {
-        return true;
+        return L.isEnabled(L.PUMPBTCOMM);
     }
 
 }

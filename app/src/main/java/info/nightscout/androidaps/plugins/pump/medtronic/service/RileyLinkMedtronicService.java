@@ -52,7 +52,7 @@ import info.nightscout.androidaps.plugins.pump.medtronic.defs.MedtronicDeviceTyp
 import info.nightscout.androidaps.plugins.pump.medtronic.defs.PumpDeviceState;
 import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicConst;
 import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
-import info.nightscout.utils.SP;
+import info.nightscout.androidaps.utils.SP;
 
 /**
  * RileyLinkMedtronicService is intended to stay running when the gui-app is closed.
@@ -97,110 +97,112 @@ public class RileyLinkMedtronicService extends RileyLinkService {
     public boolean handleDeviceSpecificBroadcasts(Intent intent) {
         String action = intent.getAction();
 
-        if (action.equals(RT2Const.IPC.MSG_PUMP_fetchHistory)) {
-            mHistoryPages = medtronicCommunicationManager.getAllHistoryPages();
-            final boolean savePages = true;
-            if (savePages) {
-                for (int i = 0; i < mHistoryPages.size(); i++) {
-                    String filename = "PumpHistoryPage-" + i;
-                    LOG.warn("Saving history page to file " + filename);
-                    FileOutputStream outputStream;
-                    try {
-                        outputStream = openFileOutput(filename, 0);
-                        byte[] rawData = mHistoryPages.get(i).getRawData();
-                        if (rawData != null) {
-                            outputStream.write(rawData);
-                        }
-                        outputStream.close();
-                    } catch (FileNotFoundException fnf) {
-                        fnf.printStackTrace();
-                    } catch (IOException ioe) {
-                        ioe.printStackTrace();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+        LOG.error("handleDeviceSpecificBroadcasts NOT Handled.");
 
-                }
-            }
-
-            Message msg = Message.obtain(null, RT2Const.IPC.MSG_IPC, 0, 0);
-            // Create a bundle with the data
-            Bundle bundle = new Bundle();
-            bundle.putString(RT2Const.IPC.messageKey, RT2Const.IPC.MSG_PUMP_history);
-            ArrayList<Bundle> packedPages = new ArrayList<>();
-            for (Page page : mHistoryPages) {
-                packedPages.add(page.pack());
-            }
-            bundle.putParcelableArrayList(RT2Const.IPC.MSG_PUMP_history_key, packedPages);
-
-            // save it to SQL.
-            pumpHistoryManager.clearDatabase();
-            pumpHistoryManager.initFromPages(bundle);
-            // write html page to documents folder
-            pumpHistoryManager.writeHtmlPage();
-
-            // Set payload
-            msg.setData(bundle);
-            RileyLinkUtil.getRileyLinkIPCConnection().sendMessage(msg, null/* broadcast */);
-            LOG.debug("sendMessage: sent Full history report");
-
-            return true;
-        } else if (RT2Const.IPC.MSG_PUMP_fetchSavedHistory.equals(action)) {
-            LOG.info("Fetching saved history");
-            FileInputStream inputStream;
-            ArrayList<Page> storedHistoryPages = new ArrayList<>();
-            for (int i = 0; i < 16; i++) {
-
-                String filename = "PumpHistoryPage-" + i;
-                try {
-                    inputStream = openFileInput(filename);
-                    byte[] buffer = new byte[1024];
-                    int numRead = inputStream.read(buffer, 0, 1024);
-                    if (numRead == 1024) {
-                        Page p = new Page();
-                        // p.parseFrom(buffer, PumpModel.MM522);
-                        // FIXME
-                        p.parseFrom(buffer, MedtronicDeviceType.Medtronic_522);
-                        storedHistoryPages.add(p);
-                    } else {
-                        LOG.error(filename + " error: short file");
-                    }
-                } catch (FileNotFoundException fnf) {
-                    LOG.error("Failed to open " + filename + " for reading.");
-                } catch (IOException e) {
-                    LOG.error("Failed to read " + filename);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            mHistoryPages = storedHistoryPages;
-            if (storedHistoryPages.isEmpty()) {
-                LOG.error("No stored history pages loaded");
-            } else {
-                Message msg = Message.obtain(null, RT2Const.IPC.MSG_IPC, 0, 0);
-                // Create a bundle with the data
-                Bundle bundle = new Bundle();
-                bundle.putString(RT2Const.IPC.messageKey, RT2Const.IPC.MSG_PUMP_history);
-                ArrayList<Bundle> packedPages = new ArrayList<>();
-                for (Page page : mHistoryPages) {
-                    packedPages.add(page.pack());
-                }
-                bundle.putParcelableArrayList(RT2Const.IPC.MSG_PUMP_history_key, packedPages);
-
-                // save it to SQL.
-                pumpHistoryManager.clearDatabase();
-                pumpHistoryManager.initFromPages(bundle);
-                // write html page to documents folder
-                pumpHistoryManager.writeHtmlPage();
-
-                // Set payload
-                msg.setData(bundle);
-                RileyLinkUtil.getRileyLinkIPCConnection().sendMessage(msg, null/* broadcast */);
-            }
-
-            return true;
-
-        }
+//        if (action.equals(RT2Const.IPC.MSG_PUMP_fetchHistory)) {
+//            mHistoryPages = medtronicCommunicationManager.getAllHistoryPages();
+//            final boolean savePages = true;
+//            if (savePages) {
+//                for (int i = 0; i < mHistoryPages.size(); i++) {
+//                    String filename = "PumpHistoryPage-" + i;
+//                    LOG.warn("Saving history page to file " + filename);
+//                    FileOutputStream outputStream;
+//                    try {
+//                        outputStream = openFileOutput(filename, 0);
+//                        byte[] rawData = mHistoryPages.get(i).getRawData();
+//                        if (rawData != null) {
+//                            outputStream.write(rawData);
+//                        }
+//                        outputStream.close();
+//                    } catch (FileNotFoundException fnf) {
+//                        fnf.printStackTrace();
+//                    } catch (IOException ioe) {
+//                        ioe.printStackTrace();
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                }
+//            }
+//
+//            Message msg = Message.obtain(null, RT2Const.IPC.MSG_IPC, 0, 0);
+//            // Create a bundle with the data
+//            Bundle bundle = new Bundle();
+//            bundle.putString(RT2Const.IPC.messageKey, RT2Const.IPC.MSG_PUMP_history);
+//            ArrayList<Bundle> packedPages = new ArrayList<>();
+//            for (Page page : mHistoryPages) {
+//                packedPages.add(page.pack());
+//            }
+//            bundle.putParcelableArrayList(RT2Const.IPC.MSG_PUMP_history_key, packedPages);
+//
+//            // save it to SQL.
+//            pumpHistoryManager.clearDatabase();
+//            pumpHistoryManager.initFromPages(bundle);
+//            // write html page to documents folder
+//            pumpHistoryManager.writeHtmlPage();
+//
+//            // Set payload
+//            msg.setData(bundle);
+//            RileyLinkUtil.getRileyLinkIPCConnection().sendMessage(msg, null/* broadcast */);
+//            LOG.debug("sendMessage: sent Full history report");
+//
+//            return true;
+//        } else if (RT2Const.IPC.MSG_PUMP_fetchSavedHistory.equals(action)) {
+//            LOG.info("Fetching saved history");
+//            FileInputStream inputStream;
+//            ArrayList<Page> storedHistoryPages = new ArrayList<>();
+//            for (int i = 0; i < 16; i++) {
+//
+//                String filename = "PumpHistoryPage-" + i;
+//                try {
+//                    inputStream = openFileInput(filename);
+//                    byte[] buffer = new byte[1024];
+//                    int numRead = inputStream.read(buffer, 0, 1024);
+//                    if (numRead == 1024) {
+//                        Page p = new Page();
+//                        // p.parseFrom(buffer, PumpModel.MM522);
+//                        // FIXME
+//                        p.parseFrom(buffer, MedtronicDeviceType.Medtronic_522);
+//                        storedHistoryPages.add(p);
+//                    } else {
+//                        LOG.error(filename + " error: short file");
+//                    }
+//                } catch (FileNotFoundException fnf) {
+//                    LOG.error("Failed to open " + filename + " for reading.");
+//                } catch (IOException e) {
+//                    LOG.error("Failed to read " + filename);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            mHistoryPages = storedHistoryPages;
+//            if (storedHistoryPages.isEmpty()) {
+//                LOG.error("No stored history pages loaded");
+//            } else {
+//                Message msg = Message.obtain(null, RT2Const.IPC.MSG_IPC, 0, 0);
+//                // Create a bundle with the data
+//                Bundle bundle = new Bundle();
+//                bundle.putString(RT2Const.IPC.messageKey, RT2Const.IPC.MSG_PUMP_history);
+//                ArrayList<Bundle> packedPages = new ArrayList<>();
+//                for (Page page : mHistoryPages) {
+//                    packedPages.add(page.pack());
+//                }
+//                bundle.putParcelableArrayList(RT2Const.IPC.MSG_PUMP_history_key, packedPages);
+//
+//                // save it to SQL.
+//                pumpHistoryManager.clearDatabase();
+//                pumpHistoryManager.initFromPages(bundle);
+//                // write html page to documents folder
+//                pumpHistoryManager.writeHtmlPage();
+//
+//                // Set payload
+//                msg.setData(bundle);
+//                RileyLinkUtil.getRileyLinkIPCConnection().sendMessage(msg, null/* broadcast */);
+//            }
+//
+//            return true;
+//
+//        }
 
         return false;
     }
@@ -233,18 +235,6 @@ public class RileyLinkMedtronicService extends RileyLinkService {
     }
 
 
-    @Override
-    protected void determineRileyLinkTargetFrequency() {
-        boolean hasUSFrequency = SP.getString(MedtronicConst.Prefs.PumpFrequency,
-            MainApp.gs(R.string.medtronic_pump_frequency_us)).equals(MainApp.gs(R.string.medtronic_pump_frequency_us));
-
-        if (hasUSFrequency)
-            this.rileyLinkTargetFrequency = RileyLinkTargetFrequency.Medtronic_US;
-        else
-            this.rileyLinkTargetFrequency = RileyLinkTargetFrequency.Medtronic_WorldWide;
-    }
-
-
     /**
      * If you have customized RileyLinkServiceData you need to override this
      */
@@ -267,26 +257,23 @@ public class RileyLinkMedtronicService extends RileyLinkService {
         RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
 
         // init rileyLinkCommunicationManager
-        medtronicCommunicationManager = new MedtronicCommunicationManager(context, rfspy, rileyLinkTargetFrequency);
+        medtronicCommunicationManager = new MedtronicCommunicationManager(context, rfspy);
 
         // FIXME remove
         pumpHistoryManager = new PumpHistoryManager(this.context);
+    }
 
+
+    public void resetRileyLinkDevice() {
+        rfspy.resetRileyLinkDevice();
     }
 
 
     @Override
     public RileyLinkCommunicationManager getDeviceCommunicationManager() {
-        return medtronicCommunicationManager;
-    }
-
-
-    public MedtronicCommunicationManager getMedtronicCommunicationManager() {
         return this.medtronicCommunicationManager;
     }
 
-
-    /* private functions */
 
     public void setPumpIDString(String pumpID) {
         if (pumpID.length() != 6) {
@@ -295,8 +282,6 @@ public class RileyLinkMedtronicService extends RileyLinkService {
         }
 
         byte[] pumpIDBytes = ByteUtil.fromHexString(pumpID);
-
-        // SP.putString(MedtronicConst.Prefs.PumpSerial, pumpIDString);
 
         if (pumpIDBytes == null) {
             LOG.error("Invalid pump ID? - PumpID is null.");

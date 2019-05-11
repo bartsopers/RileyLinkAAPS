@@ -1,5 +1,8 @@
 package info.nightscout.androidaps.plugins.pump.medtronic.util;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -11,10 +14,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.data.RLHistoryItem;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.defs.RileyLinkTargetDevice;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.common.utils.HexDump;
 import info.nightscout.androidaps.plugins.pump.medtronic.comm.MedtronicCommunicationManager;
 import info.nightscout.androidaps.plugins.pump.medtronic.comm.message.MessageType;
+import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.ClockDTO;
 import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.PumpSettingDTO;
 import info.nightscout.androidaps.plugins.pump.medtronic.defs.MedtronicCommandType;
 import info.nightscout.androidaps.plugins.pump.medtronic.defs.MedtronicDeviceType;
@@ -40,6 +46,19 @@ public class MedtronicUtil extends RileyLinkUtil {
     private static Map<String, PumpSettingDTO> settings;
     private static int BIG_FRAME_LENGTH = 65;
     private static int doneBit = 1 << 7;
+    private static ClockDTO pumpTime;
+    public static Gson gsonInstance = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    public static Gson gsonInstancePretty = new GsonBuilder().excludeFieldsWithoutExposeAnnotation()
+            .setPrettyPrinting().create();
+
+
+    public static Gson getGsonInstance() {
+        return gsonInstance;
+    }
+
+    public static Gson getGsonInstancePretty() {
+        return gsonInstancePretty;
+    }
 
 
     public static LocalTime getTimeFrom30MinInterval(int interval) {
@@ -355,7 +374,10 @@ public class MedtronicUtil extends RileyLinkUtil {
 
     public static void setPumpDeviceState(PumpDeviceState pumpDeviceState) {
         MedtronicUtil.pumpDeviceState = pumpDeviceState;
-        // MainApp.bus().post(new EventMedtronicDeviceStatusChange(pumpDeviceState));
+
+        historyRileyLink.add(new RLHistoryItem(pumpDeviceState, RileyLinkTargetDevice.MedtronicPump));
+
+        //MainApp.bus().post(new EventMedtronicDeviceStatusChange(pumpDeviceState));
     }
 
 
@@ -370,9 +392,7 @@ public class MedtronicUtil extends RileyLinkUtil {
 
 
     public static void setMedtronicPumpModel(MedtronicDeviceType medtronicPumpModel) {
-        if (medtronicPumpModel != null && medtronicPumpModel != MedtronicDeviceType.Unknown_Device) {
-            MedtronicUtil.medtronicPumpModel = medtronicPumpModel;
-        }
+        MedtronicUtil.medtronicPumpModel = medtronicPumpModel;
     }
 
 
@@ -408,6 +428,25 @@ public class MedtronicUtil extends RileyLinkUtil {
 
     public static void setCurrentCommand(MedtronicCommandType currentCommand) {
         MedtronicUtil.currentCommand = currentCommand;
+
+        if (currentCommand != null)
+            historyRileyLink.add(new RLHistoryItem(currentCommand));
+
+    }
+
+    public static int pageNumber;
+    public static Integer frameNumber;
+
+
+    public static void setCurrentCommand(MedtronicCommandType currentCommand, int pageNumber_, Integer frameNumber_) {
+        pageNumber = pageNumber_;
+        frameNumber = frameNumber_;
+
+        if (MedtronicUtil.currentCommand != currentCommand) {
+            setCurrentCommand(currentCommand);
+        }
+
+        //MainApp.bus().post(new EventMedtronicDeviceStatusChange(pumpDeviceState));
     }
 
 
@@ -427,4 +466,13 @@ public class MedtronicUtil extends RileyLinkUtil {
         MedtronicUtil.settings = settings;
     }
 
+
+    public static void setPumpTime(ClockDTO pumpTime) {
+        MedtronicUtil.pumpTime = pumpTime;
+    }
+
+
+    public static ClockDTO getPumpTime() {
+        return MedtronicUtil.pumpTime;
+    }
 }

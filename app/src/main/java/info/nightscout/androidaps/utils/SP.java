@@ -1,4 +1,4 @@
-package info.nightscout.utils;
+package info.nightscout.androidaps.utils;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -10,12 +10,15 @@ import com.gxwtech.roundtrip2.MainApp;
  * Created by mike on 17.02.2017.
  */
 
-
 public class SP {
     static SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainApp.instance().getApplicationContext());
 
     static public boolean contains(String key) {
         return sharedPreferences.contains(key);
+    }
+
+    static public boolean contains(int resourceId) {
+        return sharedPreferences.contains(MainApp.gs(resourceId));
     }
 
     static public String getString(int resourceID, String defaultValue) {
@@ -82,16 +85,6 @@ public class SP {
         }
     }
 
-
-    static public float getFloat(int resourceID, Float defaultValue) {
-        return sharedPreferences.getFloat(MainApp.gs(resourceID), defaultValue);
-    }
-
-    static public float getFloat(String key, Float defaultValue) {
-        return sharedPreferences.getFloat(key, defaultValue);
-    }
-
-
     static public void putBoolean(String key, boolean value) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(key, value);
@@ -101,6 +94,18 @@ public class SP {
     static public void putBoolean(int resourceID, boolean value) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(MainApp.gs(resourceID), value);
+        editor.apply();
+    }
+
+    static public void putDouble(String key, double value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(key, Double.toString(value));
+        editor.apply();
+    }
+
+    static public void putDouble(int resourceID, double value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(MainApp.gs(resourceID), Double.toString(value));
         editor.apply();
     }
 
@@ -128,6 +133,7 @@ public class SP {
         editor.apply();
     }
 
+
     static public void putDouble(int resourceID, Double value) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(MainApp.gs(resourceID), value.toString());
@@ -145,19 +151,6 @@ public class SP {
         editor.putString(MainApp.gs(resourceID), value);
         editor.apply();
     }
-
-    static public void putFloat(String key, Float value) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putFloat(key, value);
-        editor.apply();
-    }
-
-    static public void putFloat(int resourceID, Float value) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putFloat(MainApp.gs(resourceID), value);
-        editor.apply();
-    }
-
 
     static public void putString(String key, String value) {
         SharedPreferences.Editor editor = sharedPreferences.edit();

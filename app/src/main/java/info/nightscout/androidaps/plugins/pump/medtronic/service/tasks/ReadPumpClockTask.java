@@ -8,6 +8,7 @@ import com.gxwtech.roundtrip2.ServiceData.ReadPumpClockResult;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.PumpTask;
+import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.ClockDTO;
 import info.nightscout.androidaps.plugins.pump.medtronic.service.RileyLinkMedtronicService;
 
 /**
@@ -30,15 +31,15 @@ public class ReadPumpClockTask extends PumpTask {
 
     @Override
     public void run() {
-        LocalDateTime pumpResponse = RileyLinkMedtronicService.getCommunicationManager().getPumpTime();
+        ClockDTO pumpResponse = RileyLinkMedtronicService.getCommunicationManager().getPumpTime();
         if (pumpResponse != null) {
-            Log.i(TAG, "ReadPumpClock: " + pumpResponse.toString("HH:mm:ss"));
+            Log.i(TAG, "ReadPumpClock: " + pumpResponse.pumpTime.toString("HH:mm:ss"));
         } else {
             Log.e(TAG, "handleServiceCommand(" + mTransport.getOriginalCommandName() + ") pumpResponse is null");
         }
 
         ReadPumpClockResult res = new ReadPumpClockResult();
-        res.setTime(pumpResponse);
+        res.setTime(pumpResponse.pumpTime);
 
         getServiceTransport().setServiceResult(res);
     }

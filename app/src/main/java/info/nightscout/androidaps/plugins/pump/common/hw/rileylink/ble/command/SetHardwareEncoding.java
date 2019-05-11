@@ -2,15 +2,14 @@ package info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.command;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkCommandType;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkEncodingType;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
 
 public class SetHardwareEncoding extends RileyLinkCommand {
 
     private final RileyLinkEncodingType encoding;
 
 
-    public SetHardwareEncoding(RileyLinkFirmwareVersion version, RileyLinkEncodingType encoding) {
-        super(version);
+    public SetHardwareEncoding(RileyLinkEncodingType encoding) {
+        super();
         this.encoding = encoding;
     }
 

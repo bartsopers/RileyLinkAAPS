@@ -1,4 +1,4 @@
-package info.nightscout.utils;
+package info.nightscout.androidaps.utils;
 
 /**
  * Created by mike on 20.06.2016.

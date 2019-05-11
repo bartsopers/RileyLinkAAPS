@@ -28,7 +28,7 @@ public class ReadPumpClockTask extends PumpTask {
 
     @Override
     public void run() {
-        LocalDateTime pumpResponse = RileyLinkMedtronicService.getCommunicationManager().getPumpTime();
+        LocalDateTime pumpResponse = RileyLinkMedtronicService.getCommunicationManager().getPumpTime().pumpTime;
         if (pumpResponse != null) {
             Log.i(TAG, "ReadPumpClock: " + pumpResponse.toString("HH:mm:ss"));
         } else {

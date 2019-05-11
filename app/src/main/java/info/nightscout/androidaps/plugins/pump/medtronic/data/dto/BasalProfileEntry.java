@@ -1,7 +1,10 @@
 package info.nightscout.androidaps.plugins.pump.medtronic.data.dto;
 
 import org.joda.time.LocalTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import info.nightscout.androidaps.logging.L;
 import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
 
 /**
@@ -10,6 +13,8 @@ import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
  * - fixed rate is not one bit but two
  */
 public class BasalProfileEntry {
+
+    private static final Logger LOG = LoggerFactory.getLogger(L.PUMPCOMM);
 
     public byte[] rate_raw;
     public double rate;
@@ -49,7 +54,16 @@ public class BasalProfileEntry {
         rate_raw = MedtronicUtil.getByteArrayFromUnsignedShort(rateStrokes, true);
         rate = rateStrokes * 0.025;
         startTime_raw = (byte)startTimeInterval;
-        startTime = new LocalTime(startTimeInterval / 2, (startTimeInterval % 2) * 30);
+
+        try {
+            startTime = new LocalTime(startTimeInterval / 2, (startTimeInterval % 2) * 30);
+        } catch (Exception ex) {
+            LOG.error(
+                "Error creating BasalProfileEntry: startTimeInterval={}, startTime_raw={}, hours={}, rateStrokes={}",
+                startTimeInterval, startTime_raw, startTimeInterval / 2, rateStrokes);
+            throw ex;
+        }
+
     }
 
 

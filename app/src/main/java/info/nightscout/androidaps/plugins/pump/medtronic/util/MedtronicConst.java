@@ -16,6 +16,8 @@ public class MedtronicConst {
         public static final String PumpFrequency = PrefPrefix + "frequency";
         public static final String MaxBolus = PrefPrefix + "max_bolus";
         public static final String MaxBasal = PrefPrefix + "max_basal";
+        public static final String BolusDelay = PrefPrefix + "bolus_delay";
+        public static final String Encoding = PrefPrefix + "encoding";
     }
 
     public class Statistics {
@@ -27,6 +29,7 @@ public class MedtronicConst {
         public static final String TBRsSet = StatsPrefix + "tbrs_set";
         public static final String StandardBoluses = StatsPrefix + "std_boluses_delivered";
         public static final String SMBBoluses = StatsPrefix + "smb_boluses_delivered";
+        public static final String LastPumpHistoryEntry = StatsPrefix + "pump_history_entry";
     }
 
 }

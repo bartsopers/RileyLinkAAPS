@@ -3,7 +3,6 @@ package info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data;
 import org.apache.commons.lang3.NotImplementedException;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RFTools;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.common.utils.CRC;
 
@@ -42,7 +41,7 @@ public class RadioPacket {
             case FourByteSixByteLocal: {
                 byte[] withCRC = getWithCRC();
 
-                byte[] encoded = RFTools.encode4b6b(withCRC);
+                byte[] encoded = RileyLinkUtil.getEncoding4b6b().encode4b6b(withCRC);
                 return ByteUtil.concat(encoded, (byte)0);
             }
 

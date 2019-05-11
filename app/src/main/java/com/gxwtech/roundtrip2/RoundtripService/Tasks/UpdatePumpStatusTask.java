@@ -25,7 +25,7 @@ public class UpdatePumpStatusTask extends PumpTask {
     @Override
     public void run() {
         // force pump to update everything it can
-        RileyLinkMedtronicService.getCommunicationManager().updatePumpManagerStatus();
+        //RileyLinkMedtronicService.getCommunicationManager().updatePumpManagerStatus();
         // get the newly cached status
         //PumpStatus status = RileyLinkMedtronicService.getCommunicationManager().getPumpStatus();
         // fill a PumpStatusResult message with the goods

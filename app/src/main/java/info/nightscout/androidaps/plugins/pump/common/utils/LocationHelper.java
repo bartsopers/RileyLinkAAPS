@@ -10,6 +10,7 @@ import android.os.Build;
 
 import com.gxwtech.roundtrip2.R;
 
+
 /**
  * Helper for checking if location services are enabled on the device.
  */

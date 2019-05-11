@@ -4,16 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import info.nightscout.androidaps.plugins.pump.common.utils.DateTimeUtil;
+import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
 
 /**
  * Created by andy on 9/23/18.
  */
 
 /**
- * History page contains data, sorted from oldest to newest
+ * History page contains data, sorted from newest to oldest (0=newest..n=oldest)
  */
 public class PumpHistoryResult {
 
@@ -21,20 +23,25 @@ public class PumpHistoryResult {
 
     private boolean searchFinished = false;
     private PumpHistoryEntry searchEntry = null;
-    private LocalDateTime searchDate = null;
+    private Long searchDate = null;
     private SearchType searchType = SearchType.None;
-    private List<PumpHistoryEntry> unprocessedEntries;
+    public List<PumpHistoryEntry> unprocessedEntries;
     public List<PumpHistoryEntry> validEntries;
 
 
     // private Object validValues;
 
-    public PumpHistoryResult(PumpHistoryEntry searchEntry, LocalDateTime targetDate) {
+    public PumpHistoryResult(PumpHistoryEntry searchEntry, Long targetDate) {
         if (searchEntry != null) {
-            this.searchEntry = searchEntry;
-            this.searchType = SearchType.LastEntry;
-            LOG.debug("PumpHistoryResult. Search parameters: Last Entry: " + searchEntry.getLocalDateTime() + " type="
-                + searchEntry.getEntryType().name());
+            /*
+             * this.searchEntry = searchEntry;
+             * this.searchType = SearchType.LastEntry;
+             * LOG.debug("PumpHistoryResult. Search parameters: Last Entry: " + searchEntry.atechDateTime + " type="
+             * + searchEntry.getEntryType().name());
+             */
+            this.searchDate = searchEntry.atechDateTime;
+            this.searchType = SearchType.Date;
+            LOG.debug("PumpHistoryResult. Search parameters: Date(with searchEntry): " + targetDate);
         } else if (targetDate != null) {
             this.searchDate = targetDate;
             this.searchType = SearchType.Date;
@@ -48,7 +55,7 @@ public class PumpHistoryResult {
 
     public void addHistoryEntries(List<PumpHistoryEntry> entries) {
         this.unprocessedEntries = entries;
-        LOG.debug("PumpHistoryResult. Unprocessed entries: {}", entries);
+        LOG.debug("PumpHistoryResult. Unprocessed entries: {}", MedtronicUtil.getGsonInstance().toJson(entries));
         processEntries();
     }
 
@@ -58,38 +65,52 @@ public class PumpHistoryResult {
 
         switch (searchType) {
             case None:
+                LOG.debug("PE. None search");
+                // clearOrPrepareList();
                 this.validEntries.addAll(this.unprocessedEntries);
-                // this.unprocessedEntries = null;
+                // this.unprocessedEntries
+                // = null;
                 break;
 
             case LastEntry: {
-                if (this.validEntries == null)
-                    this.validEntries = new ArrayList<>();
+                LOG.debug("PE. Last entry search");
+
+                // clearOrPrepareList();
 
                 Collections.sort(this.unprocessedEntries, new PumpHistoryEntry.Comparator());
 
-                LOG.debug("PumpHistoryResult. Search entry date: " + searchEntry.getLocalDateTime());
+                LOG.debug("PE. PumpHistoryResult. Search entry date: " + searchEntry.atechDateTime);
+
+                Long date = searchEntry.atechDateTime;
 
                 for (PumpHistoryEntry unprocessedEntry : unprocessedEntries) {
 
                     if (unprocessedEntry.equals(searchEntry)) {
+                        LOG.debug("PE. Item found {}.", unprocessedEntry);
                         searchFinished = true;
                         break;
                     }
 
+                    LOG.debug("PE. Entry {} added.", unprocessedEntry);
                     this.validEntries.add(unprocessedEntry);
                 }
             }
                 break;
             case Date: {
-                if (this.validEntries == null)
-                    this.validEntries = new ArrayList<>();
+                LOG.debug("PE. Date search");
+
+                // clearOrPrepareList();
 
                 for (PumpHistoryEntry unprocessedEntry : unprocessedEntries) {
+
+                    if (unprocessedEntry.atechDateTime==null || unprocessedEntry.atechDateTime==0) {
+                        continue;
+                    }
+
                     if (unprocessedEntry.isAfter(this.searchDate)) {
                         this.validEntries.add(unprocessedEntry);
                     } else {
-                        if (unprocessedEntry.getLocalDateTime().getYear() != 2000)
+                        if (DateTimeUtil.getYear(unprocessedEntry.atechDateTime) != 2000)
                             olderEntries++;
                     }
                 }
@@ -104,6 +125,47 @@ public class PumpHistoryResult {
 
         } // switch
 
+        LOG.debug("PE. Valid Entries: {}", validEntries);
+    }
+
+
+    private void clearOrPrepareList() {
+        if (this.validEntries == null)
+            this.validEntries = new ArrayList<>();
+        else
+            this.validEntries.clear();
+    }
+
+
+    public String toString() {
+        return "PumpHistoryResult [unprocessed=" + (unprocessedEntries != null ? "" + unprocessedEntries.size() : "0") + //
+            ", valid=" + (validEntries != null ? "" + validEntries.size() : "0") + //
+            ", searchEntry=" + searchEntry + //
+            ", searchDate=" + searchDate + //
+            ", searchType=" + searchType + //
+            ", searchFinished=" + searchFinished + //
+            "]";
+
+    }
+
+
+    /**
+     * Return latest entry (entry with highest date time)
+     * 
+     * @return
+     */
+    public PumpHistoryEntry getLatestEntry() {
+        if (this.validEntries == null || this.validEntries.size() == 0)
+            return null;
+        else {
+            return this.validEntries.get(0);
+            // PumpHistoryEntry pumpHistoryEntry = this.validEntries.get(0);
+            //
+            // if (pumpHistoryEntry.getEntryType() == PumpHistoryEntryType.EndResultTotals)
+            // return pumpHistoryEntry;
+            // else
+            // return this.validEntries.get(1);
+        }
     }
 
 

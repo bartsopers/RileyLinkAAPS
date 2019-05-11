@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import android.content.Context;
 
+import info.nightscout.androidaps.logging.L;
 import info.nightscout.androidaps.plugins.pump.common.data.PumpStatus;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RileyLinkCommunicationException;
@@ -15,16 +16,14 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.RLMe
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.RadioPacket;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.RadioResponse;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RLMessageType;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.defs.RileyLinkError;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.defs.RileyLinkServiceState;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkBLEError;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.RileyLinkServiceData;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.ServiceTaskExecutor;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.WakeAndTuneTask;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.medtronic.defs.PumpDeviceState;
 import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
-import info.nightscout.utils.SP;
+import info.nightscout.androidaps.utils.SP;
 
 /**
  * This is abstract class for RileyLink Communication, this one needs to be extended by specific "Pump" class.
@@ -33,7 +32,7 @@ import info.nightscout.utils.SP;
  */
 public abstract class RileyLinkCommunicationManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RileyLinkCommunicationManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(L.PUMPCOMM);
 
     private static final int SCAN_TIMEOUT = 1500;
     private static final int ALLOWED_PUMP_UNREACHABLE = 10 * 60 * 1000; // 10 minutes
@@ -45,20 +44,16 @@ public abstract class RileyLinkCommunicationManager {
     protected long lastGoodReceiverCommunicationTime = 0;
     protected PumpStatus pumpStatus;
     protected RileyLinkServiceData rileyLinkServiceData;
-    protected RileyLinkTargetFrequency targetFrequency;
     private long nextWakeUpRequired = 0L;
-    private double[] scanFrequencies;
 
     // internal flag
     private boolean showPumpMessages = true;
     private int timeoutCount = 0;
 
 
-    public RileyLinkCommunicationManager(Context context, RFSpy rfspy, RileyLinkTargetFrequency targetFrequency) {
+    public RileyLinkCommunicationManager(Context context, RFSpy rfspy) {
         this.context = context;
         this.rfspy = rfspy;
-        this.targetFrequency = targetFrequency;
-        this.scanFrequencies = targetFrequency.getScanFrequencies();
         this.rileyLinkServiceData = RileyLinkUtil.getRileyLinkServiceData();
         RileyLinkUtil.setRileyLinkCommunicationManager(this);
 
@@ -95,12 +90,18 @@ public abstract class RileyLinkCommunicationManager {
             if (rfSpyResponse.wasTimeout()) {
                 timeoutCount++;
 
-                if (timeoutCount >= 5) {
-                    RileyLinkUtil.setServiceState(RileyLinkServiceState.PumpConnectorError,
-                        RileyLinkError.NoContactWithDevice);
+                long diff = System.currentTimeMillis() - pumpStatus.lastConnection;
+
+                if (diff > ALLOWED_PUMP_UNREACHABLE) {
+                    if (isLogEnabled())
+                        LOG.warn("We reached max time that Pump can be unreachable. Starting Tuning.");
+                    //ServiceTaskExecutor.startTask(new WakeAndTuneTask());
                     timeoutCount = 0;
-                    ServiceTaskExecutor.startTask(new WakeAndTuneTask());
                 }
+
+                throw new RileyLinkCommunicationException(RileyLinkBLEError.Timeout);
+            } else if (rfSpyResponse.wasInterrupted()) {
+                throw new RileyLinkCommunicationException(RileyLinkBLEError.Interrupted);
             }
         }
 
@@ -210,7 +211,6 @@ public abstract class RileyLinkCommunicationManager {
     public abstract boolean tryToConnectToDevice();
 
 
-    // FIXME sorting, and time display
     public double scanForDevice(double[] frequencies) {
         if (isLogEnabled())
             LOG.info("Scanning for receiver ({})", receiverDeviceID);
@@ -431,7 +431,7 @@ public abstract class RileyLinkCommunicationManager {
     }
 
     private boolean isLogEnabled() {
-        return true;
+        return L.isEnabled(L.PUMPCOMM);
     }
 
 }

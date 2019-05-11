@@ -14,6 +14,7 @@ import com.gxwtech.roundtrip2.MainApp;
 import com.gxwtech.roundtrip2.R;
 
 import info.nightscout.androidaps.interfaces.PumpDescription;
+import info.nightscout.androidaps.logging.L;
 import info.nightscout.androidaps.plugins.pump.common.data.PumpStatus;
 import info.nightscout.androidaps.plugins.pump.common.defs.PumpType;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkConst;
@@ -21,11 +22,12 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.defs.RileyLinkError;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.defs.RileyLinkServiceState;
+import info.nightscout.androidaps.plugins.pump.medtronic.defs.BasalProfileStatus;
 import info.nightscout.androidaps.plugins.pump.medtronic.defs.MedtronicDeviceType;
 import info.nightscout.androidaps.plugins.pump.medtronic.defs.PumpDeviceState;
 import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicConst;
 import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
-import info.nightscout.utils.SP;
+import info.nightscout.androidaps.utils.SP;
 
 /**
  * Created by andy on 4/28/18.
@@ -33,12 +35,10 @@ import info.nightscout.utils.SP;
 
 public class MedtronicPumpStatus extends PumpStatus {
 
-    // private static MedtronicPumpStatus medtronicPumpStatus = new MedtronicPumpStatus();
-    private static Logger LOG = LoggerFactory.getLogger(MedtronicPumpStatus.class);
+    private static Logger LOG = LoggerFactory.getLogger(L.PUMP);
 
     public String errorDescription = null;
     public String serialNumber;
-    public PumpType pumpType = null;
     public String pumpFrequency = null;
     public String rileyLinkAddress = null;
     public Double maxBolus;
@@ -67,6 +67,10 @@ public class MedtronicPumpStatus extends PumpStatus {
     private boolean isFrequencyUS = false;
     private Map<String, PumpType> medtronicPumpMap = null;
     private Map<String, MedtronicDeviceType> medtronicDeviceTypeMap = null;
+    private RileyLinkTargetFrequency targetFrequency;
+    private boolean targetFrequencyChanged = false;
+    // public boolean isBasalInitalized = false;
+    public BasalProfileStatus basalProfileStatus;
 
 
     public MedtronicPumpStatus(PumpDescription pumpDescription) {
@@ -124,7 +128,7 @@ public class MedtronicPumpStatus extends PumpStatus {
         medtronicPumpMap.put("754", PumpType.Medtronic_554_754_Veo);
 
         frequencies = new String[2];
-        frequencies[0] = MainApp.gs(R.string.medtronic_pump_frequency_us);
+        frequencies[0] = MainApp.gs(R.string.medtronic_pump_frequency_us_ca);
         frequencies[1] = MainApp.gs(R.string.medtronic_pump_frequency_worldwide);
     }
 
@@ -138,6 +142,8 @@ public class MedtronicPumpStatus extends PumpStatus {
 
             if (this.medtronicDeviceTypeMap == null)
                 createMedtronicDeviceTypeMap();
+
+            this.errorDescription = "-";
 
             String serialNr = SP.getString(MedtronicConst.Prefs.PumpSerial, null);
 
@@ -188,6 +194,7 @@ public class MedtronicPumpStatus extends PumpStatus {
                     this.errorDescription = MainApp.gs(R.string.medtronic_error_pump_frequency_invalid);
                     return;
                 } else {
+                    // if (this.pumpFrequency == null || !this.pumpFrequency.equals(pumpFrequency))
                     this.pumpFrequency = pumpFrequency;
                     this.isFrequencyUS = pumpFrequency.equals(frequencies[0]);
 
@@ -257,7 +264,7 @@ public class MedtronicPumpStatus extends PumpStatus {
         }
 
         if (val > defaultValueDouble) {
-            SP.putString(MedtronicConst.Prefs.MaxBolus, defaultValue);
+            SP.putString(key, defaultValue);
             val = defaultValueDouble;
         }
 

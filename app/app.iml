@@ -153,6 +153,7 @@
     <orderEntry type="library" scope="TEST" name="Gradle: org.powermock:powermock-module-junit4-rule-agent:1.7.3@jar" level="project" />
     <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.12@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.4@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.guava:guava:18.0@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.powermock:powermock-module-junit4:1.7.3@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.github.tony19:logback-android-core:1.1.1-6@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-vector-drawable:27.1.0@aar" level="project" />

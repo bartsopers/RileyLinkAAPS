@@ -30,6 +30,7 @@ import info.nightscout.androidaps.plugins.pump.medtronic.comm.history.pump.PumpH
 import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.BasalProfile;
 import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.BasalProfileEntry;
 import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.BatteryStatusDTO;
+import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.ClockDTO;
 import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.PumpSettingDTO;
 import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.TempBasalPair;
 import info.nightscout.androidaps.plugins.pump.medtronic.defs.BatteryType;
@@ -309,8 +310,11 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                 break;
 
             case "RefreshData.GetTime": {
-                LocalDateTime ldt = (LocalDateTime)data;
-                putOnDisplay("Pump Time: " + ldt.toString("dd.MM.yyyy HH:mm:ss"));
+                ClockDTO ldt = (ClockDTO)data;
+                putOnDisplay("Pump Time: " + ldt.pumpTime.toString("dd.MM.yyyy HH:mm:ss"));
+                putOnDisplay("Local Time: " + ldt.localDeviceTime.toString("dd.MM.yyyy HH:mm:ss"));
+                //long diff = ldt.pumpTime.minus(ldt.localDeviceTime);
+                //putOnDisplay("Difference: " + ldt.pumpTime.toString("dd.MM.yyyy HH:mm:ss"));
             }
                 break;
 
@@ -386,7 +390,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                     putOnDisplay("History Entries: (" + validEntries.size() + ")");
                     LOG.debug("History Entries: (" + validEntries.size() + ")");
                     for (PumpHistoryEntry entry : validEntries) {
-                        putOnDisplay(entry.getLocalDateTime() + "   " + entry.getEntryType().name());
+                        putOnDisplay(entry.DT + "   " + entry.getEntryType().name());
                     }
 
                     if (validEntries.size() > 6) {
@@ -410,7 +414,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                     putOnDisplay("History Entries 2: (" + validEntries.size() + ")");
                     LOG.debug("History Entries: (" + validEntries.size() + ")");
                     for (PumpHistoryEntry entry : validEntries) {
-                        putOnDisplay(entry.getLocalDateTime() + "   " + entry.getEntryType().name());
+                        putOnDisplay(entry.DT + "   " + entry.getEntryType().name());
                     }
                 }
 
@@ -506,7 +510,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                         break;
 
                     case "RefreshData.GetStatus": {
-                        returnData = getCommunicationManager().getPumpState();
+                        //returnData = getCommunicationManager().getPumpState();
                     }
                         break;
 
@@ -524,7 +528,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                         break;
 
                     case "RefreshData.GetBolus": {
-                        returnData = getCommunicationManager().getBolusStatus();
+                        //returnData = getCommunicationManager().getBolusStatus();
                     }
                         break;
 

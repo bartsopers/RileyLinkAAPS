@@ -4,8 +4,12 @@ import android.content.Context;
 import android.preference.Preference;
 import android.util.AttributeSet;
 
+
+import com.gxwtech.roundtrip2.MainApp;
+import com.gxwtech.roundtrip2.R;
+
 import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
-import info.nightscout.utils.SP;
+import info.nightscout.androidaps.utils.SP;
 
 /**
  * Created by andy on 10/18/18.
@@ -32,7 +36,7 @@ public class RileyLinkSelectPreference extends Preference {
     private void setInitialSummaryValue() {
         String value = SP.getString("pref_rileylink_mac_address", null);
 
-        setSummary(value == null ? "Not Set" : value);
+        setSummary(value == null ? MainApp.gs(R.string.rileylink_error_address_not_set_short) : value);
     }
 
 }

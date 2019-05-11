@@ -49,7 +49,7 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.Gatt
 import info.nightscout.androidaps.plugins.pump.common.utils.LocationHelper;
 import info.nightscout.androidaps.plugins.pump.medtronic.driver.MedtronicPumpStatus;
 import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
-import info.nightscout.utils.SP;
+import info.nightscout.androidaps.utils.SP;
 
 // IMPORTANT: This activity needs to be called from RileyLinkSelectPreference (see pref_medtronic.xml as example)
 public class RileyLinkBLEScanActivity extends AppCompatActivity {
@@ -361,14 +361,6 @@ public class RileyLinkBLEScanActivity extends AppCompatActivity {
         }
 
 
-        // public void addDevice(BluetoothDevice device) {
-        //
-        // if (!mLeDevices.contains(device)) {
-        // mLeDevices.add(device);
-        // notifyDataSetChanged();
-        // }
-        // }
-
         public void addDevice(ScanResult result) {
 
             if (!mLeDevices.contains(result.getDevice())) {
@@ -378,11 +370,6 @@ public class RileyLinkBLEScanActivity extends AppCompatActivity {
             notifyDataSetChanged();
         }
 
-
-        // public BluetoothDevice getDevice(int position) {
-        //
-        // return rileyLinkDevices.get(position);
-        // }
 
         public void clear() {
             mLeDevices.clear();
@@ -439,27 +426,12 @@ public class RileyLinkBLEScanActivity extends AppCompatActivity {
                 deviceName += " (" + getResources().getString(R.string.rileylink_scanner_selected_device) + ")";
             }
 
-            // if (deviceName == null) {
-            // BleAdvertisedData bleAdvertisedData = mapDevices.get(device);
-            //
-            // deviceName = bleAdvertisedData.getName();
-            //
-            // Log.d(TAG, "Old name was null so we replaced it with " + deviceName);
-            // }
-
             viewHolder.deviceName.setText(deviceName);
             viewHolder.deviceAddress.setText(device.getAddress());
 
             return view;
         }
 
-        // public void addDevice(BluetoothDevice device, BleAdvertisedData bleAdvertisedData) {
-        // if (!mLeDevices.contains(device)) {
-        // mLeDevices.add(device);
-        // mapDevices.put(device, bleAdvertisedData);
-        // notifyDataSetChanged();
-        // }
-        // }
     }
 
     static class ViewHolder {

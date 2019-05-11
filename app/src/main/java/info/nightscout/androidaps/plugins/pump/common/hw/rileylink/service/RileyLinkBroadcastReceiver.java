@@ -23,6 +23,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.gxwtech.roundtrip2.RT2Const;
 import com.gxwtech.roundtrip2.RoundtripService.RileyLinkIPCConnection;
 
+import info.nightscout.androidaps.logging.L;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
@@ -35,7 +36,7 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.ServiceTask;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.ServiceTaskExecutor;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.WakeAndTuneTask;
-import info.nightscout.utils.SP;
+import info.nightscout.androidaps.utils.SP;
 
 /**
  * I added this class outside of RileyLinkService, because for now it's very important part of RL framework and
@@ -44,7 +45,7 @@ import info.nightscout.utils.SP;
  */
 public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RileyLinkBroadcastReceiver.class);
+    private static final Logger LOG = LoggerFactory.getLogger(L.PUMPCOMM);
 
     RileyLinkService serviceInstance;
     protected RileyLinkIPCConnection rileyLinkIPCConnection;
@@ -106,13 +107,16 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         if (intent == null) {
-            LOG.error("onReceive: received null intent");
+            if (isLoggingEnabled())
+                LOG.error("onReceive: received null intent");
         } else {
             String action = intent.getAction();
             if (action == null) {
-                LOG.error("onReceive: null action");
+                if (isLoggingEnabled())
+                    LOG.error("onReceive: null action");
             } else {
-                LOG.debug("Received Broadcast: " + action);
+                if (isLoggingEnabled())
+                    LOG.debug("Received Broadcast: " + action);
 
                 if (!processBluetoothBroadcasts(action) && //
                     !processRileyLinkBroadcasts(action) && //
@@ -120,7 +124,8 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
                     !processDeviceSpecificBroadcasts(action, intent) && //
                     !processApplicationSpecificBroadcasts(action, intent) //
                 ) {
-                    LOG.error("Unhandled broadcast: action=" + action);
+                    if (isLoggingEnabled())
+                        LOG.error("Unhandled broadcast: action=" + action);
                 }
             }
         }
@@ -144,7 +149,6 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
         }
 
         LocalBroadcastManager.getInstance(context).registerReceiver(this, intentFilter);
-
     }
 
 
@@ -153,15 +157,21 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
         if (action.equals(RileyLinkConst.Intents.RileyLinkDisconnected)) {
             if (BluetoothAdapter.getDefaultAdapter().isEnabled()) {
                 RileyLinkUtil
-                    .setServiceState(RileyLinkServiceState.BluetoothReady, RileyLinkError.RileyLinkUnreachable);
+                    .setServiceState(RileyLinkServiceState.BluetoothError, RileyLinkError.RileyLinkUnreachable);
             } else {
                 RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothError, RileyLinkError.BluetoothDisabled);
             }
 
             return true;
         } else if (action.equals(RileyLinkConst.Intents.RileyLinkReady)) {
-            LOG.warn("MedtronicConst.Intents.RileyLinkReady");
-            sendIPCNotification(RT2Const.IPC.MSG_note_WakingPump);
+
+            if (isLoggingEnabled())
+                LOG.warn("MedtronicConst.Intents.RileyLinkReady");
+            // sendIPCNotification(RT2Const.IPC.MSG_note_WakingPump);
+
+            if (this.serviceInstance.rileyLinkBLE==null)
+                return false;
+
             this.serviceInstance.rileyLinkBLE.enableNotifications();
             this.serviceInstance.rfspy.startReader(); // call startReader from outside?
 
@@ -169,24 +179,18 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
             String bleVersion = this.serviceInstance.rfspy.getBLEVersionCached();
             RileyLinkFirmwareVersion rlVersion = this.serviceInstance.rfspy.getRLVersionCached();
 
-            LOG.debug("RfSpy version (BLE113): " + bleVersion);
+            if (isLoggingEnabled())
+                LOG.debug("RfSpy version (BLE113): " + bleVersion);
             this.serviceInstance.rileyLinkServiceData.versionBLE113 = bleVersion;
 
-            LOG.debug("RfSpy Radio version (CC110): " + rlVersion.name());
+            if (isLoggingEnabled())
+                LOG.debug("RfSpy Radio version (CC110): " + rlVersion.name());
             this.serviceInstance.rileyLinkServiceData.versionCC110 = rlVersion;
 
             ServiceTask task = new InitializePumpManagerTask(RileyLinkUtil.getTargetDevice());
             ServiceTaskExecutor.startTask(task);
-            LOG.info("Announcing RileyLink open For business");
-
-            return true;
-        } else if (action.equals(RileyLinkConst.Intents.RileyLinkDisconnected)) {
-            if (BluetoothAdapter.getDefaultAdapter().isEnabled()) {
-                RileyLinkUtil
-                    .setServiceState(RileyLinkServiceState.BluetoothReady, RileyLinkError.RileyLinkUnreachable);
-            } else {
-                RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothError, RileyLinkError.BluetoothDisabled);
-            }
+            if (isLoggingEnabled())
+                LOG.info("Announcing RileyLink open For business");
 
             return true;
         } else if (action.equals(RileyLinkConst.Intents.RileyLinkNewAddressSet)) {
@@ -215,21 +219,16 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
     public boolean processBluetoothBroadcasts(String action) {
 
         if (action.equals(RileyLinkConst.Intents.BluetoothConnected)) {
-            LOG.debug("Bluetooth - Connected");
+            if (isLoggingEnabled())
+                LOG.debug("Bluetooth - Connected");
             sendIPCNotification(RT2Const.IPC.MSG_note_FindingRileyLink);
             ServiceTaskExecutor.startTask(new DiscoverGattServicesTask());
 
             return true;
 
         } else if (action.equals(RileyLinkConst.Intents.BluetoothReconnected)) {
-            LOG.debug("Bluetooth - Reconnecting");
-            sendIPCNotification(RT2Const.IPC.MSG_note_FindingRileyLink);
-            serviceInstance.bluetoothInit();
-            ServiceTaskExecutor.startTask(new DiscoverGattServicesTask(true));
-
-            return true;
-        } else if (action.equals(RileyLinkConst.Intents.BluetoothReconnected)) {
-            LOG.debug("Bluetooth - Reconnected");
+            if (isLoggingEnabled())
+	        LOG.debug("Bluetooth - Reconnecting");
             sendIPCNotification(RT2Const.IPC.MSG_note_FindingRileyLink);
             serviceInstance.bluetoothInit();
             ServiceTaskExecutor.startTask(new DiscoverGattServicesTask(true));
@@ -271,10 +270,6 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
 
     public boolean processApplicationSpecificBroadcasts(String action, Intent intent) {
         if (action.equals(RT2Const.serviceLocal.ipcBound)) {
-            // If we still need permission for bluetooth, ask now.
-            // if (needBluetoothPermission) {
-            // sendBLERequestForAccess();
-            // }
             return true;
         } else if (RT2Const.IPC.MSG_ServiceCommand.equals(action)) {
             serviceInstance.handleIncomingServiceTransport(intent);
@@ -296,6 +291,11 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
 
     public void sendIPCNotification(String notification) {
         rileyLinkIPCConnection.sendNotification(new ServiceNotification(notification), null);
+    }
+
+
+    public boolean isLoggingEnabled() {
+        return (L.isEnabled(L.PUMPCOMM));
     }
 
 }

@@ -7,6 +7,11 @@ import org.joda.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.annotations.Expose;
+
+import info.nightscout.androidaps.plugins.pump.common.defs.PumpType;
+import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
+
 import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
 
 /**
@@ -15,23 +20,24 @@ import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
  * There are three basal profiles stored on the pump. (722 only?) They are all parsed the same, the user just has 3 to
  * choose from: Standard, A, and B
  * <p>
- * The byte array seems to be 21 three byte entries long, plus a zero? If the profile is completely empty, it should
- * have one entry: [0,0,0x3F] (?) The first entry of [0,0,0] marks the end of the used entries.
+ * The byte array is 48 times three byte entries long, plus a zero? If the profile is completely empty, it should have
+ * one entry: [0,0,0x3F]. The first entry of [0,0,0] marks the end of the used entries.
  * <p>
  * Each entry is assumed to span from the specified start time to the start time of the next entry, or to midnight if
  * there are no more entries.
  * <p>
  * Individual entries are of the form [r,z,m] where r is the rate (in 0.025 U increments) z is zero (?) m is the start
- * time-of-day for the basal rate period (in 30 minute increments?)
+ * time-of-day for the basal rate period (in 30 minute increments)
  */
 public class BasalProfile {
 
-    public static final int MAX_RAW_DATA_SIZE = (48 * 3) + 1;
-    // private static final String TAG = "BasalProfile";
     private static final Logger LOG = LoggerFactory.getLogger(BasalProfile.class);
+
+    public static final int MAX_RAW_DATA_SIZE = (48 * 3) + 1;
     private static final boolean DEBUG_BASALPROFILE = false;
-    protected byte[] mRawData; // store as byte array to make transport (via parcel) easier
-    List<BasalProfileEntry> listEntries;
+    @Expose
+    private byte[] mRawData; // store as byte array to make transport (via parcel) easier
+    private List<BasalProfileEntry> listEntries;
 
 
     public BasalProfile() {
@@ -81,6 +87,32 @@ public class BasalProfile {
     }
 
 
+    public boolean setRawDataFromHistory(byte[] data) {
+        if (data == null) {
+            LOG.error("setRawData: buffer is null!");
+            return false;
+        }
+
+        mRawData = new byte[MAX_RAW_DATA_SIZE];
+        int item = 0;
+
+        for (int i = 0; i < data.length - 2; i += 3) {
+
+            if ((data[i] == 0) && (data[i + 1] == 0) && (data[i + 2] == 0)) {
+                mRawData[i] = 0;
+                mRawData[i + 1] = 0;
+                mRawData[i + 2] = 0;
+            }
+
+            mRawData[i] = data[i + 1];
+            mRawData[i + 1] = data[i + 2];
+            mRawData[i + 2] = data[i];
+        }
+
+        return true;
+    }
+
+
     public void dumpBasalProfile() {
         LOG.debug("Basal Profile entries:");
         List<BasalProfileEntry> entries = getEntries();
@@ -104,6 +136,22 @@ public class BasalProfile {
 
             sb.append(String.format("Entry %d, rate=%.3f, start=%s\n", i + 1, entry.rate, startString));
         }
+
+        return sb.toString();
+    }
+
+
+    public String basalProfileToString() {
+        StringBuffer sb = new StringBuffer("Basal Profile [");
+        List<BasalProfileEntry> entries = getEntries();
+        for (int i = 0; i < entries.size(); i++) {
+            BasalProfileEntry entry = entries.get(i);
+            String startString = entry.startTime.toString("HH:mm");
+
+            sb.append(String.format("%s=%.3f, ", startString, entry.rate));
+        }
+
+        sb.append("]");
 
         return sb.toString();
     }
@@ -174,9 +222,19 @@ public class BasalProfile {
             if ((mRawData[i] == 0) && (mRawData[i + 1] == 0) && (mRawData[i + 2] == 0))
                 break;
 
+            if ((mRawData[i] == 0) && (mRawData[i + 1] == 0) && (mRawData[i + 2] == 0x3f))
+                break;
+
             r = MedtronicUtil.makeUnsignedShort(mRawData[i + 1], mRawData[i]); // readUnsignedByte(mRawData[i]);
             st = readUnsignedByte(mRawData[i + 2]);
-            entries.add(new BasalProfileEntry(r, st));
+
+            try {
+                entries.add(new BasalProfileEntry(r, st));
+            } catch (Exception ex) {
+                LOG.error("Error decoding basal profile from bytes: {}", ByteUtil.getHex(mRawData));
+                throw ex;
+            }
+
         }
 
         return entries;
@@ -217,13 +275,32 @@ public class BasalProfile {
 
     public Double[] getProfilesByHour() {
 
-        List<BasalProfileEntry> entries = getEntries();
+        List<BasalProfileEntry> entries = null;
 
-        if (entries.size() == 0) {
-            return null;
+        try {
+            entries = getEntries();
+        } catch (Exception ex) {
+            LOG.error("=============================================================================");
+            LOG.error("  Error generating entries. Ex.: " + ex, ex);
+            LOG.error("  rawBasalValues: " + ByteUtil.getHex(this.getRawData()));
+            LOG.error("=============================================================================");
+
+            //FabricUtil.createEvent("MedtronicBasalProfileGetByHourError", null);
+        }
+
+        if (entries == null || entries.size() == 0) {
+            Double[] basalByHour = new Double[24];
+
+            for (int i = 0; i < 24; i++) {
+                basalByHour[i] = 0.0d;
+            }
+
+            return basalByHour;
         }
 
         Double[] basalByHour = new Double[24];
+
+        PumpType pumpType = MedtronicUtil.getPumpStatus().pumpType;
 
         for (int i = 0; i < entries.size(); i++) {
             BasalProfileEntry current = entries.get(i);
@@ -247,20 +324,28 @@ public class BasalProfile {
             // System.out.println("Current time: " + currentTime + " Next Time: " + lastHour);
 
             for (int j = currentTime; j < lastHour; j++) {
-                basalByHour[j] = current.rate;
+                if (pumpType == null)
+                    basalByHour[j] = current.rate;
+                else
+                    basalByHour[j] = pumpType.determineCorrectBasalSize(current.rate);
             }
         }
 
-        // StringBuilder sb = new StringBuilder();
-        //
-        // for (int i = 0; i < 24; i++) {
-        // sb.append("" + i + "=" + basalByHour[i]);
-        // sb.append("\n");
-        // }
-        //
-        // System.out.println("Basal Profile: \n" + sb.toString());
-
         return basalByHour;
+    }
+
+
+    public static String getProfilesByHourToString(Double[] data) {
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (Double value : data) {
+            stringBuilder.append(String.format("%.3f", value));
+            stringBuilder.append(" ");
+        }
+
+        return stringBuilder.toString();
+
     }
 
 
@@ -270,6 +355,6 @@ public class BasalProfile {
 
 
     public String toString() {
-        return getBasalProfileAsString();
+        return basalProfileToString();
     }
 }

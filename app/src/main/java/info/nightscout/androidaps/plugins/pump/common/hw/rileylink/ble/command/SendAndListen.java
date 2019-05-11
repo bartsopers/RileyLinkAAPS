@@ -3,6 +3,7 @@ package info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.command;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.RadioPacket;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkCommandType;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
@@ -20,21 +21,20 @@ public class SendAndListen extends RileyLinkCommand {
     private RadioPacket packetToSend;
 
 
-    public SendAndListen(RileyLinkFirmwareVersion version, byte sendChannel, byte repeatCount,
-            byte delayBetweenPackets_ms, byte listenChannel, int timeout_ms, byte retryCount, RadioPacket packetToSend
+    public SendAndListen(byte sendChannel, byte repeatCount, byte delayBetweenPackets_ms, byte listenChannel,
+            int timeout_ms, byte retryCount, RadioPacket packetToSend
 
     ) {
-        this(version, sendChannel, repeatCount, delayBetweenPackets_ms, listenChannel, timeout_ms, retryCount, null,
+        this(sendChannel, repeatCount, delayBetweenPackets_ms, listenChannel, timeout_ms, retryCount, null,
             packetToSend);
     }
 
 
-    public SendAndListen(RileyLinkFirmwareVersion version, byte sendChannel, byte repeatCount,
-            int delayBetweenPackets_ms, byte listenChannel, int timeout_ms, byte retryCount,
-            Integer preambleExtension_ms, RadioPacket packetToSend
+    public SendAndListen(byte sendChannel, byte repeatCount, int delayBetweenPackets_ms, byte listenChannel,
+            int timeout_ms, byte retryCount, Integer preambleExtension_ms, RadioPacket packetToSend
 
     ) {
-        super(version);
+        super();
         this.sendChannel = sendChannel;
         this.repeatCount = repeatCount;
         this.delayBetweenPackets_ms = delayBetweenPackets_ms;
@@ -55,7 +55,10 @@ public class SendAndListen extends RileyLinkCommand {
     @Override
     public byte[] getRaw() {
 
-        boolean isPacketV2 = this.version.isSameVersion(RileyLinkFirmwareVersion.Version2AndHigher);
+        // If firmware version is not set (error reading version from device, shouldn't happen),
+        // we will default to version 2
+        boolean isPacketV2 = RileyLinkUtil.getFirmwareVersion() != null ? RileyLinkUtil.getFirmwareVersion()
+            .isSameVersion(RileyLinkFirmwareVersion.Version2AndHigher) : true;
 
         ArrayList<Byte> bytes = new ArrayList<Byte>();
         bytes.add(this.getCommandType().code);
@@ -87,7 +90,7 @@ public class SendAndListen extends RileyLinkCommand {
             bytes.add(preambleBuf[3]);
         }
 
-        return ByteUtil.concat(ByteUtil.fromByteArray(bytes), packetToSend.getEncoded());
+        return ByteUtil.concat(ByteUtil.getByteArrayFromList(bytes), packetToSend.getEncoded());
 
     }
 }

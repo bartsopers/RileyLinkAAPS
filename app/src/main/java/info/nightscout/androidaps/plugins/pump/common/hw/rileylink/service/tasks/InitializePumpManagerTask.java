@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.gxwtech.roundtrip2.RT2Const;
 
+import info.nightscout.androidaps.logging.L;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.defs.RileyLinkError;
@@ -11,7 +12,7 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.defs.RileyLin
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.defs.RileyLinkTargetDevice;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceNotification;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
-import info.nightscout.utils.SP;
+import info.nightscout.androidaps.utils.SP;
 
 /**
  * Created by geoff on 7/9/16.
@@ -48,7 +49,9 @@ public class InitializePumpManagerTask extends ServiceTask {
 
             RileyLinkUtil.setServiceState(RileyLinkServiceState.RileyLinkReady);
 
-            Log.i(TAG, String.format("Setting radio frequency to %.2fMHz", lastGoodFrequency));
+            if (L.isEnabled(L.PUMPCOMM))
+                Log.i(TAG, String.format("Setting radio frequency to %.2fMHz", lastGoodFrequency));
+
             RileyLinkUtil.getRileyLinkCommunicationManager().setRadioFrequencyForPump(lastGoodFrequency);
 
             boolean foundThePump = RileyLinkUtil.getRileyLinkCommunicationManager().tryToConnectToDevice();

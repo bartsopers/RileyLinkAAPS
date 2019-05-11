@@ -22,7 +22,7 @@ public enum PumpCapability {
     DanaCapabilities(Bolus, ExtendedBolus, TempBasal, BasalProfileSet, Refill, TDD, ManualTDDLoad), //
     DanaWithHistoryCapabilities(Bolus, ExtendedBolus, TempBasal, BasalProfileSet, Refill, StoreCarbInfo, TDD, ManualTDDLoad), //
     InsightCapabilities(Bolus, ExtendedBolus, TempBasal, BasalProfileSet, Refill,TDD,BasalRate30min), //
-
+    MedtronicCapabilities(Bolus, TempBasal, BasalProfileSet, Refill, TDD), //
 
     // BasalRates (separately grouped)
     BasalRate_Duration15minAllowed, //
@@ -54,7 +54,8 @@ public enum PumpCapability {
         if (this == capability)
             return true;
 
-        if (this.children!=null)  {
+        if (this.children!=null)
+        {
             for (PumpCapability child : children) {
                 if (child == capability)
                     return true;
