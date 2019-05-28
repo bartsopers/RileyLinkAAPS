@@ -42,6 +42,7 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.Riley
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceNotification;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceResult;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.ResetRileyLinkTask;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.ServiceTask;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.ServiceTaskExecutor;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.WakeAndTuneTask;
@@ -335,6 +336,12 @@ public class RileyLinkMedtronicService extends RileyLinkService {
 
                 case "FetchPumpHistory": {
                     ServiceTaskExecutor.startTask(new FetchPumpHistoryTask(serviceTransport));
+                    return true;
+                }
+
+
+                case "ResetRileyLink": {
+                    ServiceTaskExecutor.startTask(new ResetRileyLinkTask(serviceTransport));
                     return true;
                 }
 

@@ -33,6 +33,7 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.DiscoverGattServicesTask;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.InitializePumpManagerTask;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.ResetRileyLinkTask;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.ServiceTask;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.ServiceTaskExecutor;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.WakeAndTuneTask;
@@ -121,6 +122,7 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
                 if (!processBluetoothBroadcasts(action) && //
                     !processRileyLinkBroadcasts(action) && //
                     !processTuneUpBroadcasts(action) && //
+                        !processResetRileyLinkBroadcast(action) && //
                     !processDeviceSpecificBroadcasts(action, intent) && //
                     !processApplicationSpecificBroadcasts(action, intent) //
                 ) {
@@ -253,6 +255,27 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
             return false;
         }
     }
+
+
+    private boolean processResetRileyLinkBroadcast(String action) {
+
+//        if (action.equals(RT2Const.IPC.MSG_ServiceCommand)) {
+//            {
+//                ServiceTaskExecutor.startTask(new ResetRileyLinkTask());
+//            }
+//            return true;
+//        } else {
+//            return false;
+//        }
+
+
+        // ResetRileyLink
+
+        return false;
+    }
+
+
+
 
 
     public boolean processDeviceSpecificBroadcasts(String action, Intent intent) {

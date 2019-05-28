@@ -59,6 +59,7 @@ public class ServiceCommand extends ServiceMessage {
             case "ReadBolusWizardCarbProfile":
             case "UpdatePumpStatus":
             case "WakeAndTune":
+            case "ResetRileyLink":
                 return true;
             default:
                 return false;
