@@ -107,6 +107,12 @@ public class ServiceClientConnection {
         roundtripServiceClientConnection.sendServiceCommand(command);
     }
 
+    public void doResetRileyLink() {
+        ServiceCommand command = ServiceClientActions.makeResetRLCommand();
+        roundtripServiceClientConnection.sendServiceCommand(command);
+    }
+
+
 
     public void getHistory() {
         //sendIPCMessage(RT2Const.IPC.MSG_PUMP_fetchHistory);

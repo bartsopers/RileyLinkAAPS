@@ -260,6 +260,7 @@ public class MainActivity extends AppCompatActivity {
                                         showIdle();
                                         break;
                                     case "FetchPumpHistory":
+
                                         storeForHistoryViewer = receivedIntent.getExtras().getBundle(
                                             RT2Const.IPC.bundleKey);
                                         startActivity(new Intent(context, HistoryPageListActivity.class));
@@ -415,8 +416,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void onFetchHistoryButtonClicked(View view) {
         /* does not work. Crashes sig 11 */
-        showBusy("Fetch history page 0", 50);
-        MainApp.getServiceClientConnection().doFetchPumpHistory();
+        showBusy("Reset", 50);
+        MainApp.getServiceClientConnection().doResetRileyLink();
     }
 
 
