@@ -1,5 +1,6 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
+// https://github.com/openaps/openomni/wiki/Command-19-Configure-Alerts
 public enum BeepRepeat {
     Once (0),
     EveryMinuteFor3MinutesRepeatEvery60Minutes(1),

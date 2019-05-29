@@ -3,8 +3,6 @@ package info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data;
 import org.apache.commons.lang3.NotImplementedException;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RFTools;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.common.utils.CRC;
 
@@ -13,12 +11,12 @@ import info.nightscout.androidaps.plugins.pump.common.utils.CRC;
  */
 
 public class RadioPacket {
-    private final RileyLinkFirmwareVersion version;
+
     protected byte[] pkt;
 
-    public RadioPacket(byte[] pkt, RileyLinkFirmwareVersion version) {
+
+    public RadioPacket(byte[] pkt) {
         this.pkt = pkt;
-        this.version = version;
     }
 
 
@@ -26,30 +24,34 @@ public class RadioPacket {
         return pkt;
     }
 
+
     public byte[] getWithCRC() {
         byte[] withCRC = ByteUtil.concat(pkt, CRC.crc8(pkt));
         return withCRC;
     }
 
+
     public byte[] getEncoded() {
-        byte[] encoded;
+
         switch (RileyLinkUtil.getEncoding()) {
-            case Manchester://We have this encoding in RL firmware
-                encoded = pkt;
-                break;
-            case FourByteSixByte:
-                byte[] withCRC = ByteUtil.concat(pkt, CRC.crc8(pkt));
-                encoded = RFTools.encode4b6b(withCRC);
-                break;
+            case Manchester: { // We have this encoding in RL firmware
+                return pkt;
+            }
+
+            case FourByteSixByteLocal: {
+                byte[] withCRC = getWithCRC();
+
+                byte[] encoded = RileyLinkUtil.getEncoding4b6b().encode4b6b(withCRC);
+                return ByteUtil.concat(encoded, (byte)0);
+            }
+
+            case FourByteSixByteRileyLink: {
+                return getWithCRC();
+            }
+
             default:
                 throw new NotImplementedException(("Encoding not supported: " + RileyLinkUtil.getEncoding().toString()));
         }
-        // Starting with 2.0 we don't put ending 0
-        if (version.isSameVersion(RileyLinkFirmwareVersion.Version2AndHigher))
-            return encoded;
-
-        byte[] withNullTerm = ByteUtil.concat(encoded, (byte) 0);
-        return withNullTerm;
     }
 
 }

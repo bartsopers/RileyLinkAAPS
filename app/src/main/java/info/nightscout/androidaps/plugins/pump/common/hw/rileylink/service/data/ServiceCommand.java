@@ -6,6 +6,7 @@ import android.os.Bundle;
  * Created by geoff on 6/25/16.
  */
 public class ServiceCommand extends ServiceMessage {
+
     public ServiceCommand() {
         map = new Bundle();
     }
@@ -58,6 +59,7 @@ public class ServiceCommand extends ServiceMessage {
             case "ReadBolusWizardCarbProfile":
             case "UpdatePumpStatus":
             case "WakeAndTune":
+            case "ResetRileyLink":
                 return true;
             default:
                 return false;

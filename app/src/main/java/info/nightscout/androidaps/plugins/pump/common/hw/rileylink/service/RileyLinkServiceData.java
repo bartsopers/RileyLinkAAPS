@@ -5,7 +5,6 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.defs.RileyLin
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.defs.RileyLinkServiceState;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.defs.RileyLinkTargetDevice;
 
-
 /**
  * Created by andy on 16/05/2018.
  */
@@ -40,4 +39,5 @@ public class RileyLinkServiceData {
         this.pumpID = pumpId;
         this.pumpIDBytes = pumpIdBytes;
     }
+
 }

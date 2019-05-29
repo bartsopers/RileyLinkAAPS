@@ -8,12 +8,7 @@ public class BasalTableEntry implements IRawRepresentable {
     private final int pulses;
     private final boolean alternateSegmentPulse;
 
-    public BasalTableEntry(
-            int segments,
-            int pulses,
-            boolean alternateSegmentPulse
-    ) {
-
+    public BasalTableEntry(int segments, int pulses, boolean alternateSegmentPulse) {
         this.segments = segments;
         this.pulses = pulses;
         this.alternateSegmentPulse = alternateSegmentPulse;
@@ -28,10 +23,10 @@ public class BasalTableEntry implements IRawRepresentable {
         rawData[1] = (byte)pulsesLowByte;
         return rawData;
     }
+
     public int checksum() {
         int checksumPerSegment = (pulses & 0xff) + (pulses >> 8);
         return (checksumPerSegment * segments + (alternateSegmentPulse ? segments / 2 : 0));
-
     }
 
 }

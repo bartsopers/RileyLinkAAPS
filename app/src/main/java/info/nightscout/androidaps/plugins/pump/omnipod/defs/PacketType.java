@@ -21,7 +21,8 @@ public enum PacketType {
         }
         return null;
     }
-    public int MaxBodyLength() {
+
+    public int maxBodyLength() {
         switch(this) {
             case Ack:
                 return 4;

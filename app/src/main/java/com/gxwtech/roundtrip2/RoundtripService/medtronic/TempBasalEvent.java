@@ -3,7 +3,7 @@ package com.gxwtech.roundtrip2.RoundtripService.medtronic;
 
 import org.joda.time.LocalDateTime;
 
-import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.TempBasalPair;
+import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.TempBasalPair;
 
 /**
  * Created by geoff on 6/8/15.
@@ -18,10 +18,12 @@ public class TempBasalEvent {
     public LocalDateTime mTimestamp;
     public TempBasalPair mBasalPair;
 
+
     public TempBasalEvent() {
         mTimestamp = new LocalDateTime();
         mBasalPair = new TempBasalPair();
     }
+
 
     public TempBasalEvent(LocalDateTime timestamp, TempBasalPair pair) {
         mTimestamp = timestamp;

@@ -1,7 +1,9 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule;
 
 import info.nightscout.androidaps.Constants;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationManager;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.IRawRepresentable;
 
 public class Bolus extends DeliverySchedule implements IRawRepresentable {
@@ -10,11 +12,9 @@ public class Bolus extends DeliverySchedule implements IRawRepresentable {
     private final int multiplier;
 
     public Bolus(double units, int multiplier) {
-
         this.units = units;
         this.multiplier = multiplier;
     }
-
 
     @Override
     public byte[] getRawData() {
@@ -32,7 +32,6 @@ public class Bolus extends DeliverySchedule implements IRawRepresentable {
         rawData[5] = buffer[2];
         rawData[6] = buffer[3];
         return rawData;
-
     }
 
     @Override

@@ -18,9 +18,8 @@ public class CancelDeliveryCommand extends MessageBlock {
         return MessageBlockType.CancelDelivery;
     }
 
-    public CancelDeliveryCommand(int nonce, BeepType beepType, boolean cancelBolus, boolean cancelTempBasal, boolean cancelBasalProgram)
-    {
-        super(null);
+    public CancelDeliveryCommand(int nonce, BeepType beepType, boolean cancelBolus,
+                                 boolean cancelTempBasal, boolean cancelBasalProgram) {
         this.nonce = nonce;
         this.beepType = beepType;
         this.cancelBolus = cancelBolus;
@@ -35,8 +34,14 @@ public class CancelDeliveryCommand extends MessageBlock {
         byte beepTypeValue = beepType.getValue();
         if (beepTypeValue > 8) beepTypeValue = 0;
         encodedData[4] = (byte)((beepTypeValue & 0x0F) << 4);
-        if (cancelBolus) encodedData[4] |= 4;
-        if (cancelTempBasal) encodedData[4] |= 2;
-        if (cancelBasalProgram) encodedData[4] |= 1;
+        if (cancelBolus) {
+            encodedData[4] |= 4;
+        }
+        if (cancelTempBasal) {
+            encodedData[4] |= 2;
+        }
+        if (cancelBasalProgram) {
+            encodedData[4] |= 1;
+        }
     }
 }

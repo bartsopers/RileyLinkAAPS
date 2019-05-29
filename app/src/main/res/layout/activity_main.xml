@@ -5,33 +5,26 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
 
-    <android.support.design.widget.CoordinatorLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity"
         android:id="@+id/mainActivity">
 
-    <android.support.design.widget.AppBarLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/appBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:elevation="0dp">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/mainActivityToolbar"
-            android:minHeight="?attr/actionBarSize"
+        <android.support.design.widget.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/appBar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/primary">
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
+            android:layout_height="wrap_content"
+            app:elevation="0dp">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/mainActivityToolbar"
+                android:minHeight="?attr/actionBarSize"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/primary"></android.support.v7.widget.Toolbar>
+        </android.support.design.widget.AppBarLayout>
 
         <LinearLayout
             android:orientation="vertical"
@@ -44,184 +37,163 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Activity:"
-                android:id="@+id/textLabelActivity" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Activity:"
+                    android:id="@+id/textLabelActivity" />
 
-            <Space
-                android:layout_width="20px"
-                android:layout_height="20px" />
+                <Space
+                    android:layout_width="20px"
+                    android:layout_height="20px" />
 
-            <ProgressBar
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/progressBarCommandActivity" />
+                <ProgressBar
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/progressBarCommandActivity" />
 
-            <Space
-                android:layout_width="20px"
-                android:layout_height="20px" />
+                <Space
+                    android:layout_width="20px"
+                    android:layout_height="20px" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Connecting to Service"
-                android:id="@+id/textViewActivity" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Connecting to Service"
+                    android:id="@+id/textViewActivity" />
 
-            <Space
-                android:layout_width="20px"
-                android:layout_height="20px" />
+                <Space
+                    android:layout_width="20px"
+                    android:layout_height="20px" />
 
-            <ProgressBar
-                style="?android:attr/progressBarStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:indeterminate="true"
-                android:indeterminateBehavior="cycle"
-                android:id="@+id/progressBarSpinny" />
+                <ProgressBar
+                    style="?android:attr/progressBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:indeterminateBehavior="cycle"
+                    android:id="@+id/progressBarSpinny" />
 
-        </LinearLayout>
+            </LinearLayout>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="RileyLink: "
-                android:id="@+id/textViewLabelRileyLink"
-                android:layout_alignParentStart="true" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="RileyLink: "
+                    android:id="@+id/textViewLabelRileyLink"
+                    android:layout_alignParentStart="true" />
 
-            <Space
-                android:layout_width="20px"
-                android:layout_height="20px" />
+                <Space
+                    android:layout_width="20px"
+                    android:layout_height="20px" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="(not found)"
-                android:id="@+id/textViewFieldRileyLink" />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="(not found)"
+                    android:id="@+id/textViewFieldRileyLink" />
+            </LinearLayout>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Pump: "
-                android:id="@+id/textViewLabelPump" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Pump: "
+                    android:id="@+id/textViewLabelPump" />
 
-            <Space
-                android:layout_width="20px"
-                android:layout_height="20px" />
+                <Space
+                    android:layout_width="20px"
+                    android:layout_height="20px" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="(not found)"
-                android:id="@+id/textViewFieldPump" />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="(not found)"
+                    android:id="@+id/textViewFieldPump" />
+            </LinearLayout>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Read Pump Clock"
-                android:id="@+id/buttonReadPumpClock"
-                android:onClick="onReadPumpClockButtonClicked"/>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Read Pump Clock"
+                    android:id="@+id/buttonReadPumpClock"
+                    android:onClick="onReadPumpClockButtonClicked" />
 
-            <Space
-                android:layout_width="20px"
-                android:layout_height="20px" />
+                <Space
+                    android:layout_width="20px"
+                    android:layout_height="20px" />
 
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text=""
-                android:id="@+id/textViewPumpClockTime" />
-        </LinearLayout>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Wake and Tune"
-            android:id="@+id/buttonTunePump"
-            android:onClick="onTunePumpButtonClicked" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fetch History and Save"
-            android:id="@+id/buttonFetchHistory"
-            android:onClick="onFetchHistoryButtonClicked" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fetch Saved History"
-            android:id="@+id/buttonFetchSavedHistory"
-            android:onClick="onFetchSavedHistoryButtonClicked"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Get ISF Profile"
-            android:id="@+id/buttonGetISFProfile"
-            android:onClick="onGetISFProfileButtonClicked"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Get Carb Profile"
-            android:id="@+id/buttonGetCarbProfile"
-            android:onClick="onGetCarbProfileButtonClicked"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="View Event Log"
-            android:id="@+id/buttonViewEventLog"
-            android:onClick="onViewEventLogButtonClicked"/>
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text=""
+                    android:id="@+id/textViewPumpClockTime" />
+            </LinearLayout>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Update All Status"
-                android:id="@+id/buttonUpdateAllStatus"
-                android:onClick="onUpdateAllStatusButtonClicked"/>
+                android:text="Wake and Tune"
+                android:id="@+id/buttonTunePump"
+                android:onClick="onTunePumpButtonClicked" />
 
             <Button
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fetch History and Save"
+                android:id="@+id/buttonFetchHistory"
+                android:onClick="onFetchHistoryButtonClicked" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fetch Saved History"
+                android:id="@+id/buttonFetchSavedHistory"
+                android:onClick="onFetchSavedHistoryButtonClicked" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="View Event Log"
+                android:id="@+id/buttonViewEventLog"
+                android:onClick="onViewEventLogButtonClicked" />
+
+            <Button
+                android:id="@+id/buttonShowAAPS"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/aaps_icon"
+                android:onClick="onShowAAPSButtonClicked"
                 android:text="@string/cmd_aaps_show_apps_cmd"
-                android:textAllCaps="false"
-                android:id="@+id/buttonShowAAPS"
-                android:onClick="onShowAAPSButtonClicked"/>
+                android:textAllCaps="false" />
 
 
         </LinearLayout>
 
     </android.support.design.widget.CoordinatorLayout>
-    </ScrollView>
+
 
     <!-- Side navigation drawer UI -->
     <LinearLayout
@@ -232,26 +204,31 @@
         android:layout_gravity="start"
         android:padding="16dp"
         android:background="@color/primary">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="38dp"
                 android:text="APS App"
                 android:textSize="14sp"
-                android:gravity="center_vertical"/>
+                android:gravity="center_vertical" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="38dp"
                 android:orientation="horizontal">
+
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/apsApp_icon"
                     android:background="@drawable/exit_to_app"
-                    android:layout_gravity="center"/>
+                    android:layout_gravity="center" />
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -260,18 +237,19 @@
                     android:text="-"
                     android:paddingLeft="16dp"
                     android:textColor="@color/white"
-                    android:gravity="center_vertical"/>
+                    android:gravity="center_vertical" />
             </LinearLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/icons"/>
+                android:background="@color/icons" />
         </LinearLayout>
+
         <ListView
             android:id="@+id/navList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
+            android:layout_height="match_parent" />
     </LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>

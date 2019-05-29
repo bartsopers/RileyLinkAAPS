@@ -16,16 +16,12 @@ public class SetInsulinScheduleCommand extends MessageBlock {
     private DeliverySchedule schedule;
 
     public SetInsulinScheduleCommand(int nonce, DeliverySchedule schedule) {
-        super(null);
-
         this.nonce = nonce;
         this.schedule = schedule;
         encode();
     }
 
     public SetInsulinScheduleCommand(int nonce, BasalSchedule schedule, Duration scheduleOffset) {
-        super(null);
-
         BasalDeliveryTable table = new BasalDeliveryTable(schedule);
         int offsetMinutes = (int) scheduleOffset.getStandardMinutes();
         int segment = offsetMinutes / 30;

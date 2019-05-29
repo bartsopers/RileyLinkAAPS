@@ -13,12 +13,12 @@ public class BasalSchedule {
         double rate = 0;
         int offset = (int) timeOffset.getStandardMinutes();
         int cumulatedMinutes = 0;
-        for (BasalScheduleEntry entry :
-                entries) {
+        for (BasalScheduleEntry entry : entries) {
             rate = entry.rate;
             cumulatedMinutes += entry.duration.getStandardMinutes();
-            if (offset < cumulatedMinutes)
+            if (offset < cumulatedMinutes) {
                 return rate;
+            }
         }
         throw new IllegalArgumentException("timeOffset");
     }

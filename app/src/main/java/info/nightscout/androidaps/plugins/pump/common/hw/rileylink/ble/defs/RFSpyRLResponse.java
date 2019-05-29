@@ -8,19 +8,22 @@ public enum RFSpyRLResponse {
     // 0x11 == invalidParam
     // 0x22 == unknownCommand
 
-    Invalid(0), //default, just fail
+    Invalid(0), // default, just fail
     Timeout(0xAA),
     Interrupted(0xBB),
     ZeroData(0xCC),
     Success(0xDD),
     OldSuccess(0x01),
     InvalidParam(0x11),
-    UnknownCommand(0x22),;
+    UnknownCommand(0x22), ;
+
     byte value;
 
+
     RFSpyRLResponse(int value) {
-        this.value = (byte) value;
+        this.value = (byte)value;
     }
+
 
     public static RFSpyRLResponse fromByte(byte input) {
         for (RFSpyRLResponse type : values()) {

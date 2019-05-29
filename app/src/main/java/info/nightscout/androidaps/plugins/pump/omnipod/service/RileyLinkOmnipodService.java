@@ -16,16 +16,15 @@ import org.slf4j.LoggerFactory;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RileyLinkBLEFake;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RFSpyFake;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RFSpy;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RileyLinkBLE;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkEncodingType;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.defs.RileyLinkTargetDevice;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.RileyLinkService;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.RileyLinkServiceData;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationManager;
-import info.nightscout.utils.SP;
+import info.nightscout.androidaps.utils.SP;
 
 /**
  * Created by andy on 6/1/18.
@@ -42,7 +41,7 @@ public class RileyLinkOmnipodService extends RileyLinkService {
 
     @Override
     public RileyLinkEncodingType getEncoding() {
-        return RileyLinkEncodingType.FourByteSixByte;
+        return RileyLinkEncodingType.FourByteSixByteRileyLink;
     }
 
     public RileyLinkOmnipodService() {
@@ -52,19 +51,8 @@ public class RileyLinkOmnipodService extends RileyLinkService {
         RileyLinkUtil.setRileyLinkService(this);
     }
 
-
-    @Override
-    protected void determineRileyLinkTargetFrequency() {
-        this.rileyLinkTargetFrequency = RileyLinkTargetFrequency.Omnipod;
-
-        // omnipod has only one frequency, and no tuneup required
-        SP.putFloat(RileyLinkConst.Prefs.LastGoodDeviceFrequency, 433.91f);
-    }
-
-
     @Override
     public void initRileyLinkServiceData() {
-
         rileyLinkServiceData = new RileyLinkServiceData(RileyLinkTargetDevice.Omnipod);
 
         RileyLinkUtil.setRileyLinkServiceData(rileyLinkServiceData);
@@ -74,8 +62,6 @@ public class RileyLinkOmnipodService extends RileyLinkService {
 
         //rileyLinkBLE = new RileyLinkBLE(this.context); // or this
         //rfspy = new RFSpy(rileyLinkBLE);
-
-
     }
 
     @Override
@@ -88,9 +74,12 @@ public class RileyLinkOmnipodService extends RileyLinkService {
         super.onCreate();
         //delete when capture-debug is finished
         RileyLinkUtil.setRileyLinkService(this);
-        rfspy = new RFSpyFake();
+        //rfspy = new RFSpyFake();
+        rileyLinkBLE = new RileyLinkBLE(context);
+        rfspy = new RFSpy(rileyLinkBLE);
         //this.onCreate();
-        rileyLinkBLE = new RileyLinkBLEFake();
+        //rileyLinkBLE = new RileyLinkBLEFake();
+
         rfspy.startReader();
 
         RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
@@ -98,25 +87,30 @@ public class RileyLinkOmnipodService extends RileyLinkService {
         omnipodCommunicationManager = new OmnipodCommunicationManager(context, rfspy);
     }
 
-
+    // TODO
     @Override
-    public void addPumpSpecificIntents(IntentFilter intentFilter) {
+    public String getDeviceSpecificBroadcastsIdentifierPrefix() {
+        return null;
     }
 
-
+    // TODO
     @Override
-    public void handlePumpSpecificIntents(Intent intent) {
+    public boolean handleDeviceSpecificBroadcasts(Intent intent) {
+        return false;
     }
 
+    // TODO
+    @Override
+    public void registerDeviceSpecificBroadcasts(IntentFilter intentFilter) {
+    }
 
     @Override
-    public void handleIncomingServiceTransport(Intent intent) {
+    public boolean handleIncomingServiceTransport(Intent intent) {
         Bundle bundle = intent.getBundleExtra(RT2Const.IPC.bundleKey);
 
         ServiceTransport serviceTransport = new ServiceTransport(bundle);
 
         if (serviceTransport.getServiceCommand().isPumpCommand()) {
-
             LOG.debug("IsPumpCommand not implemented.");
         } else {
             switch (serviceTransport.getOriginalCommandName()) {
@@ -128,7 +122,7 @@ public class RileyLinkOmnipodService extends RileyLinkService {
                     if ("".equals(deviceAddress)) {
                         LOG.error("handleIPCMessage: null RL address passed");
                     } else {
-                        reconfigureRileylink(deviceAddress);
+                        return reconfigureRileyLink(deviceAddress);
                     }
                     break;
                 default:
@@ -136,9 +130,8 @@ public class RileyLinkOmnipodService extends RileyLinkService {
                     break;
             }
         }
-
+        return false;
     }
-
 
     //@Nullable
     //@Override
@@ -149,7 +142,7 @@ public class RileyLinkOmnipodService extends RileyLinkService {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return rileyLinkIPCConnection.doOnBind(intent);
+        return RileyLinkUtil.getRileyLinkIPCConnection().doOnBind(intent);
     }
 
     public class LocalBinder extends Binder {
@@ -157,6 +150,5 @@ public class RileyLinkOmnipodService extends RileyLinkService {
             return RileyLinkOmnipodService.this;
         }
     }
-
 
 }

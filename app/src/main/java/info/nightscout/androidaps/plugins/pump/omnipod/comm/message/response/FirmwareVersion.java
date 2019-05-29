@@ -6,7 +6,6 @@ public class FirmwareVersion {
     private int patch;
 
     public FirmwareVersion(int major, int minor, int patch) {
-
         this.major = major;
         this.minor = minor;
         this.patch = patch;
@@ -14,6 +13,6 @@ public class FirmwareVersion {
 
     @Override
     public String toString() {
-        return "" + major + "." + minor + "." + patch;
+        return String.format("%d.%d.%d", major, minor, patch);
     }
 }

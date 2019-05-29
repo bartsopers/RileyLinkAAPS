@@ -6,9 +6,9 @@ import java.io.IOException;
 public abstract class MessageBlock {
     protected byte[] encodedData = new byte[0];
 
-    public MessageBlock(byte[] encodedData) {
-
+    public MessageBlock() {
     }
+
     public abstract MessageBlockType getType();
 
     //This method returns raw message representation
@@ -26,9 +26,4 @@ public abstract class MessageBlock {
         }
         return stream.toByteArray();
     }
-
-    protected byte[] getByteArray(byte... input) {
-        return input;
-    }
-
 }

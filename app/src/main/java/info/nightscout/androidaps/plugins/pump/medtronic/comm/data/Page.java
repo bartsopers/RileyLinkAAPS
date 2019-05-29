@@ -28,30 +28,31 @@ package info.nightscout.androidaps.plugins.pump.medtronic.comm.data;
  * GGW: TODO: examine src/ecc1/medtronic for better history parsing
  */
 
-import android.os.Bundle;
-import android.util.Log;
-
-import org.joda.time.DateTime;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.joda.time.DateTime;
+
+import android.os.Bundle;
+import android.util.Log;
+
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.common.utils.CRC;
 import info.nightscout.androidaps.plugins.pump.common.utils.HexDump;
-import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.history.PumpTimeStamp;
-import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.history.Record;
-import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.history.RecordTypeEnum;
-import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.history.TimeFormat;
-import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.history.record.IgnoredHistoryEntry;
+import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.history_old.PumpTimeStamp;
+import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.history_old.Record;
+import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.history_old.RecordTypeEnum;
+import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.history_old.TimeFormat;
+import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.history_old.record.IgnoredHistoryEntry;
 import info.nightscout.androidaps.plugins.pump.medtronic.defs.MedtronicDeviceType;
 
 @Deprecated
 public class Page {
+
     private final static String TAG = "Page";
     private static final boolean DEBUG_PAGE = true;
-    //protected PumpModel model;
+    // protected PumpModel model;
     public static MedtronicDeviceType model = MedtronicDeviceType.Medtronic_522;
     public List<Record> mRecordList;
     private byte[] crc;
@@ -63,10 +64,12 @@ public class Page {
         mRecordList = new ArrayList<>();
     }
 
-    /* attemptParseRecord will attempt to create a subclass of Record from the given
-     * data and offset.  It will return NULL if it fails.  If it succeeds, the returned
+
+    /*
+     * attemptParseRecord will attempt to create a subclass of Record from the given
+     * data and offset. It will return NULL if it fails. If it succeeds, the returned
      * subclass of Record can be examined for its length, so that the next attempt can be made.
-     *
+     * 
      * TODO maybe try to change this, so that we can loose all the classes and using enum instead with full
      * configuration. Its something to think about for later versions -- Andy
      */
@@ -79,7 +82,7 @@ public class Page {
         if (data.length < offsetStart) {
             return null;
         }
-        //Log.d(TAG,String.format("checking for handler for record type 0x%02X at index %d",data[offsetStart],offsetStart));
+        // Log.d(TAG,String.format("checking for handler for record type 0x%02X at index %d",data[offsetStart],offsetStart));
         RecordTypeEnum en = RecordTypeEnum.fromByte(data[offsetStart]);
         T record = en.getRecordClassInstance(model);
         if (record != null) {
@@ -88,20 +91,24 @@ public class Page {
             System.arraycopy(data, offsetStart, tmpData, 0, data.length - offsetStart);
             boolean didParse = record.parseWithOffset(tmpData, model, offsetStart);
             if (!didParse) {
-                Log.e(TAG, String.format("attemptParseRecord: class %s (opcode 0x%02X) failed to parse at offset %d", record.getShortTypeName(), data[offsetStart], offsetStart));
+                Log.e(
+                    TAG,
+                    String.format("attemptParseRecord: class %s (opcode 0x%02X) failed to parse at offset %d",
+                        record.getShortTypeName(), data[offsetStart], offsetStart));
             }
         }
         return record;
     }
+
 
     public static DateTime parseSimpleDate(byte[] data, int offset) {
         DateTime timeStamp = null;
         int seconds = 0;
         int minutes = 0;
         int hour = 0;
-        //int high = data[0] >> 4;
+        // int high = data[0] >> 4;
         int low = data[0 + offset] & 0x1F;
-        //int year_high = data[1] >> 4;
+        // int year_high = data[1] >> 4;
         int mhigh = (data[0 + offset] & 0xE0) >> 4;
         int mlow = (data[1 + offset] & 0x80) >> 7;
         int month = mhigh + mlow;
@@ -110,18 +117,19 @@ public class Page {
         // Hopefully, the remaining bits are part of the year...
         int year = data[1 + offset] & 0x3F;
         /*
-        Log.w(TAG, String.format("Attempting to create DateTime from: %04d-%02d-%02d %02d:%02d:%02d",
-                year + 2000, month, dayOfMonth, hour, minutes, seconds));
+         * Log.w(TAG, String.format("Attempting to create DateTime from: %04d-%02d-%02d %02d:%02d:%02d",
+         * year + 2000, month, dayOfMonth, hour, minutes, seconds));
          */
         try {
             timeStamp = new DateTime(year + 2000, month, dayOfMonth, hour, minutes, seconds);
         } catch (org.joda.time.IllegalFieldValueException e) {
-            //Log.e(TAG,"Illegal DateTime field");
-            //e.printStackTrace();
+            // Log.e(TAG,"Illegal DateTime field");
+            // e.printStackTrace();
             return null;
         }
         return timeStamp;
     }
+
 
     public static void discoverRecords(byte[] data) {
         int i = 0;
@@ -135,13 +143,13 @@ public class Page {
                 Log.v(TAG, String.format("Possible record of type %s found at index %d", en, i));
             }
             /*
-            DateTime ts = parseSimpleDate(data,i);
-            if (ts != null) {
-                if (ts.year().get() == 2015) {
-                    Log.w(TAG, String.format("Possible simple date at index %d", i));
-                }
-            }
-            */
+             * DateTime ts = parseSimpleDate(data,i);
+             * if (ts != null) {
+             * if (ts.year().get() == 2015) {
+             * Log.w(TAG, String.format("Possible simple date at index %d", i));
+             * }
+             * }
+             */
             i = i + 1;
             done = (i >= data.length - 2);
         }
@@ -154,6 +162,7 @@ public class Page {
         }
     }
 
+
     public byte[] getRawData() {
         if (data == null) {
             return crc;
@@ -164,6 +173,7 @@ public class Page {
         return ByteUtil.concat(data, crc);
     }
 
+
     protected PumpTimeStamp collectTimeStamp(byte[] data, int offset) {
         try {
             PumpTimeStamp timestamp = new PumpTimeStamp(TimeFormat.parse5ByteDate(data, offset));
@@ -173,12 +183,14 @@ public class Page {
         }
     }
 
+
     public boolean parsePicky(byte[] rawPage, MedtronicDeviceType model) {
         mRecordList = new ArrayList<>();
         this.model = model;
         int pageOffset = 0;
 
-        if ((rawPage == null) || (rawPage.length == 0)) return false;
+        if ((rawPage == null) || (rawPage.length == 0))
+            return false;
         this.data = Arrays.copyOfRange(rawPage, 0, rawPage.length - 2);
         this.crc = Arrays.copyOfRange(rawPage, rawPage.length - 2, rawPage.length);
         byte[] expectedCrc = CRC.calculate16CCITT(this.data);
@@ -186,7 +198,10 @@ public class Page {
             Log.i(TAG, String.format("Data length: %d", data.length));
         }
         if (!Arrays.equals(crc, expectedCrc)) {
-            Log.w(TAG, String.format("CRC does not match expected value. Expected: %s Was: %s", HexDump.toHexString(expectedCrc), HexDump.toHexString(crc)));
+            Log.w(
+                TAG,
+                String.format("CRC does not match expected value. Expected: %s Was: %s",
+                    HexDump.toHexString(expectedCrc), HexDump.toHexString(crc)));
         } else {
             if (DEBUG_PAGE) {
                 Log.i(TAG, "CRC OK");
@@ -197,7 +212,9 @@ public class Page {
         while (pageOffset < data.length) {
             if (data[pageOffset] == 0) {
                 if (record != null) {
-                    Log.i(TAG, String.format("End of page or Previous parse fail: prev opcode 0x%02x, curr offset %d, %d bytes remaining", record.getRecordOp(), pageOffset, data.length - pageOffset + 1));
+                    Log.i(TAG, String.format(
+                        "End of page or Previous parse fail: prev opcode 0x%02x, curr offset %d, %d bytes remaining",
+                        record.getRecordOp(), pageOffset, data.length - pageOffset + 1));
                     break;
                 } else {
                     Log.i(TAG, "WTF?");
@@ -229,11 +246,12 @@ public class Page {
         return true;
     }
 
+
     public boolean parseByDates(byte[] rawPage, MedtronicDeviceType model) {
         mRecordList = new ArrayList<>();
         if (rawPage.length != 1024) {
             Log.e(TAG, "Unexpected page size. Expected: 1024 Was: " + rawPage.length);
-            //return false;
+            // return false;
         }
         Page.model = model;
         if (DEBUG_PAGE) {
@@ -252,7 +270,10 @@ public class Page {
             Log.i(TAG, String.format("Data length: %d", data.length));
         }
         if (!Arrays.equals(crc, expectedCrc)) {
-            Log.w(TAG, String.format("CRC does not match expected value. Expected: %s Was: %s", HexDump.toHexString(expectedCrc), HexDump.toHexString(crc)));
+            Log.w(
+                TAG,
+                String.format("CRC does not match expected value. Expected: %s Was: %s",
+                    HexDump.toHexString(expectedCrc), HexDump.toHexString(crc)));
         } else {
             if (DEBUG_PAGE) {
                 Log.i(TAG, "CRC OK");
@@ -287,15 +308,15 @@ public class Page {
             pageOffset++;
         }
 
-
         return true;
     }
+
 
     public boolean parseFrom(byte[] rawPage, MedtronicDeviceType model) {
         mRecordList = new ArrayList<>(); // wipe old contents each time when parsing.
         if (rawPage.length != 1024) {
             Log.e(TAG, "Unexpected page size. Expected: 1024 Was: " + rawPage.length);
-            //return false;
+            // return false;
         }
         this.model = model;
         if (DEBUG_PAGE) {
@@ -314,7 +335,10 @@ public class Page {
             Log.i(TAG, String.format("Data length: %d", data.length));
         }
         if (!Arrays.equals(crc, expectedCrc)) {
-            Log.w(TAG, String.format("CRC does not match expected value. Expected: %s Was: %s", HexDump.toHexString(expectedCrc), HexDump.toHexString(crc)));
+            Log.w(
+                TAG,
+                String.format("CRC does not match expected value. Expected: %s Was: %s",
+                    HexDump.toHexString(expectedCrc), HexDump.toHexString(crc)));
         } else {
             if (DEBUG_PAGE) {
                 Log.i(TAG, "CRC OK");
@@ -334,12 +358,14 @@ public class Page {
                     record = null;
                 }
             } else {
-                Log.v(TAG, "Zero opcode encountered -- end of page. " + (rawPage.length - dataIndex) + " bytes remaining.");
+                Log.v(TAG, "Zero opcode encountered -- end of page. " + (rawPage.length - dataIndex)
+                    + " bytes remaining.");
 
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append("Possible parsing problem: ");
                 stringBuilder.append("Previous record: " + previousRecord);
-                stringBuilder.append("  Content of previous record: " + HexDump.toHexStringDisplayable(previousRecord.getRawbytes()));
+                stringBuilder.append("  Content of previous record: "
+                    + HexDump.toHexStringDisplayable(previousRecord.getRawbytes()));
 
                 int remainingData = rawPage.length - dataIndex;
                 byte[] tmpData = new byte[remainingData + 10];
@@ -354,10 +380,13 @@ public class Page {
 
             if (record != null) {
                 if (record instanceof IgnoredHistoryEntry) {
-                    IgnoredHistoryEntry he = (IgnoredHistoryEntry) record;
-                    Log.v(TAG, "parseFrom: found event " + he.getShortTypeName() + " length=" + record.getLength() + " offset=" + record.getFoundAtOffset() + " -- IGNORING");
+                    IgnoredHistoryEntry he = (IgnoredHistoryEntry)record;
+                    Log.v(TAG, "parseFrom: found event " + he.getShortTypeName() + " length=" + record.getLength()
+                        + " offset=" + record.getFoundAtOffset() + " -- IGNORING");
                 } else {
-                    Log.v(TAG, "parseFrom: found event " + record.getClass().getSimpleName() + " length=" + record.getLength() + " offset=" + record.getFoundAtOffset());
+                    Log.v(TAG,
+                        "parseFrom: found event " + record.getClass().getSimpleName() + " length=" + record.getLength()
+                            + " offset=" + record.getFoundAtOffset());
                     mRecordList.add(record);
                 }
 
@@ -368,19 +397,19 @@ public class Page {
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append("Possible parsing problem: ");
                 stringBuilder.append("Previous record: " + previousRecord);
-                stringBuilder.append("  Content of previous record: " + HexDump.toHexStringDisplayable(previousRecord.getRawbytes()));
+                stringBuilder.append("  Content of previous record: "
+                    + HexDump.toHexStringDisplayable(previousRecord.getRawbytes()));
 
                 int remainingData = data.length - dataIndex;
                 byte[] tmpData = Arrays.copyOfRange(data, dataIndex, 1022);
 
-
-                //new byte[remainingData];
-                //System.arraycopy(data, dataIndex, tmpData, 0, remainingData - 2);
+                // new byte[remainingData];
+                // System.arraycopy(data, dataIndex, tmpData, 0, remainingData - 2);
 
                 stringBuilder.append("  Remaining data: " + HexDump.toHexStringDisplayable(tmpData));
 
-
-                Log.e(TAG, String.format("parseFrom: Failed to parse opcode 0x%02x, offset=%d", data[dataIndex], dataIndex));
+                Log.e(TAG,
+                    String.format("parseFrom: Failed to parse opcode 0x%02x, offset=%d", data[dataIndex], dataIndex));
                 done = true;
             }
             if (dataIndex >= data.length - 2) {
@@ -401,18 +430,18 @@ public class Page {
         return true;
     }
 
+
     /*
-    *
-    * For IPC serialization
-    *
+     * 
+     * For IPC serialization
      */
 
     /*
-    private byte[] crc;
-    private byte[] data;
-    protected PumpModel model;
-    public List<Record> mRecordList;
-    */
+     * private byte[] crc;
+     * private byte[] data;
+     * protected PumpModel model;
+     * public List<Record> mRecordList;
+     */
 
     public Bundle pack() {
         Bundle bundle = new Bundle();
@@ -446,6 +475,5 @@ public class Page {
             }
         }
     }
-
 
 }

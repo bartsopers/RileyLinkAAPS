@@ -27,19 +27,19 @@ public class FetchPumpHistoryTask extends PumpTask {
 
     @Override
     public void run() {
-        ArrayList<Page> ra = new ArrayList<>();
-        for(int i = 0; i < 16; i++) {
-            Page page = RileyLinkMedtronicService.getCommunicationManager().getPumpHistoryPage(i);
-            if (page != null) {
-                ra.add(page);
-                RileyLinkMedtronicService.getInstance().saveHistoryPage(i, page);
-            }
-        }
-
-        result.setMap(getServiceTransport().getServiceResult().getMap());
-        result.setResultOK();
-        result.setPageArray(ra);
-        getServiceTransport().setServiceResult(result);
+//        ArrayList<Page> ra = new ArrayList<>();
+//        for(int i = 0; i < 16; i++) {
+//            Page page = RileyLinkMedtronicService.getCommunicationManager().getPumpHistory().getPumpHistoryPage(i);
+//            if (page != null) {
+//                ra.add(page);
+//                RileyLinkMedtronicService.getInstance().saveHistoryPage(i, page);
+//            }
+//        }
+//
+//        result.setMap(getServiceTransport().getServiceResult().getMap());
+//        result.setResultOK();
+//        result.setPageArray(ra);
+//        getServiceTransport().setServiceResult(result);
     }
 
 

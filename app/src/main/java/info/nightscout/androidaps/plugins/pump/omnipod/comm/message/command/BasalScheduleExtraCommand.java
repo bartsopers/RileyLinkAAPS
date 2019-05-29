@@ -11,13 +11,8 @@ public class BasalScheduleExtraCommand extends MessageBlock {
     private final Duration programReminderInterval;
     private final BasalSchedule schedule;
 
-    public BasalScheduleExtraCommand(
-            BasalSchedule schedule,
-            Duration scheduleOffset,
-            boolean confidenceReminder,
-            Duration programReminderInterval
-    ) {
-        super(null);
+    public BasalScheduleExtraCommand(BasalSchedule schedule, Duration scheduleOffset,
+                                     boolean confidenceReminder, Duration programReminderInterval) {
         this.confidenceReminder = confidenceReminder;
         this.programReminderInterval = programReminderInterval;
         this.schedule = schedule;

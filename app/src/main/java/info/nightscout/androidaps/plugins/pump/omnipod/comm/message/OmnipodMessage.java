@@ -16,10 +16,7 @@ public class OmnipodMessage {
     private MessageBlock[] messageBlocks;
     private int sequenceNumber;
 
-
-
     public OmnipodMessage(int address, MessageBlock[] messageBlocks, int sequenceNumber) {
-
         this.address = address;
         this.messageBlocks = messageBlocks;
         this.sequenceNumber = sequenceNumber;
@@ -29,7 +26,7 @@ public class OmnipodMessage {
         byte[] encodedData = new byte[0];
         for (int i = 0; i < messageBlocks.length; i++) {
             encodedData = ByteUtil.concat(encodedData, messageBlocks[i].getRawData());
-            }
+        }
 
         byte[] header = new byte[0];
         //right before the message blocks we have 6 bits of seqNum and 10 bits of length
@@ -56,12 +53,8 @@ public class OmnipodMessage {
             return null;
         }
 
-        int address = ByteUtil.toInt(new Integer(data[0])
-                , new Integer(data[1])
-                , new Integer(data[2])
-                , new Integer(data[3])
-                , ByteUtil.BitConversion.BIG_ENDIAN
-                );
+        int address = ByteUtil.toInt(new Integer(data[0]), new Integer(data[1]), new Integer(data[2]),
+                new Integer(data[3]), ByteUtil.BitConversion.BIG_ENDIAN);
         byte b9 = data[4];
         byte bodyLength = data[5];
         if (data.length - 8 < bodyLength) {
@@ -93,7 +86,7 @@ public class OmnipodMessage {
         int index = 0;
         while (index < data.length) {
             MessageBlockType blockType = MessageBlockType.fromByte(data[index]);
-            MessageBlock block = blockType.Decode(data);
+            MessageBlock block = blockType.decode(data);
             if (block == null) {
                 //FIXME: Throw/log: unknown block
                 LOG.warn("OmnipodMessage: Unknown block type: " + data[index]);

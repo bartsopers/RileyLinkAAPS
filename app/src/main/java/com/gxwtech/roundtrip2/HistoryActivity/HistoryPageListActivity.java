@@ -1,5 +1,9 @@
 package com.gxwtech.roundtrip2.HistoryActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -23,10 +27,6 @@ import com.gxwtech.roundtrip2.R;
 import com.gxwtech.roundtrip2.RT2Const;
 import com.gxwtech.roundtrip2.ServiceData.RetrieveHistoryPageResult;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceResult;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
 
@@ -39,8 +39,8 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.
  * item details side-by-side using two vertical panes.
  */
 public class HistoryPageListActivity extends AppCompatActivity {
-    private static final String TAG = "HistoryPageListActivity";
 
+    private static final String TAG = "HistoryPageListActivity";
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -55,7 +55,7 @@ public class HistoryPageListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_historypage_list);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.title_pump_history);
 
@@ -67,7 +67,7 @@ public class HistoryPageListActivity extends AppCompatActivity {
 
         View recyclerView = findViewById(R.id.historypage_list);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        setupRecyclerView((RecyclerView)recyclerView);
 
         if (findViewById(R.id.historypage_detail_container) != null) {
             // The detail container view will be present only in the
@@ -78,6 +78,7 @@ public class HistoryPageListActivity extends AppCompatActivity {
         }
 
         mBroadcastRecevier = new BroadcastReceiver() {
+
             @Override
             public void onReceive(Context context, Intent receivedIntent) {
                 if (receivedIntent == null) {
@@ -88,15 +89,16 @@ public class HistoryPageListActivity extends AppCompatActivity {
                         Log.e(TAG, "onReceive: null action");
                     } else {
                         if (RT2Const.local.INTENT_historyPageBundleIncoming.equals(action)) {
-                            Bundle incomingBundle = receivedIntent.getExtras().getBundle(RT2Const.IPC.MSG_PUMP_history_key);
+                            Bundle incomingBundle = receivedIntent.getExtras().getBundle(
+                                RT2Const.IPC.MSG_PUMP_history_key);
                             ServiceTransport transport = new ServiceTransport(incomingBundle);
                             ServiceResult result = transport.getServiceResult();
                             if ("RetrieveHistoryPageResult".equals(result.getServiceResultType())) {
-                                RetrieveHistoryPageResult pageResult = (RetrieveHistoryPageResult) result;
+                                RetrieveHistoryPageResult pageResult = (RetrieveHistoryPageResult)result;
                                 Bundle page = pageResult.getPageBundle();
                                 ArrayList<Bundle> recordBundleList = page.getParcelableArrayList("mRecordList");
                                 try {
-                                    for(Bundle record : recordBundleList) {
+                                    for (Bundle record : recordBundleList) {
                                         HistoryPageListContent.addItem(record);
                                     }
                                 } catch (java.lang.NullPointerException e) {
@@ -147,7 +149,6 @@ public class HistoryPageListActivity extends AppCompatActivity {
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(HistoryPageListContent.ITEMS));
     }
 
-
     public class SimpleItemRecyclerViewAdapter extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private final List<HistoryPageListContent.RecordHolder> mValues;
@@ -160,7 +161,8 @@ public class HistoryPageListActivity extends AppCompatActivity {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.historypage_list_content, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.historypage_list_content, parent,
+                false);
             return new ViewHolder(view);
         }
 
@@ -172,7 +174,7 @@ public class HistoryPageListActivity extends AppCompatActivity {
             String keytext = "";
             Set<String> keys = holder.mItem.content.keySet();
             int n = 0;
-            for(String key : keys) {
+            for (String key : keys) {
                 if (!key.equals("_type") && !key.equals("_stype") && !key.equals("timestamp") && !key.equals("_opcode")) {
                     try {
                         keytext += key + ":" + holder.mItem.content.get(key).toString();
@@ -188,6 +190,7 @@ public class HistoryPageListActivity extends AppCompatActivity {
             holder.mContentView.setText(keytext);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
+
                 @Override
                 public void onClick(View v) {
                     if (mTwoPane) {
@@ -195,7 +198,8 @@ public class HistoryPageListActivity extends AppCompatActivity {
                         arguments.putString(HistoryPageDetailFragment.ARG_ITEM_ID, holder.mItem.id);
                         HistoryPageDetailFragment fragment = new HistoryPageDetailFragment();
                         fragment.setArguments(arguments);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.historypage_detail_container, fragment).commit();
+                        getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.historypage_detail_container, fragment).commit();
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, HistoryPageDetailActivity.class);
@@ -213,8 +217,8 @@ public class HistoryPageListActivity extends AppCompatActivity {
             return mValues.size();
         }
 
-
         public class ViewHolder extends RecyclerView.ViewHolder {
+
             public final View mView;
             public final TextView mIdView;
             public final TextView mContentView;
@@ -224,8 +228,8 @@ public class HistoryPageListActivity extends AppCompatActivity {
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
-                mContentView = (TextView) view.findViewById(R.id.content);
+                mIdView = (TextView)view.findViewById(R.id.id);
+                mContentView = (TextView)view.findViewById(R.id.content);
             }
 
 

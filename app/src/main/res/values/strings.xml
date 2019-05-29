@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Roundtrip2</string>
+    <string name="app_name">RileyLink AAPS</string>
     <string name="roundtrip_service_name">RoundtripService</string>
     <string name="title_historypage_list">HistoryPages</string>
     <string name="title_historypage_detail">HistoryPage Detail</string>
@@ -44,7 +44,7 @@
 
     <!-- Show AAPS -->
     <string name="cmd_aaps_get_status">Get Status</string>
-    <string name="cmd_aaps_initialize_pod">Initialize new POD</string>
+	<string name="cmd_aaps_initialize_pod">Initialize new POD</string>
     <string name="cmd_aaps_finish_prime">Finish prime</string>
     <string name="cmd_aaps_set_tbr">Set TBR</string>
     <string name="cmd_aaps_cancel_tbr">Cancel TBR</string>
@@ -53,7 +53,8 @@
     <string name="cmd_aaps_get_basal_profile">Get Basal Profile</string>
     <string name="cmd_aaps_set_basal_profile">Set Basal Profile</string>
     <string name="cmd_aaps_read_history">Read History</string>
-    <string name="cmd_aaps_set_ext_bolus">Set Ext Bolus</string>
+    <string name="cmd_aaps_read_history2">Read History 2</string>
+    <string name="cmd_aaps_set_ext_bolus">Set Extended Bolus</string>
     <string name="cmd_aaps_cancel_ext_bolus">Cancel Ext Bolus</string>
     <string name="cmd_aaps_load_tdd">Load TDD</string>
     <string name="cmd_aaps_show_apps_cmd">Show AAPS Cmd</string>
@@ -82,6 +83,46 @@
     <string name="smb_shortname">SMB</string>
     <string name="insulin_unit_shortname">U</string>
 
+    <string name="medtronic_history_group_basal">Basals</string>
+    <string name="medtronic_history_group_configuration">Configurations</string>
+    <string name="medtronic_history_group_notification">Notifications</string>
+    <string name="medtronic_history_group_statistic">Statistics</string>
+    <string name="medtronic_history_group_unknown">Unknowns</string>
+    <string name="medtronic_history_group_all">All</string>
+    <string name="medtronic_pump_history">Medtronic Pump History</string>
+    <string name="danar_history_alarm">Alarms</string>
+    <string name="danar_history_bolus">Boluses</string>
+    <string name="danar_history_errors">Errors</string>
+    <string name="danar_history_glucose">Glucose</string>
+    <string name="danar_history_prime">Prime</string>
+
+    <!-- RL State -->
+    <string name="rileylink_state_bt_init">Bluetooth Initializing…</string>
+    <string name="rileylink_state_bt_error">Bluetooth Error</string>
+    <string name="rileylink_state_bt_ready">Bluetooth Ready</string>
+    <string name="rileylink_state_not_started">Not Started</string>
+    <string name="rileylink_state_rl_init">RileyLink Initialization…</string>
+    <string name="rileylink_state_rl_error">RileyLink Error</string>
+    <string name="rileylink_state_pc_tune_up">Tunning up RileyLink and Pump</string>
+    <string name="rileylink_state_pc_error">Problem connecting to Pump</string>
+    <string name="rileylink_state_connected">Connected</string>
+
+
+    <!-- RL Errors -->
+    <string name="rileylink_error_not_rl">Device is not RileyLink</string>
+    <string name="rileylink_error_unreachable">RileyLink unreachable</string>
+    <string name="rileylink_error_bt_disabled">Bluetooth disabled</string>
+    <string name="rileylink_error_no_bt_adapter">No Bluetooth Adapter</string>
+    <string name="rileylink_error_tuneup_failed">TuneUp Failed</string>
+    <string name="rileylink_error_pump_unreachable">Pump unreachable</string>
+    <string name="rileylink_error_pod_unreachable">Pod unreachable</string>
+    <string name="rileylink_error_address_not_set_short">Not set</string>
+
+    <!-- RL Target Device -->
+    <string name="rileylink_target_device_medtronic">Medtronic Pump</string>
+    <string name="rileylink_target_device_omnipod">Omnipod</string>
+    <string name="virtualpump_pump_def_extended_note">* Only discrete values no ranges are supported as granularity for basal/bolus in virtual pump.</string>
+
 
     <!-- Pump Abstract -->
     <string name="pump_operation_not_supported_by_pump">Operation not supported by pump.</string>
@@ -104,8 +145,42 @@
     <string name="medtronic_error_pump_frequency_not_set">Pump Frequency not set.</string>
     <string name="medtronic_error_pump_frequency_invalid">Pump Frequency unsupported.</string>
     <string name="medtronic_error_rileylink_address_invalid">RileyLink Address invalid.</string>
-    <string name="medtronic_pump_frequency_us">US (916 MHz)</string>
+    <string name="medtronic_pump_frequency_us_ca">US &amp; Canada (916 MHz)</string>
     <string name="medtronic_pump_frequency_worldwide">Worldwide (868 Mhz)</string>
+
+    <!-- <string name="medtronic_cmd_profile_not_set">Remote Basal profile setting is not supported. Please modify Basal profile on your pump manually.</string> -->
+    <string name="medtronic_cmd_cancel_bolus_not_supported">You cancelled Bolus, after it was already set on Pump. Since Medtronic Pump doesn\'t support cancel, you will need to manually cancel it. Put the Pump into Suspend mode and then do Resume (if you still want to cancel). Application will pick up changes, on next update (in less than 5 minutes).</string>
+    <string name="medtronic_cmd_cant_read_tbr">Could not read current TBR.</string>
+    <string name="medtronic_cmd_cant_cancel_tbr_stop_op">Could not cancel current TBR. Stopping operation.</string>
+    <string name="medtronic_cmd_set_profile_pattern_overflow">Profile set failed, because following patterns, have too big basal rate: %1$s</string>
+    <string name="medtronic_cmd_bolus_could_not_be_delivered">Bolus could not be delivered.</string>
+    <string name="medtronic_cmd_tbr_could_not_be_delivered">TBR could not be set.</string>
+    <string name="medtronic_cmd_cant_cancel_tbr">Could not cancel current TBR.</string>
+    <string name="medtronic_cmd_basal_profile_could_not_be_set">Basal profile could not be set.</string>
+    <string name="medtronic_cmd_basal_profile_not_set_is_same">Basal profile is the same, so it will not be set again.</string>
+
+    <string name="medtronic_cmd_desc_get_history">Get History - Page %1$d (%2$d/16)</string>
+    <string name="medtronic_cmd_desc_get_history_request">Get History - Page %1$d</string>
+    <string name="medtronic_cmd_desc_get_history_base">Get History - Page %1$d</string>
+    <string name="medtronic_cmd_desc_get_time">Get Pump Time</string>
+    <string name="medtronic_cmd_desc_get_settings">Get Settings</string>
+    <string name="medtronic_cmd_desc_get_model">Get Pump Model</string>
+    <string name="medtronic_cmd_desc_get_basal_profile">Get Basal Profile</string>
+    <string name="medtronic_cmd_desc_set_basal_profile">Set Basal Profile</string>
+    <string name="medtronic_cmd_desc_get_tbr">Get Temporary Basal</string>
+    <string name="medtronic_cmd_desc_set_tbr">Set Temporary Basal</string>
+    <string name="medtronic_cmd_desc_set_bolus">Set Bolus</string>
+
+    <!-- MDT Pump Status -->
+    <string name="medtronic_pump_status_never_contacted">Never contacted</string>
+    <string name="medtronic_pump_status_waking_up">Waking up</string>
+    <string name="medtronic_pump_status_error_comm">Error with communication</string>
+    <string name="medtronic_pump_status_timeout_comm">Timeout on communication</string>
+    <string name="medtronic_pump_status_problem_contacting">Problem contacting Pump</string>
+    <string name="medtronic_pump_status_pump_unreachable">Pump unreachable</string>
+    <string name="medtronic_pump_status_invalid_config">Invalid configuration</string>
+    <string name="medtronic_pump_status_active">Active</string>
+    <string name="medtronic_pump_status_sleeping">Sleeping</string>
 
     <string name="rileylink_mac_address">RileyLink MAC Address</string>
     <string name="rileylink_scanner_selected_device">Selected</string>
@@ -128,6 +203,9 @@
     <string name="rileylink_last_used_frequency">Last used frequency</string>
     <string name="rileylink_last_device_contact">Last device contact</string>
 
+    <string name="medtronic_pump_encoding">Medtronic Encoding</string>
+    <string name="medtronic_pump_encoding_4b6b_local">Software 4b6b Encoding</string>
+    <string name="medtronic_pump_encoding_4b6b_rileylink">Hardware 4b6b Encoding</string>
 
     <string name="rileylink_settings_tab1">Settings</string>
     <string name="rileylink_settings_tab2">History</string>

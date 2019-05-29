@@ -35,12 +35,12 @@ public class RetrieveHistoryPageTask extends PumpTask {
 
     @Override
     public void run() {
-        pageNumber = mTransport.getServiceCommand().getMap().getInt("pageNumber");
-        page = RileyLinkMedtronicService.getCommunicationManager().getPumpHistoryPage(pageNumber);
-        result = (RetrieveHistoryPageResult) getServiceTransport().getServiceResult();
-        result.setResultOK();
-        result.setPageNumber(pageNumber);
-        result.setPageBundle(page.pack());
+//        pageNumber = mTransport.getServiceCommand().getMap().getInt("pageNumber");
+//        page = RileyLinkMedtronicService.getCommunicationManager().getPumpHistoryPage(pageNumber);
+//        result = (RetrieveHistoryPageResult) getServiceTransport().getServiceResult();
+//        result.setResultOK();
+//        result.setPageNumber(pageNumber);
+//        result.setPageBundle(page.pack());
     }
 
 }

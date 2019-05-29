@@ -5,11 +5,12 @@ package info.nightscout.androidaps.plugins.pump.medtronic.comm.message;
  */
 // Andy: See comments in message body
 public class CarelinkShortMessageBody extends MessageBody {
+
     byte[] body;
 
 
     public CarelinkShortMessageBody() {
-        init(new byte[]{0});
+        init(new byte[] { 0 });
     }
 
 
@@ -17,10 +18,12 @@ public class CarelinkShortMessageBody extends MessageBody {
         init(data);
     }
 
+
     @Override
     public int getLength() {
         return body.length;
     }
+
 
     @Override
     public void init(byte[] rxData) {

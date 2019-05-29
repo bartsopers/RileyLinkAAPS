@@ -6,11 +6,10 @@ import org.junit.Test;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryStatus;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodAlarm;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.ReservoirStatus;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressState;
 
 import info.nightscout.androidaps.Constants;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -22,7 +21,7 @@ public class StatusResponseUnitTests {
         byte[] bytes = ByteUtil.fromHexString("00430000000038800000");
         StatusResponse statusResponse = new StatusResponse(bytes);
         assertEquals(DeliveryStatus.Purging, statusResponse.deliveryStatus);
-        assertEquals(ReservoirStatus.PairingSuccess, statusResponse.reservoirStatus);
+        assertEquals(PodProgressState.PairingSuccess, statusResponse.podProgressState);
         assertTrue(statusResponse.alarms.getFlags().contains(PodAlarm.PodAlarmType.Suspended));
         assertTrue(statusResponse.alarms.getFlags().contains(PodAlarm.PodAlarmType.SuspendExpired));
         assertTrue(statusResponse.alarms.getFlags().contains(PodAlarm.PodAlarmType.BelowFiftyUnits));
@@ -35,7 +34,7 @@ public class StatusResponseUnitTests {
         StatusResponse statusResponse = new StatusResponse(bytes);
 
         assertEquals(DeliveryStatus.BasalRunning, statusResponse.deliveryStatus);
-        assertEquals(ReservoirStatus.AboveFiftyUnits, statusResponse.reservoirStatus);
+        assertEquals(PodProgressState.AboveFiftyUnits, statusResponse.podProgressState);
         assertEquals(50, statusResponse.reservoirLevel, 0);
         assertEquals(Duration.standardMinutes(1307).getMillis(), statusResponse.activeTime.getMillis());
         assertEquals(60.05, statusResponse.insulin, 0.05);

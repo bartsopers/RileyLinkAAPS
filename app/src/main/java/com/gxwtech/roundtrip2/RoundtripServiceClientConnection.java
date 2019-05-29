@@ -80,7 +80,6 @@ public class RoundtripServiceClientConnection {
                 // do anything with it; we can count on soon being
                 // disconnected (and then reconnected if it can be restarted)
                 // so there is no need to do anything here.
-                Log.e(TAG,"Connection crashed. " + e.getMessage());
             }
             Log.d(TAG, "Sent registration message to service");
         }
@@ -108,7 +107,6 @@ public class RoundtripServiceClientConnection {
                     mService.send(msg);
                 } catch (RemoteException e) {
                     // Nothing to do if the connection has already crashed.
-                    Log.e(TAG,"Connection crashed. " + e.getMessage());
                 }
             }
             mBound = false;

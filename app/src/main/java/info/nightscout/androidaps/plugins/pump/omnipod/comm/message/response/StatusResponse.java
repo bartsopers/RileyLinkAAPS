@@ -8,11 +8,11 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryStatus;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodAlarm;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.ReservoirStatus;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressState;
 
 public class StatusResponse extends MessageBlock {
     public final DeliveryStatus deliveryStatus;
-    public final ReservoirStatus reservoirStatus;
+    public final PodProgressState podProgressState;
     public final Duration activeTime;
     public final double insulin;
     public final double insulinNotDelivered;
@@ -21,10 +21,8 @@ public class StatusResponse extends MessageBlock {
     public final double reservoirLevel;
 
     public StatusResponse(byte[] encodedData) {
-        super(encodedData);
-
         this.deliveryStatus = DeliveryStatus.fromByte((byte) ((encodedData[1] & 0xF0) >>> 4));
-        this.reservoirStatus = ReservoirStatus.fromByte((byte) (encodedData[1] & 0x0F));
+        this.podProgressState = PodProgressState.fromByte((byte) (encodedData[1] & 0x0F));
         int minutes = ((encodedData[7] & 0x7F) << 6) | ((encodedData[8] & 0xFC) >>> 2);
         this.activeTime = Duration.standardMinutes(minutes);
 
@@ -43,7 +41,6 @@ public class StatusResponse extends MessageBlock {
         this.reservoirLevel = Math.round((double)((resHighBits | resLowBits)) * 50 / 255);
 
         this.encodedData = ByteUtil.substring(encodedData, 1, 9);
-
     }
 
     @Override

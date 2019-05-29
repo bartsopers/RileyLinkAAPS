@@ -1,11 +1,11 @@
 package info.nightscout.androidaps.plugins.pump.medtronic.service.data;
 
-import android.os.Bundle;
-import android.util.Log;
-
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import android.os.Bundle;
+import android.util.Log;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceResult;
 
@@ -13,6 +13,7 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.
  * Created by geoff on 6/25/16.
  */
 public class ReadPumpClockResult extends ServiceResult {
+
     private static final String TAG = "ReadPumpClockResult";
 
 
@@ -24,6 +25,7 @@ public class ReadPumpClockResult extends ServiceResult {
     public void init() {
         map.putString("ServiceMessageType", "ReadPumpClockResult");
     }
+
 
     public LocalDateTime getTime() {
         LocalDateTime rval = new LocalDateTime(1900, 1, 1, 1, 1);
@@ -42,12 +44,14 @@ public class ReadPumpClockResult extends ServiceResult {
         return rval;
     }
 
+
     public void setTime(LocalDateTime pumpTime) {
         Bundle map = getMap();
         DateTimeFormatter fmt = DateTimeFormat.forStyle("FF");
         map.putString("PumpTime", fmt.print(pumpTime));
         setMap(map);
     }
+
 
     public String getTimeString() {
         Bundle map = getMap();

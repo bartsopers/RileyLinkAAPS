@@ -29,13 +29,17 @@ public enum PacketType {
 
 
     PacketType(int value) {
-        this.value = (byte) value;
+        this.value = (byte)value;
     }
 
+
     public static PacketType getByValue(short value) {
-        if (mapByValue.containsKey(value)) return mapByValue.get(value);
-        else return PacketType.Invalid;
+        if (mapByValue.containsKey(value))
+            return mapByValue.get(value);
+        else
+            return PacketType.Invalid;
     }
+
 
     public byte getValue() {
         return value;

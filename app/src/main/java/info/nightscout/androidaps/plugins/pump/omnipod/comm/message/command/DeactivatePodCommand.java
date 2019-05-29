@@ -12,11 +12,11 @@ public class DeactivatePodCommand extends MessageBlock {
         return MessageBlockType.DeactivatePod;
     }
 
-    public DeactivatePodCommand( int nonce ) {
-        super(null);
+    public DeactivatePodCommand(int nonce) {
         this.nonce = nonce;
         encode();
     }
+
     private void encode() {
         encodedData = ByteUtil.getBytesFromInt(nonce);
     }

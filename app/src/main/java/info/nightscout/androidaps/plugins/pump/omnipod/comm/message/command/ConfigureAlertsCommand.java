@@ -16,19 +16,15 @@ public class ConfigureAlertsCommand extends MessageBlock {
         return MessageBlockType.ConfigureAlerts;
     }
 
-    public ConfigureAlertsCommand(
-            int nonce,
-            AlertConfiguration[] configurations
-    ) {
-        super(null);
+    public ConfigureAlertsCommand(int nonce, AlertConfiguration[] configurations) {
         this.nonce = nonce;
         this.configurations = configurations;
         encode();
     }
+
     private void encode() {
         encodedData = ByteUtil.getBytesFromInt(nonce);
-        for (AlertConfiguration config:configurations
-             ) {
+        for (AlertConfiguration config : configurations) {
             encodedData = ByteUtil.concat(encodedData, config.getRawData());
         }
     }

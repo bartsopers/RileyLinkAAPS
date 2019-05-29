@@ -1,5 +1,10 @@
 package com.gxwtech.roundtrip2;
 
+import java.util.ArrayList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -45,20 +50,17 @@ import com.gxwtech.roundtrip2.ServiceData.ReadPumpClockResult;
 import com.gxwtech.roundtrip2.ServiceMessageViewActivity.ServiceMessageViewListActivity;
 import com.gxwtech.roundtrip2.util.tools;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-
 import info.nightscout.androidaps.interfaces.PumpDescription;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceNotification;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
 import info.nightscout.androidaps.plugins.pump.medtronic.driver.MedtronicPumpStatus;
+import info.nightscout.androidaps.plugins.pump.medtronic.service.RileyLinkMedtronicService;
 import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicConst;
+import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.service.RileyLinkOmnipodService;
-import info.nightscout.utils.SP;
+import info.nightscout.androidaps.utils.SP;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -66,19 +68,19 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 2177; // just something unique.
     private RoundtripServiceClientConnection roundtripServiceClientConnection;
     private BroadcastReceiver mBroadcastReceiver;
-    private BroadcastReceiver btReceiver;
 
     private static final Logger LOG = LoggerFactory.getLogger(MainActivity.class);
 
     BroadcastReceiver apsAppConnected;
     Bundle storeForHistoryViewer;
 
-    //UI items
+    // UI items
     private DrawerLayout mDrawerLayout;
     private LinearLayout mDrawerLinear;
     private Toolbar toolbar;
 
-    public static Context mContext;  // TODO: 09/07/2016 @TIM this should not be needed
+    public static Context mContext; // TODO: 09/07/2016 @TIM this should not be needed
+    BroadcastReceiver btReceiver;
 
 
     @Override
@@ -91,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
         mContext = this; // TODO: 09/07/2016 @TIM this should not be needed
 
-        //Sets default Preferences
+        // Sets default Preferences
         PreferenceManager.setDefaultValues(this, R.xml.pref_pump, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_rileylink, false);
 
@@ -100,11 +102,11 @@ public class MainActivity extends AppCompatActivity {
         setBTReceiver();
 
         // Temporary AAPS
-        RileyLinkUtil.setPumpStatus(new MedtronicPumpStatus(new PumpDescription()));
-
+        //MedtronicUtil.setPumpStatus(new MedtronicPumpStatus(new PumpDescription()));
 
         /* start the RileyLinkMedtronicService */
-        /* using startService() will keep the service running until it is explicitly stopped
+        /*
+         * using startService() will keep the service running until it is explicitly stopped
          * with stopService() or by RileyLinkMedtronicService calling stopSelf().
          * Note that calling startService repeatedly has no ill effects on RileyLinkMedtronicService
          */
@@ -112,13 +114,14 @@ public class MainActivity extends AppCompatActivity {
         Intent bindIntent = new Intent(this, RileyLinkOmnipodService.class);
         startService(bindIntent);
 
-        linearProgressBar = (ProgressBar) findViewById(R.id.progressBarCommandActivity);
-        spinnyProgressBar = (ProgressBar) findViewById(R.id.progressBarSpinny);
+        linearProgressBar = (ProgressBar)findViewById(R.id.progressBarCommandActivity);
+        spinnyProgressBar = (ProgressBar)findViewById(R.id.progressBarSpinny);
     }
 
 
     private void setBTReceiver() {
         btReceiver = new BroadcastReceiver() {
+
             @Override
             public void onReceive(Context context, Intent intent) {
                 final String action = intent.getAction();
@@ -130,14 +133,14 @@ public class MainActivity extends AppCompatActivity {
                             LOG.trace("Bluetooth off");
                             break;
                         case BluetoothAdapter.STATE_TURNING_OFF:
-                            //LOG.trace("Turning Bluetooth off...");
+                            // LOG.trace("Turning Bluetooth off...");
                             break;
                         case BluetoothAdapter.STATE_ON:
                             LOG.trace("Bluetooth on");
                             RileyLinkUtil.sendBroadcastMessage(RileyLinkConst.Intents.BluetoothReconnected);
                             break;
                         case BluetoothAdapter.STATE_TURNING_ON:
-                            //LOG.trace("Turning Bluetooth on...");
+                            // LOG.trace("Turning Bluetooth on...");
                             break;
                     }
                 }
@@ -146,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Register for broadcasts on BluetoothAdapter state change
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-        //LocalBroadcastManager.getInstance(MainApp.instance()).registerReceiver(btReceiver, filter);
+        // LocalBroadcastManager.getInstance(MainApp.instance()).registerReceiver(btReceiver, filter);
         registerReceiver(btReceiver, filter);
 
     }
@@ -185,8 +188,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void setBroadcastReceiver() {
-        //Register this receiver for UI Updates
+        // Register this receiver for UI Updates
         mBroadcastReceiver = new BroadcastReceiver() {
+
             @Override
             public void onReceive(Context context, Intent receivedIntent) {
 
@@ -206,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
                              *
                              * We can change the format so that it is a simple "bluetooth OK" message,
                              * rather than an explicit address of a Rileylink, and the Service can
-                             * use the last known good value.  But the kick-off of bluetooth ops must
+                             * use the last known good value. But the kick-off of bluetooth ops must
                              * come from an Activity.
                              */
                             String RileylinkBLEAddress = SP.getString(RileyLinkConst.Prefs.RileyLinkAddress, "");
@@ -218,8 +222,16 @@ public class MainActivity extends AppCompatActivity {
                                 MainApp.getServiceClientConnection().setThisRileylink(RileylinkBLEAddress);
                             }
                             break;
+
+                        case RT2Const.local.INTENT_NEW_disconnectRileyLink: {
+                            showBusy("Configuring Service", 50);
+                            MainApp.getServiceClientConnection().setThisRileylink(null);
+                        }
+                            break;
+
                         case RT2Const.local.INTENT_NEW_pumpIDKey:
-                            MainApp.getServiceClientConnection().sendPUMP_useThisDevice(SP.getString(MedtronicConst.Prefs.PumpSerial, ""));
+                            MainApp.getServiceClientConnection().sendPUMP_useThisDevice(
+                                SP.getString(MedtronicConst.Prefs.PumpSerial, ""));
                             break;
                         case RT2Const.local.INTENT_historyPageViewerReady:
                             Intent sendHistoryIntent = new Intent(RT2Const.local.INTENT_historyPageBundleIncoming);
@@ -244,18 +256,21 @@ public class MainActivity extends AppCompatActivity {
                                     case "ReadPumpClock":
                                         ReadPumpClockResult clockResult = new ReadPumpClockResult();
                                         clockResult.initFromServiceResult(transport.getServiceResult());
-                                        TextView pumpTimeTextView = (TextView) findViewById(R.id.textViewPumpClockTime);
+                                        TextView pumpTimeTextView = (TextView)findViewById(R.id.textViewPumpClockTime);
                                         pumpTimeTextView.setText(clockResult.getTimeString());
                                         showIdle();
                                         break;
                                     case "FetchPumpHistory":
-                                        storeForHistoryViewer = receivedIntent.getExtras().getBundle(RT2Const.IPC.bundleKey);
+
+                                        storeForHistoryViewer = receivedIntent.getExtras().getBundle(
+                                            RT2Const.IPC.bundleKey);
                                         startActivity(new Intent(context, HistoryPageListActivity.class));
                                         // wait for history viewer to announce "ready"
                                         showIdle();
                                         break;
                                     case "RetrieveHistoryPage":
-                                        storeForHistoryViewer = receivedIntent.getExtras().getBundle(RT2Const.IPC.bundleKey);
+                                        storeForHistoryViewer = receivedIntent.getExtras().getBundle(
+                                            RT2Const.IPC.bundleKey);
                                         startActivity(new Intent(context, HistoryPageListActivity.class));
                                         // wait for history viewer to announce "ready"
                                         showIdle();
@@ -283,7 +298,10 @@ public class MainActivity extends AppCompatActivity {
 
                                         break;
                                     default:
-                                        Log.e(TAG, "Dunno what to do with this command completion: " + transport.getOriginalCommandName());
+                                        Log.e(
+                                            TAG,
+                                            "Dunno what to do with this command completion: "
+                                                + transport.getOriginalCommandName());
                                 }
                             } else {
                                 Log.e(TAG, "Command failed? " + transport.getOriginalCommandName());
@@ -328,18 +346,16 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(RT2Const.IPC.MSG_ServiceResult);
         intentFilter.addAction(RT2Const.IPC.MSG_ServiceNotification);
         intentFilter.addAction(RT2Const.local.INTENT_historyPageViewerReady);
+        intentFilter.addAction(RT2Const.local.INTENT_NEW_disconnectRileyLink);
 
-
-        linearProgressBar = (ProgressBar) findViewById(R.id.progressBarCommandActivity);
-        spinnyProgressBar = (ProgressBar) findViewById(R.id.progressBarSpinny);
+        linearProgressBar = (ProgressBar)findViewById(R.id.progressBarCommandActivity);
+        spinnyProgressBar = (ProgressBar)findViewById(R.id.progressBarSpinny);
         LocalBroadcastManager.getInstance(MainApp.instance()).registerReceiver(mBroadcastReceiver, intentFilter);
     }
-
 
     /**
      * GUI element functions
      */
-
 
     private int mProgress = 0;
     private int mSpinnyProgress = 0;
@@ -351,13 +367,14 @@ public class MainActivity extends AppCompatActivity {
 
     void showBusy(String activityString, int progress) {
         mProgress = progress;
-        TextView tv = (TextView) findViewById(R.id.textViewActivity);
+        TextView tv = (TextView)findViewById(R.id.textViewActivity);
         tv.setText(activityString);
         linearProgressBar.setProgress(progress);
         if (progress > 0) {
             spinnyProgressBar.setVisibility(View.VISIBLE);
             if (spinnyThread == null) {
                 spinnyThread = new Thread(new Runnable() {
+
                     @Override
                     public void run() {
                         while ((mProgress > 0) && (mProgress < 100)) {
@@ -382,13 +399,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     void setRileylinkStatusMessage(String statusMessage) {
-        TextView field = (TextView) findViewById(R.id.textViewFieldRileyLink);
+        TextView field = (TextView)findViewById(R.id.textViewFieldRileyLink);
         field.setText(statusMessage);
     }
 
 
     void setPumpStatusMessage(String statusMessage) {
-        TextView field = (TextView) findViewById(R.id.textViewFieldPump);
+        TextView field = (TextView)findViewById(R.id.textViewFieldPump);
         field.setText(statusMessage);
     }
 
@@ -400,8 +417,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void onFetchHistoryButtonClicked(View view) {
         /* does not work. Crashes sig 11 */
-        showBusy("Fetch history page 0", 50);
-        MainApp.getServiceClientConnection().doFetchPumpHistory();
+        showBusy("Reset", 50);
+        MainApp.getServiceClientConnection().doResetRileyLink();
     }
 
 
@@ -418,8 +435,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void onGetISFProfileButtonClicked(View view) {
-        //ServiceCommand getISFProfileCommand = ServiceClientActions.makeReadISFProfileCommand();
-        //roundtripServiceClientConnection.sendServiceCommand(getISFProfileCommand);
+        // ServiceCommand getISFProfileCommand = ServiceClientActions.makeReadISFProfileCommand();
+        // roundtripServiceClientConnection.sendServiceCommand(getISFProfileCommand);
         MainApp.getServiceClientConnection().readISFProfile();
     }
 
@@ -436,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onShowAAPSButtonClicked(View view) {
         try {
-            //startActivity(new Intent(getApplicationContext(), ShowAAPSActivity.class));
+            // startActivity(new Intent(getApplicationContext(), ShowAAPSActivity.class));
             startActivity(new Intent(getApplicationContext(), ShowAAPS2Activity.class));
         } catch (Exception ex) {
             LOG.error("Error loading activity: " + ex.getMessage(), ex);
@@ -445,7 +462,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void onGetCarbProfileButtonClicked(View view) {
-        //MainApp.getServiceClientConnection().re(ServiceClientActions.makeReadBolusWizardCarbProfileCommand());
+        // MainApp.getServiceClientConnection().re(ServiceClientActions.makeReadBolusWizardCarbProfileCommand());
     }
 
 
@@ -487,10 +504,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void setupMenuAndToolbar() {
-        //Setup menu
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerLinear = (LinearLayout) findViewById(R.id.left_drawer);
-        toolbar = (Toolbar) findViewById(R.id.mainActivityToolbar);
+        // Setup menu
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        mDrawerLinear = (LinearLayout)findViewById(R.id.left_drawer);
+        toolbar = (Toolbar)findViewById(R.id.mainActivityToolbar);
         Drawable logsIcon = getDrawable(R.drawable.file_chart);
         Drawable historyIcon = getDrawable(R.drawable.history);
         Drawable settingsIcon = getDrawable(R.drawable.settings);
@@ -503,7 +520,7 @@ public class MainActivity extends AppCompatActivity {
         catIcon.setColorFilter(getResources().getColor(R.color.primary_dark), PorterDuff.Mode.SRC_ATOP);
         apsIcon.setColorFilter(getResources().getColor(R.color.primary_dark), PorterDuff.Mode.SRC_ATOP);
 
-        ListView mDrawerList = (ListView) findViewById(R.id.navList);
+        ListView mDrawerList = (ListView)findViewById(R.id.navList);
         ArrayList<NavItem> menuItems = new ArrayList<>();
         menuItems.add(new NavItem("APS Integration", apsIcon));
         menuItems.add(new NavItem("Pump History", historyIcon));
@@ -513,27 +530,28 @@ public class MainActivity extends AppCompatActivity {
         DrawerListAdapter adapterMenu = new DrawerListAdapter(this, menuItems);
         mDrawerList.setAdapter(adapterMenu);
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        //Check APS App Connectivity
-                        //sendAPSAppMessage(view);
+                        // Check APS App Connectivity
+                        // sendAPSAppMessage(view);
                         break;
                     case 1:
-                        //Pump History
+                        // Pump History
                         startActivity(new Intent(getApplicationContext(), HistoryPageListActivity.class));
                         break;
                     case 2:
-                        //Treatment Logs
+                        // Treatment Logs
                         startActivity(new Intent(getApplicationContext(), TreatmentHistory.class));
                         break;
                     case 3:
-                        //Settings
+                        // Settings
                         startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                         break;
                     case 4:
-                        //View LogCat
+                        // View LogCat
                         tools.showLogging();
                         break;
                 }
@@ -541,15 +559,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open,
+            R.string.drawer_close) {
+
             /** Called when a drawer has settled in a completely open state. */
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 
-                //Insulin Integration App, try and connect
-                //checkInsulinAppIntegration(false);
+                // Insulin Integration App, try and connect
+                // checkInsulinAppIntegration(false);
             }
 
 
@@ -569,17 +589,17 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(mDrawerToggle);
     }
 
-
     /* Functions for APS App Service */
 
-    //Our Service that APS App will connect to
+    // Our Service that APS App will connect to
     private Messenger myService = null;
     private ServiceConnection myConnection = new ServiceConnection() {
+
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             myService = new Messenger(service);
 
-            //Broadcast there has been a connection
+            // Broadcast there has been a connection
             Intent intent = new Intent("APS_CONNECTED");
             LocalBroadcastManager.getInstance(MainApp.instance()).sendBroadcast(intent);
         }
@@ -588,57 +608,59 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceDisconnected(ComponentName className) {
             myService = null;
-            //FYI, only called if Service crashed or was killed, not on unbind
+            // FYI, only called if Service crashed or was killed, not on unbind
         }
     };
 
-    //    public void sendAPSAppMessage(final View view) {
-    //        //listen out for a successful connection
-    //        apsAppConnected = new BroadcastReceiver() {
-    //            @Override
-    //            public void onReceive(Context context, Intent intent) {
+    // public void sendAPSAppMessage(final View view) {
+    // //listen out for a successful connection
+    // apsAppConnected = new BroadcastReceiver() {
+    // @Override
+    // public void onReceive(Context context, Intent intent) {
     //
-    //                Resources appR = view.getContext().getResources();
-    //                CharSequence txt = appR.getText(appR.getIdentifier("app_name", "string", view.getContext().getPackageName()));
+    // Resources appR = view.getContext().getResources();
+    // CharSequence txt = appR.getText(appR.getIdentifier("app_name", "string", view.getContext().getPackageName()));
     //
-    //                Message msg = Message.obtain();
-    //                Bundle bundle = new Bundle();
-    //                bundle.putString(RT2Const.commService.ACTION, RT2Const.commService.OUTGOING_TEST_MSG);
-    //                bundle.putString(RT2Const.commService.REMOTE_APP_NAME, txt.toString());
-    //                msg.setData(bundle);
+    // Message msg = Message.obtain();
+    // Bundle bundle = new Bundle();
+    // bundle.putString(RT2Const.commService.ACTION, RT2Const.commService.OUTGOING_TEST_MSG);
+    // bundle.putString(RT2Const.commService.REMOTE_APP_NAME, txt.toString());
+    // msg.setData(bundle);
     //
-    //                try {
-    //                    myService.send(msg);
-    //                } catch (RemoteException e) {
-    //                    e.printStackTrace();
-    //                    //cannot Bind to service
-    //                    Snackbar snackbar = Snackbar
-    //                            .make(view, "error sending msg: " + e.getMessage(), Snackbar.LENGTH_INDEFINITE);
-    //                    snackbar.show();
-    //                }
+    // try {
+    // myService.send(msg);
+    // } catch (RemoteException e) {
+    // e.printStackTrace();
+    // //cannot Bind to service
+    // Snackbar snackbar = Snackbar
+    // .make(view, "error sending msg: " + e.getMessage(), Snackbar.LENGTH_INDEFINITE);
+    // snackbar.show();
+    // }
     //
-    //                if (apsAppConnected != null)
-    //                    LocalBroadcastManager.getInstance(MainApp.instance()).unregisterReceiver(apsAppConnected); //Stop listening for new connections
-    //                MainApp.instance().unbindService(myConnection);
-    //            }
-    //        };
-    //        LocalBroadcastManager.getInstance(MainApp.instance()).registerReceiver(apsAppConnected, new IntentFilter("APS_CONNECTED"));
+    // if (apsAppConnected != null)
+    // LocalBroadcastManager.getInstance(MainApp.instance()).unregisterReceiver(apsAppConnected); //Stop listening for
+    // new connections
+    // MainApp.instance().unbindService(myConnection);
+    // }
+    // };
+    // LocalBroadcastManager.getInstance(MainApp.instance()).registerReceiver(apsAppConnected, new
+    // IntentFilter("APS_CONNECTED"));
     //
-    //        connect_to_aps_app(MainApp.instance());
-    //    }
+    // connect_to_aps_app(MainApp.instance());
+    // }
 
-    //    //Connect to the APS App Treatments Service
-    //    private void connect_to_aps_app(Context c) {
-    //        // TODO: 16/06/2016 add user selected aps app
-    //        Intent intent = new Intent("com.hypodiabetic.happ.services.TreatmentService");
-    //        intent.setPackage("com.hypodiabetic.happ");
-    //        c.bindService(intent, myConnection, Context.BIND_AUTO_CREATE);
-    //    }
-
+    // //Connect to the APS App Treatments Service
+    // private void connect_to_aps_app(Context c) {
+    // // TODO: 16/06/2016 add user selected aps app
+    // Intent intent = new Intent("com.hypodiabetic.happ.services.TreatmentService");
+    // intent.setPackage("com.hypodiabetic.happ");
+    // c.bindService(intent, myConnection, Context.BIND_AUTO_CREATE);
+    // }
 
 }
 
 class NavItem {
+
     String mTitle;
     Drawable mIcon;
 
@@ -684,14 +706,14 @@ class DrawerListAdapter extends BaseAdapter {
         View view;
 
         if (convertView == null) {
-            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.menu_item, null);
         } else {
             view = convertView;
         }
 
-        TextView titleView = (TextView) view.findViewById(R.id.menuText);
-        ImageView iconView = (ImageView) view.findViewById(R.id.menuIcon);
+        TextView titleView = (TextView)view.findViewById(R.id.menuText);
+        ImageView iconView = (ImageView)view.findViewById(R.id.menuIcon);
 
         titleView.setText(mNavItems.get(position).mTitle);
         iconView.setBackground(mNavItems.get(position).mIcon);

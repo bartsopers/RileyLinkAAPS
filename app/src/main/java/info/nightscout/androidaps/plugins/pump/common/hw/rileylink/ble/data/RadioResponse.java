@@ -5,10 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RFTools;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RileyLinkCommunicationException;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.command.RileyLinkCommand;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkBLEError;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkCommandType;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.command.RileyLinkCommand;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.command.RileyLinkCommandType;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.common.utils.CRC;
 
@@ -28,26 +29,26 @@ public class RadioResponse {
 
 
     public RadioResponse() {
+
     }
 
 
-    public RadioResponse(byte[] rxData) {
-        init(rxData);
-    }
+    // public RadioResponse(byte[] rxData) {
+    // init(rxData);
+    // }
 
-    public RadioResponse(RileyLinkCommand command, byte[] raw) {
+    public RadioResponse(RileyLinkCommand command /* , byte[] raw */) {
         this.command = command;
-        init(raw);
+        // init(raw);
     }
 
 
     public boolean isValid() {
 
-        //We should check for all listening commands, but only one is actually used
+        // We should check for all listening commands, but only one is actually used
         if (command != null && command.getCommandType() != RileyLinkCommandType.SendAndListen) {
             return true;
         }
-
 
         if (!decodedOK) {
             return false;
@@ -61,7 +62,8 @@ public class RadioResponse {
     }
 
 
-    public void init(byte[] rxData) {
+    public void init(byte[] rxData) throws RileyLinkCommunicationException {
+
         if (rxData == null) {
             return;
         }
@@ -72,77 +74,63 @@ public class RadioResponse {
         rssi = rxData[0];
         responseNumber = rxData[1];
         byte[] encodedPayload;
-        if (RileyLinkFirmwareVersion.isSameVersion(RileyLinkUtil.getRileyLinkServiceData().versionCC110, RileyLinkFirmwareVersion.Version2)) {
+
+        if (RileyLinkFirmwareVersion.isSameVersion(RileyLinkUtil.getRileyLinkServiceData().versionCC110,
+            RileyLinkFirmwareVersion.Version2)) {
             encodedPayload = ByteUtil.substring(rxData, 3, rxData.length - 3);
         } else {
             encodedPayload = ByteUtil.substring(rxData, 2, rxData.length - 2);
-
         }
+
         try {
 
             // for non-radio commands we just return the raw response
             // well, for non-radio commands we shouldn't even reach this point
             // but getVersion is kind of exception
             if (command != null && //
-                    command.getCommandType() != RileyLinkCommandType.SendAndListen) {
+                command.getCommandType() != RileyLinkCommandType.SendAndListen) {
                 decodedOK = true;
                 decodedPayload = encodedPayload;
                 return;
             }
-            //boolean isEncoded = command==null || command.isEncoded();
 
             switch (RileyLinkUtil.getEncoding()) {
+
                 case Manchester:
-                    //decodedPayload = ByteUtil.substring(encodedPayload, 0, encodedPayload.length - 1);
+                case FourByteSixByteRileyLink: {
                     decodedOK = true;
                     decodedPayload = encodedPayload;
-                    //receivedCRC = encodedPayload[encodedPayload.length - 1];
+                }
                     break;
-                case FourByteSixByte:
-                    byte[] decodeThis = RFTools.decode4b6b(encodedPayload);
-                    decodedOK = true;
-                    decodedPayload = ByteUtil.substring(decodeThis, 0, decodeThis.length - 1);
-                    receivedCRC = decodeThis[decodeThis.length - 1];
-                    byte calculatedCRC = CRC.crc8(decodedPayload);
-                    if (receivedCRC != calculatedCRC) {
-                        LOG.error(String.format("RadioResponse: CRC mismatch, calculated 0x%02x, received 0x%02x", calculatedCRC, receivedCRC));
+
+                case FourByteSixByteLocal: {
+                    byte[] decodeThis = RileyLinkUtil.getEncoding4b6b().decode4b6b(encodedPayload);
+
+                    if (decodeThis != null && decodeThis.length > 2) {
+                        decodedOK = true;
+
+                        decodedPayload = ByteUtil.substring(decodeThis, 0, decodeThis.length - 1);
+                        receivedCRC = decodeThis[decodeThis.length - 1];
+                        byte calculatedCRC = CRC.crc8(decodedPayload);
+                        if (receivedCRC != calculatedCRC) {
+                            LOG.error(String.format("RadioResponse: CRC mismatch, calculated 0x%02x, received 0x%02x",
+                                calculatedCRC, receivedCRC));
+                        }
+                    } else {
+                        throw new RileyLinkCommunicationException(RileyLinkBLEError.TooShortOrNullResponse);
                     }
+                }
                     break;
+
                 default:
-                    throw new NotImplementedException("this {" + RileyLinkUtil.getEncoding().toString() + "} encoding is not supported");
+                    throw new NotImplementedException("this {" + RileyLinkUtil.getEncoding().toString()
+                        + "} encoding is not supported");
             }
         } catch (NumberFormatException e) {
             decodedOK = false;
             LOG.error("Failed to decode radio data: " + ByteUtil.shortHexString(encodedPayload));
         }
     }
-
-
-//    public void init(byte[] rxData, boolean isEncoded) {
-//        if (rxData == null) {
-//            return;
-//        }
-//        if (rxData.length < 3) {
-//            // This does not look like something valid heard from a RileyLink device
-//            return;
-//        }
-//        rssi = rxData[0];
-//        responseNumber = rxData[1];
-//        byte[] encodedPayload = ByteUtil.substring(rxData, 2, rxData.length - 2);
-//        try {
-//            byte[] decodeThis = RFTools.decode4b6b(encodedPayload);
-//            decodedOK = true;
-//            decodedPayload = ByteUtil.substring(decodeThis, 0, decodeThis.length - 1);
-//            byte calculatedCRC = CRC.crc8(decodedPayload);
-//            receivedCRC = decodeThis[decodeThis.length - 1];
-//            if (receivedCRC != calculatedCRC) {
-//                LOG.error("RadioResponse: CRC mismatch, calculated 0x%02x, received 0x%02x", calculatedCRC, receivedCRC);
-//            }
-//        } catch (NumberFormatException e) {
-//            decodedOK = false;
-//            LOG.error("Failed to decode radio data: " + ByteUtil.shortHexString(encodedPayload));
-//        }
-//    }
 
 
     public byte[] getPayload() {

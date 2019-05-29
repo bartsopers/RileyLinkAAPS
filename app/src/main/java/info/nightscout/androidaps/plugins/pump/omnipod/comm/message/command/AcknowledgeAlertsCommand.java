@@ -17,20 +17,13 @@ public class AcknowledgeAlertsCommand extends MessageBlock {
         return MessageBlockType.AcknowledgeAlerts;
     }
 
-    public AcknowledgeAlertsCommand(
-            int nonce,
-            Iterable<AlertType> alertTypes)
-    {
-        super(null);
+    public AcknowledgeAlertsCommand(int nonce, Iterable<AlertType> alertTypes) {
         this.nonce = nonce;
         this.alertTypes = alertTypes;
         encode();
     }
 
-    public AcknowledgeAlertsCommand(
-            int nonce,
-            AlertType alertType)
-    {
+    public AcknowledgeAlertsCommand(int nonce, AlertType alertType) {
         this(nonce, Arrays.asList(alertType));
     }
 

@@ -45,7 +45,7 @@ public enum MessageBlockType {
         return null;
     }
 
-    public MessageBlock Decode(byte[] encodedData) {
+    public MessageBlock decode(byte[] encodedData) {
         switch (this) {
             case ConfigResponse:
                 return new ConfigResponse(encodedData);

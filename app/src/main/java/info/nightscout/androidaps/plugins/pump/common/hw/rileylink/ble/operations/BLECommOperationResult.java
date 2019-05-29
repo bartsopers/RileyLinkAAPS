@@ -4,6 +4,7 @@ package info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.operatio
  * Created by geoff on 5/26/16.
  */
 public class BLECommOperationResult {
+
     public static final int RESULT_NONE = 0;
     public static final int RESULT_SUCCESS = 1;
     public static final int RESULT_TIMEOUT = 2;

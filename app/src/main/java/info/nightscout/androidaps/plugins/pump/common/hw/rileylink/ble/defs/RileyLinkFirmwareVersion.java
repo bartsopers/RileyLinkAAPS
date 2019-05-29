@@ -20,11 +20,8 @@ public enum RileyLinkFirmwareVersion {
     ;
 
     private static final String FIRMWARE_IDENTIFICATION_PREFIX = "subg_rfspy ";
-    private static final Pattern _version_pattern = Pattern.compile(FIRMWARE_IDENTIFICATION_PREFIX + "([0-9]+)\\.([0-9]+)");
-    private int major;
-    private int minor;
-    protected RileyLinkFirmwareVersion[] familyMembers;
-    private String versionKey = "";
+    private static final Pattern _version_pattern = Pattern.compile(FIRMWARE_IDENTIFICATION_PREFIX
+        + "([0-9]+)\\.([0-9]+)");
     static Map<String, RileyLinkFirmwareVersion> mapByVersion;
 
     static {
@@ -35,6 +32,11 @@ public enum RileyLinkFirmwareVersion {
             }
         }
     }
+
+    protected RileyLinkFirmwareVersion[] familyMembers;
+    private int major;
+    private int minor;
+    private String versionKey = "";
 
 
     RileyLinkFirmwareVersion(int major, int minor, String versionKey) {
@@ -62,11 +64,6 @@ public enum RileyLinkFirmwareVersion {
     }
 
 
-    public boolean isSameVersion(RileyLinkFirmwareVersion versionSources) {
-        return isSameVersion(this, versionSources);
-    }
-
-
     public static RileyLinkFirmwareVersion getByVersionString(String versionString) {
         if (versionString != null) {
             Matcher m = _version_pattern.matcher(versionString);
@@ -77,7 +74,8 @@ public enum RileyLinkFirmwareVersion {
                 if (mapByVersion.containsKey(versionKey)) {
                     return mapByVersion.get(versionKey);
                 } else {
-                    return defaultToLowestMajorVersion(major); // just in case there is new release that we don't cover example: 2.3 etc
+                    return defaultToLowestMajorVersion(major); // just in case there is new release that we don't cover
+                                                               // example: 2.3 etc
                 }
             }
         }
@@ -91,6 +89,11 @@ public enum RileyLinkFirmwareVersion {
             return mapByVersion.get(major + ".0");
         }
         return UnknownVersion;
+    }
+
+
+    public boolean isSameVersion(RileyLinkFirmwareVersion versionSources) {
+        return isSameVersion(this, versionSources);
     }
 
 

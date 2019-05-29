@@ -6,7 +6,6 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.IRawRepresen
 
 public class TempBasalSchedule extends DeliverySchedule implements IRawRepresentable {
 
-
     @Override
     public byte[] getRawData() {
         byte[] rawData = new byte[0];

@@ -7,7 +7,6 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock
 
 public class StatusError extends MessageBlock {
     public StatusError(byte[] encodedData) {
-        super(encodedData);
         throw new NotImplementedException("StatusError");
     }
 

@@ -152,6 +152,11 @@ public class ServiceClientActions {
     }
 
 
+    public static ServiceCommand makeResetRLCommand() {
+        return new ServiceCommand("ResetRileyLink", makeRandomID());
+    }
+
+
     public static ServiceCommand makeFetchPumpHistoryCommand() {
         return new ServiceCommand("FetchPumpHistory", makeRandomID());
     }

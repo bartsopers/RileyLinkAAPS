@@ -35,7 +35,6 @@ public class BasalDeliveryTable implements IRawRepresentable {
     @Override
     public byte[] getRawData() {
         throw new NotImplementedException("BasalDeliveryTable.getRawData");
-
     }
 }
 

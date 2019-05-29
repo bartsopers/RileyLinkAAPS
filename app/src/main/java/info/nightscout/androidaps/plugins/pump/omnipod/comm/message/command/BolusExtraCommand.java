@@ -11,7 +11,6 @@ public class BolusExtraCommand extends MessageBlock {
     private final byte[] unknownPart;
 
     public BolusExtraCommand(double units, byte byte2, byte[] unknownPart) {
-        super(null);
         this.units = units;
         this.byte2 = byte2;
         this.unknownPart = unknownPart;
@@ -21,9 +20,8 @@ public class BolusExtraCommand extends MessageBlock {
     private void encode() {
         encodedData = new byte[] {byte2};
         encodedData = ByteUtil.concat(encodedData,
-                ByteUtil.substring(
-                        ByteUtil.getBytesFromInt((int) (units / Constants.PodPulseSize * 10)), 2, 2
-                ));
+                ByteUtil.substring(ByteUtil.getBytesFromInt(
+                        (int) (units / Constants.PodPulseSize * 10)), 2, 2));
         encodedData = ByteUtil.concat(encodedData, unknownPart);
         encodedData = ByteUtil.concat(encodedData, new byte[6]);
     }

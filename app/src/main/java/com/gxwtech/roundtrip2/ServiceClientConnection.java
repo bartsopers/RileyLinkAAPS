@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceCommand;
-import info.nightscout.androidaps.plugins.pump.omnipod.service.RileyLinkOmnipodService;
+import info.nightscout.androidaps.plugins.pump.medtronic.service.RileyLinkMedtronicService;
 
 /**
  * Created by Tim on 27/06/2016.
@@ -41,7 +41,7 @@ public class ServiceClientConnection {
     *
     */
     private void doBindService() {
-        context.bindService(new Intent(context, RileyLinkOmnipodService.class), roundtripServiceClientConnection.getServiceConnection(), Context.BIND_AUTO_CREATE);
+        context.bindService(new Intent(context, RileyLinkMedtronicService.class), roundtripServiceClientConnection.getServiceConnection(), Context.BIND_AUTO_CREATE);
         Log.d(TAG, "doBindService: binding.");
         LOG.debug("doBindService Logger: binding.");
     }
@@ -106,6 +106,12 @@ public class ServiceClientConnection {
         ServiceCommand command = ServiceClientActions.makeTunePumpCommand();
         roundtripServiceClientConnection.sendServiceCommand(command);
     }
+
+    public void doResetRileyLink() {
+        ServiceCommand command = ServiceClientActions.makeResetRLCommand();
+        roundtripServiceClientConnection.sendServiceCommand(command);
+    }
+
 
 
     public void getHistory() {

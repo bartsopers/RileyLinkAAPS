@@ -2,28 +2,32 @@
 <resources>
 
     <string-array name="pumpCommands">
-        <item>@string/cmd_aaps_initialize_pod</item>
-        <item>@string/cmd_aaps_finish_prime</item>
-        <!--<item>@string/cmd_aaps_cancel_tbr</item>-->
-        <!--<item>@string/cmd_aaps_get_model</item>-->
-        <!--<item>@string/cmd_aaps_set_bolus</item>-->
 
-        <!--<item>@string/cmd_aaps_get_basal_profile</item>-->
-        <!--<item>@string/cmd_aaps_set_basal_profile</item>-->
-        <!--<item>@string/cmd_aaps_status_bolus</item>-->
-        <!--<item>@string/cmd_aaps_status_time</item>-->
-        <!--<item>@string/cmd_aaps_status_insulin</item>-->
-        <!--<item>@string/cmd_aaps_status_power</item>-->
-        <!--<item>@string/cmd_aaps_status_tbr</item>-->
-        <!--<item>@string/cmd_aaps_status_ext_bolus</item>-->
-        <!--<item>@string/cmd_aaps_status_settings</item>-->
+        <item>@string/cmd_aaps_get_model</item>
+        <item>@string/cmd_aaps_set_tbr</item>
+        <item>@string/cmd_aaps_cancel_tbr</item>
+        <item>@string/cmd_aaps_status_tbr</item>
+        <item>@string/cmd_aaps_get_basal_profile</item>
+        <item>@string/cmd_aaps_set_bolus</item>
+        <item>@string/cmd_aaps_status_time</item>
+        <item>@string/cmd_aaps_status_insulin</item>
+        <item>@string/cmd_aaps_status_power</item>
+        <item>@string/cmd_aaps_status_settings</item>
+        <item>@string/cmd_aaps_read_history</item>
+        <item>@string/cmd_aaps_read_history2</item>
+        <item>@string/cmd_aaps_set_basal_profile</item>
+        <item>@string/cmd_aaps_set_ext_bolus</item>
 
-        <!--<item>@string/cmd_aaps_set_ext_bolus</item>-->
-        <!--<item>@string/cmd_aaps_read_history</item>-->
-        <!--<item>@string/cmd_aaps_load_tdd</item>-->
-        <!--<item>@string/cmd_aaps_cancel_bolus</item>-->
-        <!--<item>@string/cmd_aaps_cancel_ext_bolus</item>-->
+    </string-array>
 
+    <string-array name="medtronicPumpFreqArray">
+        <item>@string/medtronic_pump_frequency_us_ca</item>
+        <item>@string/medtronic_pump_frequency_worldwide</item>
+    </string-array>
+
+    <string-array name="medtronicEncoding">
+        <item>@string/medtronic_pump_encoding_4b6b_local</item>
+        <item>@string/medtronic_pump_encoding_4b6b_rileylink</item>
     </string-array>
 
 

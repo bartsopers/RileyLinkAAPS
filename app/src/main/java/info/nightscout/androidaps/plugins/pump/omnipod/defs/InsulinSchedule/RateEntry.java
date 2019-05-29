@@ -8,25 +8,20 @@ import java.util.List;
 
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.IRawRepresentable;
 
-public class RateEntry  implements IRawRepresentable {
+public class RateEntry implements IRawRepresentable {
 
     private final double ttotalPUlses;
     private final Duration delayBetweenPulses;
 
     public RateEntry(double ttotalPUlses, Duration delayBetweenPulses) {
-
         this.ttotalPUlses = ttotalPUlses;
         this.delayBetweenPulses = delayBetweenPulses;
     }
 
     public static List<RateEntry> fromBasalScheduleEntry(BasalScheduleEntry entry) {
         ArrayList<RateEntry> list = new ArrayList<RateEntry>();
-
-
         return list;
     }
-
-
 
     @Override
     public byte[] getRawData() {

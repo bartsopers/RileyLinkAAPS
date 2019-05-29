@@ -4,9 +4,11 @@ package com.gxwtech.roundtrip2;
  * Created by geoff on 6/5/16.
  */
 public class RT2Const {
+
     public static final String RT2Prefix = "com.gxwtech.roundtrip2.";
 
     public class IPC {
+
         public static final String Prefix = RT2Prefix + "IPC.";
 
         // This message is used to bind the "replyTo" field
@@ -30,24 +32,27 @@ public class RT2Const {
 
         // used by gui to pass the address of the Rileylink to the Service
         // has an 'address' field with the string address.
-        //public static final String MSG_BLE_useThisDevice = Prefix + "MSG_BLE_useThisDevice";
-        //public static final String MSG_BLE_useThisDevice_addressKey = Prefix + "MSG_BLE_useThisDevice_addressKey";
+        // public static final String MSG_BLE_useThisDevice = Prefix + "MSG_BLE_useThisDevice";
+        // public static final String MSG_BLE_useThisDevice_addressKey = Prefix + "MSG_BLE_useThisDevice_addressKey";
 
         // used by gui to tell service that BLE access is denied by user.
         public static final String MSG_BLE_accessDenied = Prefix + "MSG_BLE_accessDenied";
         public static final String MSG_BLE_accessGranted = Prefix + "MSG_BLE_accessGranted";
         // used by service to ask user for Bluetooth permission
-        //public static final String MSG_BLE_requestAccess = Prefix + "MSG_BLE_requestAccess";
+        // public static final String MSG_BLE_requestAccess = Prefix + "MSG_BLE_requestAccess";
         public static final String MSG_BLE_RileyLinkReady = Prefix + "MSG_BLE_RileyLinkReady";
 
         // used to pass the pump ID from GUI to service
         // has a 'pumpID' field containing a six digit String
-        //public static final String MSG_PUMP_useThisAddress = Prefix + "MSG_PUMP_useThisAddress";
-        //public static final String MSG_PUMP_useThisAddress_pumpIDKey = Prefix + "MSG_PUMP_useThisAddress_pumpIDKey";
+        // public static final String MSG_PUMP_useThisAddress = Prefix + "MSG_PUMP_useThisAddress";
+        // public static final String MSG_PUMP_useThisAddress_pumpIDKey = Prefix + "MSG_PUMP_useThisAddress_pumpIDKey";
 
         // These are used to pass information about the pump from the service to the GUI.
         // has a 'model' field
-        //public static final String MSG_PUMP_reportedPumpModel = Prefix + "MSG_PUMP_reportedPumpModel";
+        // public static final String MSG_PUMP_reportedPumpModel = Prefix + "MSG_PUMP_reportedPumpModel";
+
+        public static final String MSG_PUMP_Prefix = Prefix + "MSG_PUMP_";
+
         public static final String MSG_PUMP_pumpFound = Prefix + "MSG_PUMP_pumpFound";
         public static final String MSG_PUMP_pumpLost = Prefix + "MSG_PUMP_pumpLost";
         public static final String MSG_PUMP_pumpNotFound = Prefix + "MSG_PUMP_pumpNotContacted";
@@ -75,24 +80,26 @@ public class RT2Const {
     }
 
     public class local {
+
         // These are local to the GUI activities
         public static final String Prefix = RT2Prefix + "local.";
         public static final String INTENT_serviceConnected = Prefix + "INTENT_serviceConnected";
         public static final String INTENT_NEW_rileylinkAddressKey = Prefix + "INTENT_NEW_rileylinkAddressKey";
         public static final String INTENT_NEW_pumpIDKey = Prefix + "INTENT_NEW_pumpIDKey";
-
+        public static final String INTENT_NEW_disconnectRileyLink = Prefix + "INTENT_NEW_disconnectRileyLink";
 
         public static final String INTENT_historyPageViewerReady = Prefix + "I'm ready, hit me up";
         public static final String INTENT_historyPageBundleIncoming = Prefix + "Here's the kitchen sink";
     }
 
     public class serviceLocal {
+
         public static final String Prefix = RT2Prefix + "serviceLocal.";
         // for local broadcasts annoucing connectivity events
         public static final String INTENT_seekRileylink = Prefix + "INTENT_seekRileylink";
         // public static final String bluetooth_connected = Prefix + "bluetooth_connected"; BluetoothConnected
-        //public static final String bluetooth_disconnected = Prefix + "bluetooth_disconnected";
-        //public static final String BLE_services_discovered = Prefix + "BLE_services_discovered"; // MedtronicConst
+        // public static final String bluetooth_disconnected = Prefix + "bluetooth_disconnected";
+        // public static final String BLE_services_discovered = Prefix + "BLE_services_discovered"; // MedtronicConst
 
         public static final String ipcBound = Prefix + "ipcBound";
 
@@ -100,20 +107,22 @@ public class RT2Const {
         public static final String sharedPreferencesKey = Prefix + "sharedPreferencesKey";
 
         // These are used to identify shared preference items
-        //public static final String pumpIDKey = Prefix + "PumpIDKey";
-        //public static final String rileylinkAddressKey = Prefix + "rileylinkAddressKey";
+        // public static final String pumpIDKey = Prefix + "PumpIDKey";
+        // public static final String rileylinkAddressKey = Prefix + "rileylinkAddressKey";
         public static final String prefsLastGoodPumpFrequency = Prefix + "prefsLastGoodPumpFrequency";
 
         // The the key to identify the hashCode() of the msg.replyTo, when the bundle is moved to an intent.
         public static final String IPCReplyTo_hashCodeKey = Prefix + "IPCReplyTo_hashCodeKey";
 
-        // This is sent from the MedtronicCommunicationManager to RileyLinkServiceMedtronic at the completion of a pump command session.
+        // This is sent from the MedtronicCommunicationManager to RileyLinkServiceMedtronic at the completion of a pump
+        // command session.
         public static final String INTENT_sessionCompleted = Prefix + "INTENT_sessionCompleted";
 
     }
 
     public class commService {
-        //Data
+
+        // Data
         public static final String ACTION = "ACTION";
         public static final String DATE_REQUESTED = "DATE_REQUESTED";
         public static final String INTEGRATION_OBJECTS = "INTEGRATION_OBJECTS";
@@ -121,19 +130,20 @@ public class RT2Const {
         public static final String PUMP = "PUMP";
         public static final String REMOTE_APP_NAME = "REMOTE_APP_NAME";
 
-        //Incoming actions
+        // Incoming actions
         public static final String INCOMING_NEW_TREATMENTS = "NEW_TREATMENTS";
         public static final String INCOMING_TEST_MSG = "TEST_MSG";
 
-        //Outgoing actions
+        // Outgoing actions
         public static final String OUTGOING_TREATMENT_UPDATES = "TREATMENT_UPDATES";
         public static final String OUTGOING_TEST_MSG = "TEST_MSG";
 
     }
 
     public class safety {
-        public static final int INCOMING_REQUEST_MAX_AGE = 10; //mins
-        public static final int TREATMENT_MAX_AGE = 8; //mins
+
+        public static final int INCOMING_REQUEST_MAX_AGE = 10; // mins
+        public static final int TREATMENT_MAX_AGE = 8; // mins
 
     }
 }

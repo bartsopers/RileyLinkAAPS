@@ -7,7 +7,6 @@ public class BasalScheduleEntry {
     public final Duration duration;
 
     public BasalScheduleEntry(double rate, Duration duration) {
-
         this.rate = rate;
         this.duration = duration;
     }
