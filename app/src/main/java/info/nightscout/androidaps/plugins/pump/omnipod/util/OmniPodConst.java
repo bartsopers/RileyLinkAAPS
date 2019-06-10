@@ -9,10 +9,11 @@ public class OmniPodConst {
     static final String Prefix = "AAPS.OmniPod.";
 
     public class Prefs {
-        public static final String PrefPrefix = "pref_omnipod_";
-        public static final String RileyLinkAddress = PrefPrefix + "rileylink_mac";
-        public static final String PodState = PrefPrefix + "pod_state";
 
-        public static final String LastGoodPumpCommunicationTime = Prefix + "lastGoodPumpCommunicationTime";
+        public static final String PREF_PREFIX = "pref_";
+
+        public static final String RILEY_LINK_ADDRESS = PREF_PREFIX + "rileylink_mac";
+        public static final String POD_STATE = PREF_PREFIX + "pod_state";
+        public static final String LAST_GOOD_PUMP_COMMUNICATION_TIME = Prefix + "last_good_pump_communication_time";
     }
 }

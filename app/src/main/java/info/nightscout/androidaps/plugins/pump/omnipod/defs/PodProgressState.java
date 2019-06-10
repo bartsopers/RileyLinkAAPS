@@ -2,19 +2,19 @@ package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
 // https://github.com/openaps/openomni/wiki/Pod-Progress-State
 public enum PodProgressState {
-    Initialized (0),
-    TankPowerActivated (1),
-    TankFillCompleted (2),
-    PairingSuccess (3),
-    Priming ( 4),
-    ReadyForInjection ( 5),
-    InjectionStarted ( 6),
-    InjectionDone ( 7),
-    AboveFiftyUnits ( 8),
-    BelowFiftyUnits ( 9),
-    ErrorEventLoggedShuttingDown (13),
-    DelayedPrime ( 14 ),
-    Inactive ( 15);
+    INITIAL_VALUE(0),
+    TANK_POWER_ACTIVATED(1),
+    TANK_FILL_COMPLETED(2),
+    PAIRING_SUCCESS(3),
+    PURGING( 4),
+    READY_FOR_INJECTION( 5),
+    INJECTION_DONE( 6),
+    PRIMING_CANNULA( 7),
+    RUNNING_ABOVE_FIFTY_UNITS( 8),
+    RUNNING_BELOW_FIFTY_UNITS( 9),
+    ERROR_EVENT_OCCURRED_SHUTTING_DOWN(13),
+    FAILED_TO_INITIALIZE_IN_TIME_SHUTTING_DOWN( 14 ),
+    INACTIVE( 15);
 
     byte value;
 

@@ -18,6 +18,6 @@ public class GetStatusCommand extends MessageBlock {
 
     @Override
     public MessageBlockType getType() {
-        return MessageBlockType.GetStatus;
+        return MessageBlockType.GET_STATUS;
     }
 }

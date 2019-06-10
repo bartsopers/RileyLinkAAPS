@@ -6,14 +6,12 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlockType;
 
 public class ConfigureAlertsCommand extends MessageBlock {
-
-
     private int nonce;
     private AlertConfiguration[] configurations;
 
     @Override
     public MessageBlockType getType() {
-        return MessageBlockType.ConfigureAlerts;
+        return MessageBlockType.CONFIGURE_ALERTS;
     }
 
     public ConfigureAlertsCommand(int nonce, AlertConfiguration[] configurations) {

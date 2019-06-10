@@ -47,11 +47,11 @@ public class AlertConfiguration{
         encodedData[1] = valueBuffer[3];
 
         switch (expirationType.expirationType) {
-            case Reservoir:
+            case RESERVOIR:
                 int ticks = (int)(expirationType.reservoirLevel / Constants.PodPulseSize / 2);
                 valueBuffer = ByteUtil.getBytesFromInt(ticks);
                 break;
-            case Timer:
+            case TIMER:
                 int duration = (int)expirationType.timeToExpire.getStandardMinutes();
                 valueBuffer = ByteUtil.getBytesFromInt(duration);
                 break;

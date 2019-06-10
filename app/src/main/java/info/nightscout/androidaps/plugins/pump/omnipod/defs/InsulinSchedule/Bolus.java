@@ -36,7 +36,7 @@ public class Bolus extends DeliverySchedule implements IRawRepresentable {
 
     @Override
     public InsulinScheduleType getType() {
-        return InsulinScheduleType.Bolus;
+        return InsulinScheduleType.BOLUS;
     }
 
 }

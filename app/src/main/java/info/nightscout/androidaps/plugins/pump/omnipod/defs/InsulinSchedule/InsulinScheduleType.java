@@ -1,9 +1,9 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule;
 
 public enum InsulinScheduleType {
-    BasalSchedule(0),
-    TempBasalSchedule(1),
-    Bolus(2);
+    BASAL_SCHEDULE(0),
+    TEMP_BASAL_SCHEDULE(1),
+    BOLUS(2);
 
     byte value;
 

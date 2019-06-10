@@ -53,6 +53,6 @@ public class SetInsulinScheduleCommand extends MessageBlock {
 
     @Override
     public MessageBlockType getType() {
-        return MessageBlockType.SetInsulinSchedule;
+        return MessageBlockType.SET_INSULIN_SCHEDULE;
     }
 }

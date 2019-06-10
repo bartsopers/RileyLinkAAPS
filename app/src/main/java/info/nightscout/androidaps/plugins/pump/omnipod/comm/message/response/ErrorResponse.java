@@ -19,9 +19,8 @@ public class ErrorResponse extends MessageBlock {
 
     @Override
     public MessageBlockType getType() {
-        return MessageBlockType.ErrorResponse;
+        return MessageBlockType.ERROR_RESPONSE;
     }
-
 
     public ErrorResponseType getErrorResponseType() {
         return errorResponseType;

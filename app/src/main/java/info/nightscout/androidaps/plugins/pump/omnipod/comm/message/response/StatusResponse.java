@@ -45,6 +45,6 @@ public class StatusResponse extends MessageBlock {
 
     @Override
     public MessageBlockType getType() {
-        return MessageBlockType.StatusResponse;
+        return MessageBlockType.STATUS_RESPONSE;
     }
 }

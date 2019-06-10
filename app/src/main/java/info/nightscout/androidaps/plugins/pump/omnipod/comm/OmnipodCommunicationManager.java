@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RFSpy;
@@ -26,7 +25,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.Assi
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.ConfigureAlertsCommand;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.ConfirmPairingCommand;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.SetInsulinScheduleCommand;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.ConfigResponse;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.VersionResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.OmnipodMessage;
@@ -55,13 +54,13 @@ import info.nightscout.androidaps.utils.SP;
 
 public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
-    private static final int defaultAddress = 0xFFFFFFFF;
+    private static final int DEFAULT_ADDRESS = 0xFFFFFFFF;
+    private static final Logger LOG = LoggerFactory.getLogger(OmnipodCommunicationManager.class);
+
     private Integer messageNumber;
     private Integer packetNumber;
     private PodState podState;
 
-    private static final Logger LOG = LoggerFactory.getLogger(OmnipodCommunicationManager.class);
-    private boolean showPumpMessages;
     static OmnipodCommunicationManager omnipodCommunicationManager;
 
     public OmnipodCommunicationManager(Context context, RFSpy rfspy) {
@@ -71,6 +70,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
     @Override
     protected void configurePumpSpecificSettings() {
+        // TODO
     }
 
     @Override
@@ -84,18 +84,10 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         return new byte[0];
     }
 
-    //FIXME: This one should be refactored as it sends/listens to raw packets and not messages
     @Override
     public <E extends RLMessage> E createResponseMessage(byte[] payload, Class<E> clazz) {
-        OmnipodPacket pumpMessage = new OmnipodPacket(payload);
-        return (E)pumpMessage;
+        return (E) new OmnipodPacket(payload);
     }
-
-//    // All pump communications go through this function.
-//    protected PodMessage sendAndListen(RLMessage msg, int timeout_ms) {
-//
-//        return sendAndListen(msg, timeout_ms, PodMessage.class);
-//    }
 
     public static OmnipodCommunicationManager getInstance() {
         return omnipodCommunicationManager;
@@ -106,9 +98,9 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     }
 
     protected <T extends MessageBlock> T exchangeMessages(OmnipodMessage message, Integer addressOverride, Integer ackAddressOverride) {
-        int packetAddress = defaultAddress;
+        int packetAddress = DEFAULT_ADDRESS;
         if (this.podState != null) {
-            packetAddress = this.podState.Address;
+            packetAddress = this.podState.address;
         }
         if (addressOverride != null) {
             packetAddress = addressOverride;
@@ -119,8 +111,8 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
         OmnipodPacket response = null;
         while(encodedMessage.length > 0) {
-            PacketType packetType = firstPacket? PacketType.Pdm : PacketType.Con;
-            OmnipodPacket packet = new OmnipodPacket(packetAddress, packetType,podState == null? packetNumber : podState.packetNumber, encodedMessage);
+            PacketType packetType = firstPacket? PacketType.PDM : PacketType.CON;
+            OmnipodPacket packet = new OmnipodPacket(packetAddress, packetType, podState == null? packetNumber : podState.packetNumber, encodedMessage);
             byte[] encodedMessageInPacket = packet.getEncodedMessage();
             //getting the data remaining to be sent
             encodedMessage = ByteUtil.substring(encodedMessage, encodedMessageInPacket.length, encodedMessage.length - encodedMessageInPacket.length);
@@ -128,22 +120,18 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
             try {
                 response = exchangePackets(packet);
             } catch(Exception ex) {
-                return null;
-                // FIXME
+                throw new OmnipodCommunicationException("Failed to exchange packets", ex);
             }
             //We actually ignore (ack) responses if it is not last packet to send
         }
         if (response == null) {
-            LOG.debug("Timeout on receive");
-            //FIXME: Log timeout
-            return null;
+            throw new OmnipodCommunicationException("Timeout on receive");
         }
 
-        if (response.getPacketType() == PacketType.Ack) {
-            LOG.warn("Received ack instead of real response");
-            //FIXME: we received ack instead of real response, something is wrong
-            incrementPacketNumber(1);
-            return null;
+
+        if (response.getPacketType() == PacketType.ACK) {
+            increasePacketNumber(1);
+            throw new OmnipodCommunicationException("Received ack instead of real response");
         }
 
         OmnipodMessage receivedMessage = null;
@@ -151,52 +139,45 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         while(receivedMessage == null) {
             receivedMessage = OmnipodMessage.TryDecode(receivedMessageData);
             if (receivedMessage == null) {
-                OmnipodPacket ackForCon = makeAckPacket(packetAddress, ackAddressOverride);
+                OmnipodPacket ackForCon = createAckPacket(packetAddress, ackAddressOverride);
                 try {
                     OmnipodPacket conPacket = exchangePackets(ackForCon, 3, 40);
-                    if (conPacket.getPacketType() != PacketType.Con) {
-                        LOG.debug("Received a non-con packet type:", conPacket.getPacketType());
-                        //FIXME: We should throw an error as we expect only continuation packets
-                        return null;
+                    if (conPacket.getPacketType() != PacketType.CON) {
+                        throw new OmnipodCommunicationException("Received a non-con packet type: "+ conPacket.getPacketType());
                     }
                     receivedMessageData = ByteUtil.concat(receivedMessageData, conPacket.getEncodedMessage());
                 } catch(RileyLinkCommunicationException ex) {
-                    // FIXME
-                    return null;
+                    throw new OmnipodCommunicationException("RileyLink communication failed", ex);
                 }
             }
         }
-        incrementMessageNumber(2);
+
+        increaseMessageNumber(2);
 
         ackUntilQuiet(packetAddress, ackAddressOverride);
 
         MessageBlock[] messageBlocks = receivedMessage.getMessageBlocks();
         if (messageBlocks.length == 0) {
-            LOG.debug("Not enough data");
-            //FIXME: We should throw an error of not enough data
-            return null;
+            throw new OmnipodCommunicationException("Not enough data");
         }
 
         MessageBlock block = messageBlocks[0];
-        if (block.getType() == MessageBlockType.ErrorResponse) {
+        if (block.getType() == MessageBlockType.ERROR_RESPONSE) {
             ErrorResponse error = (ErrorResponse)block;
-            if (error.getErrorResponseType() == ErrorResponseType.BadNonce) {
-                LOG.debug("Nonce out-of-sync");
-                //FIXME: Log that we have nonce out-of-sync
+            if (error.getErrorResponseType() == ErrorResponseType.BAD_NONCE) {
+                LOG.warn("Nonce out-of-sync");
+
                 if (podState != null) {
                     this.podState.resyncNonce(error.getNonceSearchKey(), this.podState.getCurrentNonce(), message.getSequenceNumber());
                 }
             }
-            //FIXME: we should log and throw the error
-            return null;
+            throw new OmnipodCommunicationException("Received an error response: "+ error.getErrorResponseType().name());
         }
 
-        T responseBlock = (T) block;
-        //FIXME: Log content here
-        return responseBlock;
+        return (T) block;
     }
 
-    private void incrementMessageNumber(int increment) {
+    private void increaseMessageNumber(int increment) {
         if (podState == null) {
             messageNumber = (messageNumber + increment) & 0b1111;
         } else {
@@ -204,7 +185,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         }
     }
 
-    private void incrementPacketNumber(int increment) {
+    private void increasePacketNumber(int increment) {
         if (podState == null) {
             packetNumber = (packetNumber + increment) & 0b11111;
         } else {
@@ -212,11 +193,11 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         }
     }
 
-    private OmnipodPacket makeAckPacket(Integer packetAddress, Integer messageAddress) {
-        int pktAddress = defaultAddress;
-        int msgAddress = defaultAddress;
+    private OmnipodPacket createAckPacket(Integer packetAddress, Integer messageAddress) {
+        int pktAddress = DEFAULT_ADDRESS;
+        int msgAddress = DEFAULT_ADDRESS;
         if (this.podState != null) {
-            pktAddress = msgAddress = podState.Address;
+            pktAddress = msgAddress = podState.address;
         }
         if (packetAddress != null) {
             pktAddress = packetAddress;
@@ -224,39 +205,39 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         if (messageAddress != null) {
             msgAddress = messageAddress;
         }
-        return new OmnipodPacket(pktAddress, PacketType.Ack, podState == null ? packetNumber : podState.packetNumber, ByteUtil.getBytesFromInt(msgAddress));
+        return new OmnipodPacket(pktAddress, PacketType.ACK, podState == null ? packetNumber : podState.packetNumber, ByteUtil.getBytesFromInt(msgAddress));
     }
 
     private void ackUntilQuiet(Integer packetAddress, Integer messageAddress) {
-        OmnipodPacket ack = makeAckPacket(packetAddress, messageAddress);
+        OmnipodPacket ack = createAckPacket(packetAddress, messageAddress);
         Boolean quiet = false;
         while(!quiet) {
             try {
                 OmnipodPacket response = sendAndListen(ack, 600, 5, 40, OmnipodPacket.class);
                 //FIXME: instead of this crappy core we should make a proper timeout handling (exception-based?)
-                if (response == null || (!response.isValid() && response.getPacketType() == PacketType.Invalid)) {
+                if (response == null || (!response.isValid() && response.getPacketType() == PacketType.INVALID)) {
                     quiet = true;
                 }
             } catch(Exception ex) {
-                // FIXME
+                LOG.warn("Caught exception while trying to ack until quiet: "+ ex.getMessage());
             }
         }
-        incrementPacketNumber(1);
+        increasePacketNumber(1);
     }
 
     private OmnipodPacket exchangePackets(OmnipodPacket packet) throws RileyLinkCommunicationException {
         return exchangePackets(packet, 0, 250,20000, 127);
     }
 
-    private OmnipodPacket exchangePackets(OmnipodPacket packet, int repeatCount, int preambleExtension_ms) throws RileyLinkCommunicationException {
-        return exchangePackets(packet, repeatCount, 250, 20000, preambleExtension_ms);
+    private OmnipodPacket exchangePackets(OmnipodPacket packet, int repeatCount, int preambleExtensionMilliseconds) throws RileyLinkCommunicationException {
+        return exchangePackets(packet, repeatCount, 250, 20000, preambleExtensionMilliseconds);
     }
 
-    private OmnipodPacket exchangePackets(OmnipodPacket packet, int repeatCount, int responseTimeout_ms, int exchangeTimeout_ms, int preambleExtension_ms) throws RileyLinkCommunicationException {
-        int radioRetriesCount = 20;
-        long timeoutTime = System.currentTimeMillis() + exchangeTimeout_ms;
+    private OmnipodPacket exchangePackets(OmnipodPacket packet, int repeatCount, int responseTimeoutMilliseconds, int exchangeTimeoutMilliseconds, int preambleExtensionMilliseconds) throws RileyLinkCommunicationException {
+        long timeoutTime = System.currentTimeMillis() + exchangeTimeoutMilliseconds;
+        
         while(System.currentTimeMillis() < timeoutTime) {
-            OmnipodPacket response = sendAndListen(packet, responseTimeout_ms, repeatCount, preambleExtension_ms, OmnipodPacket.class);
+            OmnipodPacket response = sendAndListen(packet, responseTimeoutMilliseconds, repeatCount, preambleExtensionMilliseconds, OmnipodPacket.class);
             if (response == null || !response.isValid()) {
                 continue;
             }
@@ -267,18 +248,16 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
                 continue;
             }
 
-            incrementPacketNumber(2);
+            increasePacketNumber(2);
             return response;
-
         }
-        //FIXME: throw timeout (no response) exception
-        return null;
+        throw new OmnipodCommunicationException("Timeout when trying to exchange packets");
     }
 
     public <T extends MessageBlock> T sendCommand(MessageBlock command) {
-        int msgAddress = defaultAddress;
+        int msgAddress = DEFAULT_ADDRESS;
         if (this.podState != null) {
-            msgAddress = podState.Address;
+            msgAddress = podState.address;
         }
         OmnipodMessage message = new OmnipodMessage(msgAddress, new MessageBlock[]{command}, podState == null ? messageNumber : podState.messageNumber);
         return exchangeMessages(message);
@@ -286,65 +265,49 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
     private int nonceValue() {
         if (this.podState == null) {
-            //FIXME: we should have a set of application-level meaningfull exceptions
-            throw new IllegalArgumentException("Getting nonce without active pod");
+            throw new OmnipodCommunicationException("Getting nonce without active pod");
         }
         return podState.getCurrentNonce();
     }
 
     private void advanceToNextNonce() {
         if (this.podState == null) {
-            //FIXME: we should have a set of application-level meaningfull exceptions
-            throw new IllegalArgumentException("Getting nonce without active pod");
+            throw new OmnipodCommunicationException("Getting nonce without active pod");
         }
         podState.advanceToNextNonce();
     }
 
-    public Object initializePod() {
-        if (SP.contains(OmniPodConst.Prefs.PodState)) {
+    public void initializePod() {
+        if (SP.contains(OmniPodConst.Prefs.POD_STATE)) {
             //FIXME: We should ask "are you sure?"
-            SP.remove(OmniPodConst.Prefs.PodState);
+            SP.remove(OmniPodConst.Prefs.POD_STATE);
         }
 
-        Random rnd = new Random();
-        int newAddress = rnd.nextInt();
-        this.packetNumber = 0x0A;
-        this.messageNumber = 0;
-        newAddress = 0x1f05e70b;
-        //LOG.debug("New address: " + ByteUtil.shortHexString());
-        newAddress = (newAddress & 0x001fffff) | 0x1f000000;
+        packetNumber = 0x0A;
+        messageNumber = 0;
+
+        int newAddress = 0x1f0b3557;
+
         AssignAddressCommand assignAddress = new AssignAddressCommand(newAddress);
-        OmnipodMessage assignAddressMessage = new OmnipodMessage(defaultAddress, new MessageBlock[] { assignAddress }, messageNumber);
+        OmnipodMessage assignAddressMessage = new OmnipodMessage(DEFAULT_ADDRESS, new MessageBlock[] { assignAddress }, messageNumber);
 
-        ConfigResponse config = exchangeMessages(assignAddressMessage, defaultAddress, newAddress);
-        if (config == null) {
-            LOG.debug("config is null (timeout or wrong answer)");
-            //FIXME: show communication timeout
-            // FIXME throw exception
-            return null;
+        VersionResponse configResponse = exchangeMessages(assignAddressMessage, DEFAULT_ADDRESS, newAddress);
+        if (configResponse == null) {
+            throw new OmnipodCommunicationException("config is null (timeout or wrong answer)");
         }
 
-        //DateTime activationDate = DateTime.now();
-        DateTime activationDate = new DateTime(2018,8,18,20,5);
+        DateTime activationDate = DateTime.now();
 
         //at this point for an unknown reason PDM starts counting messages from 0 again
         messageNumber = 0;
         ConfirmPairingCommand confirmPairing = new ConfirmPairingCommand(newAddress, activationDate,
-                config.lot, config.tid);
-        OmnipodMessage confirmPairingMessage = new OmnipodMessage(defaultAddress,
+                configResponse.lot, configResponse.tid);
+        OmnipodMessage confirmPairingMessage = new OmnipodMessage(DEFAULT_ADDRESS,
                 new MessageBlock[] { confirmPairing }, messageNumber);
-        ConfigResponse config2 = exchangeMessages(confirmPairingMessage, defaultAddress, newAddress);
-        if (config == null) {
-            LOG.debug("Second command timeout, that's bad");
-            // FIXME throw exception
-            return null;
-        }
+        VersionResponse config2 = exchangeMessages(confirmPairingMessage, DEFAULT_ADDRESS, newAddress);
 
-        if (config2.podProgressState != PodProgressState.PairingSuccess) {
-            //FIXME: Log invalid data (we should have received a paired-state response
-            LOG.error("Invalid pairing state");
-            // FIXME throw exception
-            return null;
+        if (config2.podProgressState != PodProgressState.PAIRING_SUCCESS) {
+            throw new OmnipodCommunicationException("Pairing failed, state: "+ config2.podProgressState.name());
         }
 
         this.podState = new PodState(newAddress, activationDate, config2.piVersion,
@@ -353,10 +316,10 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         packetNumber = messageNumber = null;
 
         ExpirationAdvisory expirationAdvisory =
-                new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.Reservoir, 50);
+                new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.RESERVOIR, 50);
         AlertConfiguration lweReservoir =
-                new AlertConfiguration(AlertType.LowReservoir,true,false,0,
-                expirationAdvisory, BeepRepeat.EveryMinuteFor3MinutesRepeatEvery60Minutes, BeepType.FourBipBeeps);
+                new AlertConfiguration(AlertType.LOW_RESERVOIR,true,false,0,
+                expirationAdvisory, BeepRepeat.EVERY_MINUTE_FOR_3_MINUTES_REPEAT_EVERY_60_MINUTES, BeepType.FOUR_BIP_BEEPS);
 
         int nonce = nonceValue();
 
@@ -364,10 +327,10 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         StatusResponse status = sendCommand(lowReservoirCommand);
         advanceToNextNonce();
 
-        ExpirationAdvisory insertionTimerExpirationAdvisory = new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.Timer, new Duration(5 * 60 * 1000));
+        ExpirationAdvisory insertionTimerExpirationAdvisory = new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.TIMER, new Duration(5 * 60 * 1000));
 
-        AlertConfiguration insertionTimer = new AlertConfiguration(AlertType.TimerLimit,true,false,
-                55, insertionTimerExpirationAdvisory, BeepRepeat.Every5Minutes, BeepType.FourBipBeeps);
+        AlertConfiguration insertionTimer = new AlertConfiguration(AlertType.TIMER_LIMIT,true,false,
+                55, insertionTimerExpirationAdvisory, BeepRepeat.EVERY_5_MINUTES, BeepType.FOUR_BIP_BEEPS);
 
         ConfigureAlertsCommand insertionTimerCommand = new ConfigureAlertsCommand(nonceValue(), new AlertConfiguration[] { insertionTimer });
         status = sendCommand(insertionTimerCommand);
@@ -382,24 +345,20 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         advanceToNextNonce();
 
         Gson gson = Utils.gsonDateTime();
-        String s = gson.toJson(podState);
-        SP.putString(OmniPodConst.Prefs.PodState, s);
 
-        // FIXME return what?
-        return "OK";
+        SP.putString(OmniPodConst.Prefs.POD_STATE, gson.toJson(podState));
     }
 
     public Object finishPrime() {
         if (this.podState == null) {
-            String serialized = "{\"ActivatedAt\":\"2018-08-18T20:05:00.000Z\",\"Address\":520480523,\"Lot\":43687,\"PiVersion\":{\"major\":2,\"minor\":7,\"patch\":0},\"PmVersion\":{\"major\":2,\"minor\":7,\"patch\":0},\"Tid\":630145,\"nonceState\":{\"index\":3,\"table\":[79745181,413876894,1799221675,-381140322,1859143840,497915028,-1194513883,1557972065,1353375686,-736718945,541733452,-833859995,1587621096,-543494224,426786215,-1655021558,-1174888418,-1772703871,0,0,0]}}";
-            Gson gson = Utils.gsonDateTime();
-            this.podState = gson.fromJson(serialized, PodState.class);
+            throw new IllegalStateException("Pod state cannot be null");
         }
 
-        ExpirationAdvisory expirationAdvisory = new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.Timer, new Duration(70 * 60 * 60 * 1000 + 58 * 60 * 1000));
 
-        AlertConfiguration alert = new AlertConfiguration(AlertType.ExpirationAdvisory,true,false,0, expirationAdvisory,
-                BeepRepeat.EveryMinuteFor3MinutesRepeatEvery15Minutes, BeepType.FourBipBeeps);
+        ExpirationAdvisory expirationAdvisory = new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.TIMER, new Duration(70 * 60 * 60 * 1000 + 58 * 60 * 1000));
+
+        AlertConfiguration alert = new AlertConfiguration(AlertType.EXPIRATION_ADVISORY,true,false,0, expirationAdvisory,
+                BeepRepeat.EVERY_MINUTE_FOR_3_MINUTES_REPEAT_EVERY_15_MINUTES, BeepType.FOUR_BIP_BEEPS);
 
         ConfigureAlertsCommand alertCommand = new ConfigureAlertsCommand(nonceValue(), new AlertConfiguration[] { alert });
 
@@ -442,7 +401,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     public void setBasalSchedule(BasalSchedule schedule, boolean confidenceReminder, Duration scheduleOffset, Duration programReminderInterval) {
         SetInsulinScheduleCommand setBasal = new SetInsulinScheduleCommand(nonceValue(), schedule, scheduleOffset);
         //BasalScheduleExtraCommand extraCommand = new BasalScheduleExtraCommand(confidenceReminder, programReminderInterval,);
-        //OmnipodMessage basalMessage = new OmnipodMessage(podState.Address, new MessageBlock[]{setBasal, extraCommand}, podState.messageNumber);
-        //StatusResponse status = exchangeMessages(basalMessage);
+        //OmnipodMessage basalMessage = new OmnipodMessage(podState.address, new MessageBlock[]{setBasal, extraCommand}, podState.messageNumber);
+        //STATUS_RESPONSE status = exchangeMessages(basalMessage);
     }
 }

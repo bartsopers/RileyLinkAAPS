@@ -2,11 +2,11 @@ package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
 // https://github.com/openaps/openomni/wiki/Command-1D-Status-response
 public enum DeliveryType {
-    None ( 0),
-    Basal ( 1),
-    TempBasal ( 2),
-    Bolus ( 4),
-    ExtendedBolus ( 8);
+    NONE( 0),
+    BASAL ( 1),
+    TEMP_BASAL ( 2),
+    BOLUS ( 4),
+    EXTENDED_BOLUS( 8);
 	
     byte value;
 

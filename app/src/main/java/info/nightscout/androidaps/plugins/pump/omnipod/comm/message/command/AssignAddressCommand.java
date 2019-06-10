@@ -15,7 +15,7 @@ public class AssignAddressCommand extends MessageBlock {
 
     @Override
     public MessageBlockType getType() {
-        return MessageBlockType.AssignAddress;
+        return MessageBlockType.ASSIGN_ADDRESS;
     }
 
     public AssignAddressCommand(int address) {

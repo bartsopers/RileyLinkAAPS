@@ -15,7 +15,7 @@ public class CancelDeliveryCommand extends MessageBlock {
 
     @Override
     public MessageBlockType getType() {
-        return MessageBlockType.CancelDelivery;
+        return MessageBlockType.CANCEL_DELIVERY;
     }
 
     public CancelDeliveryCommand(int nonce, BeepType beepType, boolean cancelBolus,

@@ -9,7 +9,7 @@ public class DeactivatePodCommand extends MessageBlock {
 
     @Override
     public MessageBlockType getType() {
-        return MessageBlockType.DeactivatePod;
+        return MessageBlockType.DEACTIVATE_POD;
     }
 
     public DeactivatePodCommand(int nonce) {

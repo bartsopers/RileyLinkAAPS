@@ -2,29 +2,30 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message;
 
 import org.apache.commons.lang3.NotImplementedException;
 
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.ConfigResponse;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.PodInfoResponse;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.VersionResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.ErrorResponse;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusError;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
 
 
 public enum MessageBlockType {
-    ConfigResponse(0x01),
-    StatusError(0x02),
-    ConfirmPairing(0x03),
-    ErrorResponse(0x06),
-    AssignAddress(0x07),
-    GetStatus(0x0e),
-    AcknowledgeAlerts(0x11),
-    BasalScheduleExtra(0x13),
-    TempBasalExtra(0x16),
-    BolusExtra(0x17),
-    ConfigureAlerts(0x19),
-    SetInsulinSchedule(0x1a),
-    DeactivatePod(0x1c),
-    StatusResponse(0x1d),
-    CancelDelivery(0x1f),
-    Invalid(0);
+    VERSION_RESPONSE(0x01),
+    POD_INFO_RESPONSE(0x02),
+    SETUP_POD(0x03),
+    ERROR_RESPONSE(0x06),
+    ASSIGN_ADDRESS(0x07),
+    FAULT_CONFIG(0x08),
+    GET_STATUS(0x0e),
+    ACKNOWLEDGE_ALERT(0x11),
+    BASAL_SCHEDULE_EXTRA(0x13),
+    TEMP_BASAL_EXTRA(0x16),
+    BOLUS_EXTRA(0x17),
+    CONFIGURE_ALERTS(0x19),
+    SET_INSULIN_SCHEDULE(0x1a),
+    DEACTIVATE_POD(0x1c),
+    STATUS_RESPONSE(0x1d),
+    BEEP_CONFIG(0x1e),
+    CANCEL_DELIVERY(0x1f);
 
     byte value;
 
@@ -47,36 +48,36 @@ public enum MessageBlockType {
 
     public MessageBlock decode(byte[] encodedData) {
         switch (this) {
-            case ConfigResponse:
-                return new ConfigResponse(encodedData);
-            case ErrorResponse:
+            case VERSION_RESPONSE:
+                return new VersionResponse(encodedData);
+            case ERROR_RESPONSE:
                 return new ErrorResponse(encodedData);
-            case StatusError:
-                return new StatusError(encodedData);
-            case StatusResponse:
+            case POD_INFO_RESPONSE:
+                return new PodInfoResponse(encodedData);
+            case STATUS_RESPONSE:
                 return new StatusResponse(encodedData);
-//            case ConfirmPairing:
+//            case SETUP_POD:
 //                break;
-//            case AssignAddress:
+//            case ASSIGN_ADDRESS:
 //                break;
-//            case GetStatus:
+//            case GET_STATUS:
 //                break;
-//            case BasalScheduleExtra:
+//            case BASAL_SCHEDULE_EXTRA:
 //                break;
-//            case TempBasalExtra:
+//            case TEMP_BASAL_EXTRA:
 //                break;
-//            case BolusExtra:
+//            case BOLUS_EXTRA:
 //                break;
-//            case ConfigureAlerts:
+//            case CONFIGURE_ALERTS:
 //                break;
-//            case SetInsulinSchedule:
+//            case SET_INSULIN_SCHEDULE:
 //                break;
-//            case DeactivatePod:
+//            case DEACTIVATE_POD:
 //                break;
-//            case CancelDelivery:
+//            case CANCEL_DELIVERY:
 //                break;
             default:
-                throw new NotImplementedException(this.toString());
+                throw new NotImplementedException(this.name());
         }
     }
 }

@@ -10,8 +10,9 @@ public class ExpirationAdvisory {
     public double reservoirLevel;
 
     public enum ExpirationType {
-        Reservoir(4),
-        Timer(0);
+        RESERVOIR(4),
+        TIMER(0);
+        
         byte value;
 
         ExpirationType(int value) {
@@ -24,7 +25,8 @@ public class ExpirationAdvisory {
 
     }
     public ExpirationAdvisory(ExpirationType type, double reservoirLevel) {
-        if (type != ExpirationType.Reservoir) {
+
+        if (type != ExpirationType.RESERVOIR) {
             throw new IllegalArgumentException("Wrong mix of arguments");
         }
         this.expirationType = type;
@@ -32,7 +34,8 @@ public class ExpirationAdvisory {
 
     }
     public ExpirationAdvisory(ExpirationType type, Duration timeToExpire) {
-        if (type != ExpirationType.Timer) {
+
+        if (type != ExpirationType.TIMER) {
             throw new IllegalArgumentException("Wrong mix of arguments");
         }
         this.expirationType = type;

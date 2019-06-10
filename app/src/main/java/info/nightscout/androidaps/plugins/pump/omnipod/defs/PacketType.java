@@ -1,11 +1,11 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
 public enum PacketType {
-    Invalid(0),
-    Pod(0b111),
-    Pdm(0b101),
-    Con(0b100),
-    Ack(0b010);
+    INVALID(0),
+    POD(0b111),
+    PDM(0b101),
+    CON(0b100),
+    ACK(0b010);
 
     byte value;
 
@@ -24,11 +24,11 @@ public enum PacketType {
 
     public int maxBodyLength() {
         switch(this) {
-            case Ack:
+            case ACK:
                 return 4;
-            case Con:
-            case Pdm:
-            case Pod:
+            case CON:
+            case PDM:
+            case POD:
                 return 31;
             default:
                 return 0;

@@ -2,13 +2,13 @@ package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
 // https://github.com/openaps/openomni/wiki/Command-19-Configure-Alerts
 public enum AlertType {
-    AutoOff(0),
-    EndOfService(2),
-    ExpirationAdvisory(3),
-    LowReservoir(4),
-    SuspendInProgress(5),
-    SuspendEnded(6),
-    TimerLimit(7);
+    AUTO_OFF(0),
+    END_OF_SERVICE(2),
+    EXPIRATION_ADVISORY(3),
+    LOW_RESERVOIR(4),
+    SUSPEND_IN_PROGRESS(5),
+    SUSPEND_ENDED(6),
+    TIMER_LIMIT(7);
 
     byte value;
 

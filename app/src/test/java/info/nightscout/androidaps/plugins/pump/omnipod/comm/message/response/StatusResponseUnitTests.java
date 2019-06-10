@@ -20,12 +20,12 @@ public class StatusResponseUnitTests {
     public void StatusResponse_EnumsCorrect() throws Exception {
         byte[] bytes = ByteUtil.fromHexString("00430000000038800000");
         StatusResponse statusResponse = new StatusResponse(bytes);
-        assertEquals(DeliveryStatus.Purging, statusResponse.deliveryStatus);
-        assertEquals(PodProgressState.PairingSuccess, statusResponse.podProgressState);
-        assertTrue(statusResponse.alarms.getFlags().contains(PodAlarm.PodAlarmType.Suspended));
-        assertTrue(statusResponse.alarms.getFlags().contains(PodAlarm.PodAlarmType.SuspendExpired));
-        assertTrue(statusResponse.alarms.getFlags().contains(PodAlarm.PodAlarmType.BelowFiftyUnits));
-        assertTrue(statusResponse.alarms.getFlags().contains(PodAlarm.PodAlarmType.UnknownBit1));
+        assertEquals(DeliveryStatus.PURGING, statusResponse.deliveryStatus);
+        assertEquals(PodProgressState.PAIRING_SUCCESS, statusResponse.podProgressState);
+        assertTrue(statusResponse.alarms.getFlags().contains(PodAlarm.PodAlarmType.SUSPENDED));
+        assertTrue(statusResponse.alarms.getFlags().contains(PodAlarm.PodAlarmType.SUSPEND_EXPIRED));
+        assertTrue(statusResponse.alarms.getFlags().contains(PodAlarm.PodAlarmType.BELOW_FIFTY_UNITS));
+        assertTrue(statusResponse.alarms.getFlags().contains(PodAlarm.PodAlarmType.UNKNOWN_BIT_1));
     }
 
     @Test
@@ -33,8 +33,9 @@ public class StatusResponseUnitTests {
         byte[] bytes = ByteUtil.fromHexString("1d180258f80000146fff");
         StatusResponse statusResponse = new StatusResponse(bytes);
 
-        assertEquals(DeliveryStatus.BasalRunning, statusResponse.deliveryStatus);
-        assertEquals(PodProgressState.AboveFiftyUnits, statusResponse.podProgressState);
+
+        assertEquals(DeliveryStatus.BASAL_RUNNING, statusResponse.deliveryStatus);
+        assertEquals(PodProgressState.RUNNING_ABOVE_FIFTY_UNITS, statusResponse.podProgressState);
         assertEquals(50, statusResponse.reservoirLevel, 0);
         assertEquals(Duration.standardMinutes(1307).getMillis(), statusResponse.activeTime.getMillis());
         assertEquals(60.05, statusResponse.insulin, 0.05);

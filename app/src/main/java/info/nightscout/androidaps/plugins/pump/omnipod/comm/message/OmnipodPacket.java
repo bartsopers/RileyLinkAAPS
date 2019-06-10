@@ -16,7 +16,7 @@ public class OmnipodPacket implements RLMessage {
     private static final Logger LOG = LoggerFactory.getLogger(OmnipodCommunicationManager.class);
 
     private int packetAddress = 0;
-    private PacketType packetType = PacketType.Invalid;
+    private PacketType packetType = PacketType.INVALID;
     private int sequenceNumber = 0;
     private byte[] encodedMessage = null;
     private Boolean _isValid = false;
@@ -34,7 +34,7 @@ public class OmnipodPacket implements RLMessage {
             return;
         }
         this.sequenceNumber = (encoded[4] & 0b11111);
-//        if (packetType == PacketType.Ack) {
+//        if (packetType == PacketType.ACK) {
 //            _isValid = true;
 //
 //        }

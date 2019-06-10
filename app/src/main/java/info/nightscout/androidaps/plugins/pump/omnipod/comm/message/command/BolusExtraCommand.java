@@ -28,6 +28,6 @@ public class BolusExtraCommand extends MessageBlock {
 
     @Override
     public MessageBlockType getType() {
-        return MessageBlockType.BolusExtra;
+        return MessageBlockType.BOLUS_EXTRA;
     }
 }

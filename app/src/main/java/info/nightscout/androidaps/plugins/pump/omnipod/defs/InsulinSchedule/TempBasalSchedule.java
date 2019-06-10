@@ -9,12 +9,12 @@ public class TempBasalSchedule extends DeliverySchedule implements IRawRepresent
     @Override
     public byte[] getRawData() {
         byte[] rawData = new byte[0];
-        throw new NotImplementedException("TempBasalSchedule.getRawData");
+        throw new NotImplementedException("TEMP_BASAL_SCHEDULE.getRawData");
     }
 
     @Override
     public InsulinScheduleType getType() {
-        return InsulinScheduleType.TempBasalSchedule;
+        return InsulinScheduleType.TEMP_BASAL_SCHEDULE;
     }
 
     @Override

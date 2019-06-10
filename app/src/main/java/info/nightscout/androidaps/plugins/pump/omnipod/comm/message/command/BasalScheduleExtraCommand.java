@@ -38,6 +38,6 @@ public class BasalScheduleExtraCommand extends MessageBlock {
 
     @Override
     public MessageBlockType getType() {
-        return null;
+        return MessageBlockType.BASAL_SCHEDULE_EXTRA;
     }
 }

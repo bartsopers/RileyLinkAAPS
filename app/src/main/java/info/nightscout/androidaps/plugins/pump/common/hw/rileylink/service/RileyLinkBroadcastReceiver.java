@@ -198,7 +198,7 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
         } else if (action.equals(RileyLinkConst.Intents.RileyLinkNewAddressSet)) {
             String RileylinkBLEAddress = SP.getString(RileyLinkConst.Prefs.RileyLinkAddress, "");
             if (RileylinkBLEAddress.equals("")) {
-                LOG.error("No Rileylink BLE Address saved in app");
+                LOG.error("No Rileylink BLE address saved in app");
             } else {
                 // showBusy("Configuring Service", 50);
                 // rileyLinkBLE.findRileyLink(RileylinkBLEAddress);

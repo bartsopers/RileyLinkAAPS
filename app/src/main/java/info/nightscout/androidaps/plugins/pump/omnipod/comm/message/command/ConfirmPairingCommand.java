@@ -16,7 +16,7 @@ public class ConfirmPairingCommand extends MessageBlock {
 
     @Override
     public MessageBlockType getType() {
-        return MessageBlockType.ConfirmPairing;
+        return MessageBlockType.SETUP_POD;
     }
     //FIXME: We should take care of timezones
     public ConfirmPairingCommand(int address, DateTime date, int lot, int tid) {

@@ -50,15 +50,10 @@ import com.gxwtech.roundtrip2.ServiceData.ReadPumpClockResult;
 import com.gxwtech.roundtrip2.ServiceMessageViewActivity.ServiceMessageViewListActivity;
 import com.gxwtech.roundtrip2.util.tools;
 
-import info.nightscout.androidaps.interfaces.PumpDescription;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceNotification;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
-import info.nightscout.androidaps.plugins.pump.medtronic.driver.MedtronicPumpStatus;
-import info.nightscout.androidaps.plugins.pump.medtronic.service.RileyLinkMedtronicService;
-import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicConst;
-import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.service.RileyLinkOmnipodService;
 import info.nightscout.androidaps.utils.SP;
 
@@ -216,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
                             String RileylinkBLEAddress = SP.getString(RileyLinkConst.Prefs.RileyLinkAddress, "");
                             if (RileylinkBLEAddress.equals("")) {
                                 // TODO: 11/07/2016 @TIM UI message for user
-                                Log.e(TAG, "No Rileylink BLE Address saved in app");
+                                Log.e(TAG, "No Rileylink BLE address saved in app");
                             } else {
                                 showBusy("Configuring Service", 50);
                                 MainApp.getServiceClientConnection().setThisRileylink(RileylinkBLEAddress);
@@ -231,7 +226,9 @@ public class MainActivity extends AppCompatActivity {
 
                         case RT2Const.local.INTENT_NEW_pumpIDKey:
                             MainApp.getServiceClientConnection().sendPUMP_useThisDevice(
-                                SP.getString(MedtronicConst.Prefs.PumpSerial, ""));
+                                //SP.getString(MedtronicConst.Prefs.PumpSerial, ""));
+                                    // FIXME
+                                    "");
                             break;
                         case RT2Const.local.INTENT_historyPageViewerReady:
                             Intent sendHistoryIntent = new Intent(RT2Const.local.INTENT_historyPageBundleIncoming);

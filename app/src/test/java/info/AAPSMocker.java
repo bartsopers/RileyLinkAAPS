@@ -11,7 +11,7 @@ import org.powermock.api.mockito.PowerMockito;
 
 import java.util.Locale;
 
-import info.nightscout.utils.SP;
+import info.nightscout.androidaps.utils.SP;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -64,7 +64,7 @@ public class AAPSMocker {
 //        when(MainApp.gs(R.string.delta)).thenReturn("Delta");
 //        when(MainApp.gs(R.string.short_avgdelta)).thenReturn("Short avg. delta");
 //        when(MainApp.gs(R.string.long_avgdelta)).thenReturn("Long avg. delta");
-//        when(MainApp.gs(R.string.zerovalueinprofile)).thenReturn("Invalid profile: %s");
+//        when(MainApp.gs(R.string.zerovalueinprofile)).thenReturn("INVALID profile: %s");
 //        when(MainApp.gs(R.string.success)).thenReturn("Success");
 //        when(MainApp.gs(R.string.enacted)).thenReturn("Enacted");
 //        when(MainApp.gs(R.string.comment)).thenReturn("Comment");

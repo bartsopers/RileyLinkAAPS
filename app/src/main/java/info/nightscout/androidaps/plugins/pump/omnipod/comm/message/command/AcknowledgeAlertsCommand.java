@@ -14,7 +14,7 @@ public class AcknowledgeAlertsCommand extends MessageBlock {
 
     @Override
     public MessageBlockType getType() {
-        return MessageBlockType.AcknowledgeAlerts;
+        return MessageBlockType.ACKNOWLEDGE_ALERT;
     }
 
     public AcknowledgeAlertsCommand(int nonce, Iterable<AlertType> alertTypes) {

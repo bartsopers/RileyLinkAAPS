@@ -6,7 +6,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressState;
 
 // https://github.com/openaps/openomni/wiki/Command-01-Version-response
-public class ConfigResponse extends MessageBlock {
+public class VersionResponse extends MessageBlock {
     public PodProgressState podProgressState;
     public FirmwareVersion pmVersion;
     public FirmwareVersion piVersion;
@@ -16,7 +16,7 @@ public class ConfigResponse extends MessageBlock {
     public Integer gain;
     public Integer rssi;
 
-    public ConfigResponse(byte[] encodedData) {
+    public VersionResponse(byte[] encodedData) {
         int length = encodedData[1] + 2;
         switch (length) {
             case 0x17:
@@ -52,7 +52,7 @@ public class ConfigResponse extends MessageBlock {
 
     @Override
     public MessageBlockType getType() {
-        return MessageBlockType.ConfigResponse;
+        return MessageBlockType.VERSION_RESPONSE;
     }
 
 }

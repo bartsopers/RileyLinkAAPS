@@ -32,6 +32,6 @@ public class BasalScheduleCommandPart extends DeliverySchedule implements IRawRe
 
     @Override
     public InsulinScheduleType getType() {
-        return InsulinScheduleType.BasalSchedule;
+        return InsulinScheduleType.BASAL_SCHEDULE;
     }
 }

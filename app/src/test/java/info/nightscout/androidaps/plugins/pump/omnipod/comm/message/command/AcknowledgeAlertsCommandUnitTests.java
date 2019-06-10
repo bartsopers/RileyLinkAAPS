@@ -15,11 +15,11 @@ public class AcknowledgeAlertsCommandUnitTests {
     @Test
     public void Constructor_BytesCorrect() throws Exception {
 
-        List<AlertType> alertTypes = Arrays.asList(AlertType.AutoOff, AlertType.SuspendInProgress);
+        List<AlertType> alertTypes = Arrays.asList(AlertType.AUTO_OFF, AlertType.SUSPEND_IN_PROGRESS);
         AcknowledgeAlertsCommand acknowledgeAlertsCommand = new AcknowledgeAlertsCommand(0x10203040, alertTypes);
         byte[] rawData = acknowledgeAlertsCommand.getRawData();
         assertArrayEquals(new byte[] {
-                MessageBlockType.AcknowledgeAlerts.getValue(),
+                MessageBlockType.ACKNOWLEDGE_ALERT.getValue(),
                 5, // length
                 (byte)0x10, (byte)0x20, (byte)0x30, (byte)0x40, // nonce
                 (byte)0x21 // alerts (bits 5 and 0)
@@ -28,10 +28,10 @@ public class AcknowledgeAlertsCommandUnitTests {
 
     @Test
     public void ConstructorSingleAlert_BytesCorrect() throws Exception {
-        AcknowledgeAlertsCommand acknowledgeAlertsCommand = new AcknowledgeAlertsCommand(0x10203040, AlertType.SuspendInProgress);
+        AcknowledgeAlertsCommand acknowledgeAlertsCommand = new AcknowledgeAlertsCommand(0x10203040, AlertType.SUSPEND_IN_PROGRESS);
         byte[] rawData = acknowledgeAlertsCommand.getRawData();
         assertArrayEquals(new byte[] {
-                MessageBlockType.AcknowledgeAlerts.getValue(),
+                MessageBlockType.ACKNOWLEDGE_ALERT.getValue(),
                 5, // length
                 (byte)0x10, (byte)0x20, (byte)0x30, (byte)0x40, // nonce
                 (byte)0x20 // alerts (bit 5)

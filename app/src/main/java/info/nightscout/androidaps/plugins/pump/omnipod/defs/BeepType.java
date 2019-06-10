@@ -2,15 +2,15 @@ package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
 // https://github.com/openaps/openomni/wiki/Command-19-Configure-Alerts
 public enum BeepType {
-    None (0),
-    FourBeeps (1),
-    FourBipBeeps (2),
-    TwoBips (3),
-    OneBeep (4),
-    ThreeBeeps (5),
-    OneLongBeep (6),
-    SixBips (7),
-    TwoLongBeeps (8);
+    NONE(0),
+    FOUR_BEEPS(1),
+    FOUR_BIP_BEEPS(2),
+    TWO_BIPS(3),
+    ONE_BEEP(4),
+    THREE_BEEPS(5),
+    ONE_LONG_BEEP(6),
+    SIX_BIPS(7),
+    TWO_LONG_BEEPS(8);
 
     byte value;
 

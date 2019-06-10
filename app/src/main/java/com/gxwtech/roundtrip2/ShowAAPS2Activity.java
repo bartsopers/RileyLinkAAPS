@@ -580,7 +580,10 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
                 if (returnData == null) {
                     data = null;
-                    errorCode = MedtronicCommunicationManager.getInstance().getErrorResponse();
+
+                    // TODO
+                    //errorCode = OmnipodCommunicationManager.getInstance().getErrorResponse();
+                    errorCode = "TODO";
                     RileyLinkUtil.sendBroadcastMessage("RefreshData.ErrorCode");
                 } else {
                     data = returnData;
