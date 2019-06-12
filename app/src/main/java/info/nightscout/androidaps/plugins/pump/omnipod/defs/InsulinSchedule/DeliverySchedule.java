@@ -6,11 +6,5 @@ public abstract class DeliverySchedule implements IRawRepresentable {
 
     public abstract InsulinScheduleType getType();
 
-    public int checksum() {
-        int checksum = 0;
-        for(byte b : getRawData()) {
-            checksum += (0xFF & b);
-        }
-        return checksum;
-    }
+    public abstract int getChecksum();
 }

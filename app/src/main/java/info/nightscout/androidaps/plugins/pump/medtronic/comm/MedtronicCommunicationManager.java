@@ -471,7 +471,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
             }
 
             if (!rawHistoryPage.isChecksumOK()) {
-                LOG.error("getPumpHistory: checksum is wrong");
+                LOG.error("getPumpHistory: getChecksum is wrong");
                 doneWithError = true;
             }
 

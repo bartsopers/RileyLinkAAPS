@@ -1,27 +1,26 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.comm.message;
 
+import org.joda.time.Duration;
+
 import info.nightscout.androidaps.Constants;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationManager;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepRepeat;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.ExpirationAdvisory;
-import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniPodConst;
 
 public class AlertConfiguration{
     private AlertType alertType;
     private boolean audible;
     private boolean autoOffModifier;
-    private int duration;
+    private Duration duration;
     private ExpirationAdvisory expirationType;
     private BeepRepeat beepRepeat;
     private BeepType beepType;
 
     public AlertConfiguration(AlertType alertType, boolean audible, boolean autoOffModifier,
-                              int duration, ExpirationAdvisory expirationType,
-                              BeepRepeat beepRepeat, BeepType beepType) {
+                              Duration duration, ExpirationAdvisory expirationType,
+                              BeepType beepType, BeepRepeat beepRepeat) {
         this.alertType = alertType;
         this.audible = audible;
         this.autoOffModifier = autoOffModifier;
@@ -32,35 +31,37 @@ public class AlertConfiguration{
     }
 
     public byte[] getRawData() {
-        byte[] encodedData = new byte[6];
-
         int firstByte = (alertType.getValue() << 4);
-        firstByte |= expirationType.expirationType.getValue();
         firstByte += audible ? (1 << 3) : 0;
 
-        byte[] valueBuffer = ByteUtil.getBytesFromInt(duration);
+        if(expirationType.expirationType == ExpirationAdvisory.ExpirationType.RESERVOIR) {
+            firstByte += 1 << 2;
+        }
+        if(autoOffModifier) {
+            firstByte += 1 << 1;
+        }
 
-        byte durationHigh = (byte) (valueBuffer[2] & (byte)1);
-        firstByte |= durationHigh;
+        firstByte += ((int)duration.getStandardMinutes() >> 8) & 0x1;
 
-        encodedData[0] = (byte) (firstByte & 0xFF);
-        encodedData[1] = valueBuffer[3];
+        byte[] encodedData = new byte[] {
+                (byte)firstByte,
+                (byte)(duration.getStandardMinutes() & 0xff)
+        };
 
         switch (expirationType.expirationType) {
             case RESERVOIR:
-                int ticks = (int)(expirationType.reservoirLevel / Constants.PodPulseSize / 2);
-                valueBuffer = ByteUtil.getBytesFromInt(ticks);
+                int ticks = (int)(expirationType.reservoirLevel / Constants.POD_PULSE_SIZE / 2);
+                encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt16(ticks));
                 break;
             case TIMER:
                 int duration = (int)expirationType.timeToExpire.getStandardMinutes();
-                valueBuffer = ByteUtil.getBytesFromInt(duration);
+                encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt16(duration));
                 break;
         }
 
-        encodedData[2] = valueBuffer[2];
-        encodedData[3] = valueBuffer[3];
-        encodedData[4] = beepRepeat.getValue();
-        encodedData[5] = beepType.getValue();
+        encodedData = ByteUtil.concat(encodedData, beepType.getValue());
+        encodedData = ByteUtil.concat(encodedData, beepRepeat.getValue());
+
         return encodedData;
     }
 }

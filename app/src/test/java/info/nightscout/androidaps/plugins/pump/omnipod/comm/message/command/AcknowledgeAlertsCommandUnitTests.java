@@ -13,7 +13,7 @@ import static org.junit.Assert.assertArrayEquals;
 public class AcknowledgeAlertsCommandUnitTests {
 
     @Test
-    public void Constructor_BytesCorrect() throws Exception {
+    public void Constructor_BytesCorrect() {
 
         List<AlertType> alertTypes = Arrays.asList(AlertType.AUTO_OFF, AlertType.SUSPEND_IN_PROGRESS);
         AcknowledgeAlertsCommand acknowledgeAlertsCommand = new AcknowledgeAlertsCommand(0x10203040, alertTypes);
@@ -27,7 +27,7 @@ public class AcknowledgeAlertsCommandUnitTests {
     }
 
     @Test
-    public void ConstructorSingleAlert_BytesCorrect() throws Exception {
+    public void ConstructorSingleAlert_BytesCorrect() {
         AcknowledgeAlertsCommand acknowledgeAlertsCommand = new AcknowledgeAlertsCommand(0x10203040, AlertType.SUSPEND_IN_PROGRESS);
         byte[] rawData = acknowledgeAlertsCommand.getRawData();
         assertArrayEquals(new byte[] {

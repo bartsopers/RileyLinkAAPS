@@ -13,7 +13,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniCRC;
  * Created by andy on 6/1/18.
  */
 public class OmnipodPacket implements RLMessage {
-    private static final Logger LOG = LoggerFactory.getLogger(OmnipodCommunicationManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OmnipodPacket.class);
 
     private int packetAddress = 0;
     private PacketType packetType = PacketType.INVALID;
@@ -23,15 +23,13 @@ public class OmnipodPacket implements RLMessage {
 
     public OmnipodPacket(byte[] encoded) {
         if (encoded.length < 7) {
-            //FIXME: Throw not enough data exception
-            return;
+            throw new OmnipodEncodingException("Not enough data");
         }
         this.packetAddress = ByteUtil.toInt(new Integer(encoded[0]), new Integer(encoded[1]),
                 new Integer(encoded[2]), new Integer(encoded[3]), ByteUtil.BitConversion.BIG_ENDIAN);
         this.packetType = PacketType.fromByte((byte)(((int)encoded[4] & 0xFF)>> 5));
         if (this.packetType == null) {
-            //FIXME: Log invalid packet type
-            return;
+            throw new OmnipodEncodingException("Invalid packet type");
         }
         this.sequenceNumber = (encoded[4] & 0b11111);
 //        if (packetType == PacketType.ACK) {
@@ -40,9 +38,7 @@ public class OmnipodPacket implements RLMessage {
 //        }
         int crc = OmniCRC.crc8(ByteUtil.substring(encoded,0, encoded.length - 1));
         if (crc != encoded[encoded.length - 1]) {
-            LOG.error("OmnipodPacket CRC mismatch");
-            //FIXME: Log CRC mismatch
-            return;
+            throw new OmnipodEncodingException("CRC mismatch");
         }
         this.encodedMessage = ByteUtil.substring(encoded, 5, encoded.length - 1 - 5);
         _isValid = true;

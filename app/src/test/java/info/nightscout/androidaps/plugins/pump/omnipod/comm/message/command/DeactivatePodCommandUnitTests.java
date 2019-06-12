@@ -7,7 +7,7 @@ import static org.junit.Assert.assertArrayEquals;
 public class DeactivatePodCommandUnitTests {
 
     @Test
-    public void Constructor_BytesCorrect() throws Exception {
+    public void Constructor_BytesCorrect() {
         DeactivatePodCommand deactivatePodCommand = new DeactivatePodCommand(0x10203040);
         byte[] rawData = deactivatePodCommand.getRawData();
         assertArrayEquals(new byte[] {

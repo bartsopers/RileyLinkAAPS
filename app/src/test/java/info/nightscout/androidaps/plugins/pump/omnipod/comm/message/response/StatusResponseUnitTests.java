@@ -50,9 +50,9 @@ public class StatusResponseUnitTests {
         StatusResponse statusResponse = new StatusResponse(bytes);
 
         assertEquals(Duration.standardMinutes(8191).getMillis(), statusResponse.activeTime.getMillis());
-        assertEquals(Constants.PodPulseSize * 1023, statusResponse.insulinNotDelivered, 0);
+        assertEquals(Constants.POD_PULSE_SIZE * 1023, statusResponse.insulinNotDelivered, 0);
         assertEquals(50, statusResponse.reservoirLevel, 0);
-        assertEquals(Constants.PodPulseSize * 8191, statusResponse.insulin, 0.05);
+        assertEquals(Constants.POD_PULSE_SIZE * 8191, statusResponse.insulin, 0.05);
         assertEquals(15, statusResponse.podMessageCounter);
     }
 }

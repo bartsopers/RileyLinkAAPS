@@ -24,9 +24,13 @@ public class BasalTableEntry implements IRawRepresentable {
         return rawData;
     }
 
-    public int checksum() {
+    public int getChecksum() {
         int checksumPerSegment = (pulses & 0xff) + (pulses >> 8);
         return (checksumPerSegment * segments + (alternateSegmentPulse ? segments / 2 : 0));
+    }
+
+    public int getSegments() {
+        return this.segments;
     }
 
 }

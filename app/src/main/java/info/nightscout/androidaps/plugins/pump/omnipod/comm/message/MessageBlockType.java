@@ -56,26 +56,6 @@ public enum MessageBlockType {
                 return new PodInfoResponse(encodedData);
             case STATUS_RESPONSE:
                 return new StatusResponse(encodedData);
-//            case SETUP_POD:
-//                break;
-//            case ASSIGN_ADDRESS:
-//                break;
-//            case GET_STATUS:
-//                break;
-//            case BASAL_SCHEDULE_EXTRA:
-//                break;
-//            case TEMP_BASAL_EXTRA:
-//                break;
-//            case BOLUS_EXTRA:
-//                break;
-//            case CONFIGURE_ALERTS:
-//                break;
-//            case SET_INSULIN_SCHEDULE:
-//                break;
-//            case DEACTIVATE_POD:
-//                break;
-//            case CANCEL_DELIVERY:
-//                break;
             default:
                 throw new NotImplementedException(this.name());
         }

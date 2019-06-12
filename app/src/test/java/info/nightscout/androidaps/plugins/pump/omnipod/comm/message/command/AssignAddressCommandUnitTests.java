@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 public class AssignAddressCommandUnitTests {
 
     @Test
-    public void StatusResponse_EnumsCorrect() throws Exception {
+    public void StatusResponse_EnumsCorrect() {
 
         AssignAddressCommand assignAddressCommand = new AssignAddressCommand(0x11223344);
         byte[] rawData = assignAddressCommand.getRawData();

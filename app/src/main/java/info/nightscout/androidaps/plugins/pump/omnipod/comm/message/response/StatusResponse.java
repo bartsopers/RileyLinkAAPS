@@ -29,10 +29,10 @@ public class StatusResponse extends MessageBlock {
         int highInsulinBits = (encodedData[2] & 0x0F) << 9;
         int middleInsulinBits = (encodedData[3] & 0xFF) << 1;
         int lowInsulinBits = (encodedData[4] & 0x80) >>> 7;
-        this.insulin = Constants.PodPulseSize * (highInsulinBits | middleInsulinBits | lowInsulinBits);
+        this.insulin = Constants.POD_PULSE_SIZE * (highInsulinBits | middleInsulinBits | lowInsulinBits);
         this.podMessageCounter = (byte) ((encodedData[4] & 0x78) >>> 3);
 
-        this.insulinNotDelivered = Constants.PodPulseSize * (((encodedData[4] & 0x03) << 8) | (encodedData[5] & 0xFF));
+        this.insulinNotDelivered = Constants.POD_PULSE_SIZE * (((encodedData[4] & 0x03) << 8) | (encodedData[5] & 0xFF));
         this.alarms = new PodAlarm((byte) (((encodedData[6] & 0x7f) << 1) | ((encodedData[7] & 0x80) >>> 7)));
 
         int resHighBits = ((encodedData[8] & 0x03) << 6);

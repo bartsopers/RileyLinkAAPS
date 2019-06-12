@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RFSpy;
@@ -23,7 +26,7 @@ import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.AlertConfiguration;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.AssignAddressCommand;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.ConfigureAlertsCommand;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.ConfirmPairingCommand;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.ConfigurePodCommand;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.SetInsulinScheduleCommand;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.VersionResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
@@ -39,7 +42,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.ExpirationAdvisory;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.BasalSchedule;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.BasalScheduleEntry;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.Bolus;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.BolusDeliverySchedule;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.BolusExtraCommand;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PacketType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressState;
@@ -137,7 +140,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         OmnipodMessage receivedMessage = null;
         byte[] receivedMessageData = response.getEncodedMessage();
         while(receivedMessage == null) {
-            receivedMessage = OmnipodMessage.TryDecode(receivedMessageData);
+            receivedMessage = OmnipodMessage.decodeMessage(receivedMessageData);
             if (receivedMessage == null) {
                 OmnipodPacket ackForCon = createAckPacket(packetAddress, ackAddressOverride);
                 try {
@@ -156,12 +159,12 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
         ackUntilQuiet(packetAddress, ackAddressOverride);
 
-        MessageBlock[] messageBlocks = receivedMessage.getMessageBlocks();
-        if (messageBlocks.length == 0) {
+        List<MessageBlock> messageBlocks = receivedMessage.getMessageBlocks();
+        if (messageBlocks.size() == 0) {
             throw new OmnipodCommunicationException("Not enough data");
         }
 
-        MessageBlock block = messageBlocks[0];
+        MessageBlock block = messageBlocks.get(0);
         if (block.getType() == MessageBlockType.ERROR_RESPONSE) {
             ErrorResponse error = (ErrorResponse)block;
             if (error.getErrorResponseType() == ErrorResponseType.BAD_NONCE) {
@@ -259,7 +262,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         if (this.podState != null) {
             msgAddress = podState.address;
         }
-        OmnipodMessage message = new OmnipodMessage(msgAddress, new MessageBlock[]{command}, podState == null ? messageNumber : podState.messageNumber);
+        OmnipodMessage message = new OmnipodMessage(msgAddress, Collections.singletonList(command), podState == null ? messageNumber : podState.messageNumber);
         return exchangeMessages(message);
     }
 
@@ -280,6 +283,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     public void initializePod() {
         if (SP.contains(OmniPodConst.Prefs.POD_STATE)) {
             //FIXME: We should ask "are you sure?"
+            // And send the DeactivatePodCommand
             SP.remove(OmniPodConst.Prefs.POD_STATE);
         }
 
@@ -289,7 +293,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         int newAddress = 0x1f0b3557;
 
         AssignAddressCommand assignAddress = new AssignAddressCommand(newAddress);
-        OmnipodMessage assignAddressMessage = new OmnipodMessage(DEFAULT_ADDRESS, new MessageBlock[] { assignAddress }, messageNumber);
+        OmnipodMessage assignAddressMessage = new OmnipodMessage(DEFAULT_ADDRESS, Collections.singletonList(assignAddress), messageNumber);
 
         VersionResponse configResponse = exchangeMessages(assignAddressMessage, DEFAULT_ADDRESS, newAddress);
         if (configResponse == null) {
@@ -300,10 +304,10 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
         //at this point for an unknown reason PDM starts counting messages from 0 again
         messageNumber = 0;
-        ConfirmPairingCommand confirmPairing = new ConfirmPairingCommand(newAddress, activationDate,
+        ConfigurePodCommand confirmPairing = new ConfigurePodCommand(newAddress, activationDate,
                 configResponse.lot, configResponse.tid);
         OmnipodMessage confirmPairingMessage = new OmnipodMessage(DEFAULT_ADDRESS,
-                new MessageBlock[] { confirmPairing }, messageNumber);
+                Collections.singletonList(confirmPairing), messageNumber);
         VersionResponse config2 = exchangeMessages(confirmPairingMessage, DEFAULT_ADDRESS, newAddress);
 
         if (config2.podProgressState != PodProgressState.PAIRING_SUCCESS) {
@@ -318,8 +322,8 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         ExpirationAdvisory expirationAdvisory =
                 new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.RESERVOIR, 50);
         AlertConfiguration lweReservoir =
-                new AlertConfiguration(AlertType.LOW_RESERVOIR,true,false,0,
-                expirationAdvisory, BeepRepeat.EVERY_MINUTE_FOR_3_MINUTES_REPEAT_EVERY_60_MINUTES, BeepType.FOUR_BIP_BEEPS);
+                new AlertConfiguration(AlertType.LOW_RESERVOIR,true,false,Duration.ZERO,
+                expirationAdvisory, BeepType.BIP_BEEP_BIP_BEEP_BIP_BEEP_BIP_BEEP, BeepRepeat.EVERY_MINUTE_FOR_3_MINUTES_REPEAT_EVERY_60_MINUTES);
 
         int nonce = nonceValue();
 
@@ -330,17 +334,17 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         ExpirationAdvisory insertionTimerExpirationAdvisory = new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.TIMER, new Duration(5 * 60 * 1000));
 
         AlertConfiguration insertionTimer = new AlertConfiguration(AlertType.TIMER_LIMIT,true,false,
-                55, insertionTimerExpirationAdvisory, BeepRepeat.EVERY_5_MINUTES, BeepType.FOUR_BIP_BEEPS);
+                Duration.standardMinutes(55), insertionTimerExpirationAdvisory, BeepType.BIP_BEEP_BIP_BEEP_BIP_BEEP_BIP_BEEP, BeepRepeat.EVERY_5_MINUTES);
 
         ConfigureAlertsCommand insertionTimerCommand = new ConfigureAlertsCommand(nonceValue(), new AlertConfiguration[] { insertionTimer });
         status = sendCommand(insertionTimerCommand);
         advanceToNextNonce();
 
         double primeUnits = 2.6;
-        Bolus primeBolus = new Bolus(primeUnits, 8);
+        BolusDeliverySchedule primeBolus = new BolusDeliverySchedule(primeUnits, Duration.standardSeconds(1));
         SetInsulinScheduleCommand primeCommand = new SetInsulinScheduleCommand(nonceValue(), primeBolus);
-        BolusExtraCommand extraBolusCommand = new BolusExtraCommand(primeUnits, (byte) 0, ByteUtil.fromHexString("000186a0"));
-        OmnipodMessage prime = new OmnipodMessage(newAddress, new MessageBlock[]{primeCommand, extraBolusCommand}, podState.messageNumber);
+        BolusExtraCommand extraBolusCommand = new BolusExtraCommand(primeUnits);
+        OmnipodMessage prime = new OmnipodMessage(newAddress, Arrays.asList(primeCommand, extraBolusCommand), podState.messageNumber);
         status = exchangeMessages(prime);
         advanceToNextNonce();
 
@@ -349,22 +353,35 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         SP.putString(OmniPodConst.Prefs.POD_STATE, gson.toJson(podState));
     }
 
-    public Object finishPrime() {
+    public void finishPrime() {
         if (this.podState == null) {
             throw new IllegalStateException("Pod state cannot be null");
         }
 
-
         ExpirationAdvisory expirationAdvisory = new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.TIMER, new Duration(70 * 60 * 60 * 1000 + 58 * 60 * 1000));
 
-        AlertConfiguration alert = new AlertConfiguration(AlertType.EXPIRATION_ADVISORY,true,false,0, expirationAdvisory,
-                BeepRepeat.EVERY_MINUTE_FOR_3_MINUTES_REPEAT_EVERY_15_MINUTES, BeepType.FOUR_BIP_BEEPS);
+        AlertConfiguration alert = new AlertConfiguration(AlertType.EXPIRATION_ADVISORY,true,false,Duration.ZERO, expirationAdvisory,
+                BeepType.BIP_BEEP_BIP_BEEP_BIP_BEEP_BIP_BEEP, BeepRepeat.EVERY_MINUTE_FOR_3_MINUTES_REPEAT_EVERY_15_MINUTES);
 
         ConfigureAlertsCommand alertCommand = new ConfigureAlertsCommand(nonceValue(), new AlertConfiguration[] { alert });
 
         StatusResponse status = sendCommand(alertCommand);
 
-        //Here goes new alarm settings and basal schedule set
+        BasalSchedule schedule = getBasalSchedule();
+
+        setBasalSchedule(schedule, false, Duration.ZERO, Duration.ZERO);
+    }
+
+    public void setBasalSchedule(BasalSchedule schedule, boolean confidenceReminder, Duration scheduleOffset, Duration programReminderInterval) {
+        //SetInsulinScheduleCommand setBasal = new SetInsulinScheduleCommand(nonceValue(), schedule, scheduleOffset);
+        //BasalScheduleExtraCommand extraCommand = new BasalScheduleExtraCommand(confidenceReminder, programReminderInterval);
+        //OmnipodMessage basalMessage = new OmnipodMessage(podState.address, new MessageBlock[]{setBasal, extraCommand}, podState.messageNumber);
+        //StatusResponse status = exchangeMessages(basalMessage);
+    }
+
+    private BasalSchedule getBasalSchedule() {
+        // Stub
+        // TODO get real basal schedule
         ArrayList<BasalScheduleEntry> basals = new ArrayList<>();
         basals.add(new BasalScheduleEntry(4, Duration.standardMinutes(30)));    //00:00-00:30
         basals.add(new BasalScheduleEntry(10, Duration.standardMinutes(30)));   //00:30-01:00
@@ -390,18 +407,6 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         basals.add(new BasalScheduleEntry(1.05, Duration.standardMinutes(30))); //10:30-11:00
         basals.add(new BasalScheduleEntry(11, Duration.standardMinutes(11*60)));//11:00-22:00
         basals.add(new BasalScheduleEntry(1.15, Duration.standardMinutes(2*60)));//22:00-24:00
-        BasalSchedule schedule = new BasalSchedule(basals.toArray(new BasalScheduleEntry[0]));
-
-        setBasalSchedule(schedule, false, Duration.ZERO, Duration.ZERO);
-
-        // FIXME return what?
-        return "OK";
-    }
-
-    public void setBasalSchedule(BasalSchedule schedule, boolean confidenceReminder, Duration scheduleOffset, Duration programReminderInterval) {
-        SetInsulinScheduleCommand setBasal = new SetInsulinScheduleCommand(nonceValue(), schedule, scheduleOffset);
-        //BasalScheduleExtraCommand extraCommand = new BasalScheduleExtraCommand(confidenceReminder, programReminderInterval,);
-        //OmnipodMessage basalMessage = new OmnipodMessage(podState.address, new MessageBlock[]{setBasal, extraCommand}, podState.messageNumber);
-        //STATUS_RESPONSE status = exchangeMessages(basalMessage);
+        return new BasalSchedule(basals);
     }
 }

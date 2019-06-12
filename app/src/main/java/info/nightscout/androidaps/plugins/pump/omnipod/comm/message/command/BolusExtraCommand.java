@@ -1,29 +1,48 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command;
 
-import info.nightscout.androidaps.Constants;
+import org.joda.time.Duration;
+
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlockType;
 
 public class BolusExtraCommand extends MessageBlock {
+    private final boolean acknowledgementBeep;
+    private final boolean completionBeep;
+    private final Duration programReminderInterval;
     private final double units;
-    private final byte byte2;
-    private final byte[] unknownPart;
+    private final Duration timeBetweenPulses;
+    private final double squareWaveUnits;
+    private final Duration squareWaveDuration;
 
-    public BolusExtraCommand(double units, byte byte2, byte[] unknownPart) {
+    public BolusExtraCommand(double units) {
+        this(units, 0.0, Duration.ZERO, true, false, Duration.ZERO, Duration.standardSeconds(2));
+    }
+
+    public BolusExtraCommand(double units, double squareWaveUnits, Duration squareWaveDuration,
+                             boolean acknowledgementBeep, boolean completionBeep,
+                             Duration programReminderInterval, Duration timeBetweenPulses) {
         this.units = units;
-        this.byte2 = byte2;
-        this.unknownPart = unknownPart;
+        this.squareWaveUnits = squareWaveUnits;
+        this.squareWaveDuration = squareWaveDuration;
+        this.acknowledgementBeep = acknowledgementBeep;
+        this.completionBeep = completionBeep;
+        this.programReminderInterval = programReminderInterval;
+        this.timeBetweenPulses = timeBetweenPulses;
         encode();
     }
 
     private void encode() {
-        encodedData = new byte[] {byte2};
-        encodedData = ByteUtil.concat(encodedData,
-                ByteUtil.substring(ByteUtil.getBytesFromInt(
-                        (int) (units / Constants.PodPulseSize * 10)), 2, 2));
-        encodedData = ByteUtil.concat(encodedData, unknownPart);
-        encodedData = ByteUtil.concat(encodedData, new byte[6]);
+        byte beepOptions = (byte)((programReminderInterval.getStandardMinutes() & 0x3f) + (completionBeep ? 1 << 6 : 0) + (acknowledgementBeep ? 1 << 7 : 0));
+
+        int squareWavePulseCountCountX10 = (int) Math.round(squareWaveUnits * 200);
+        int timeBetweenExtendedPulses = squareWavePulseCountCountX10 > 0 ? (int)squareWaveDuration.getMillis() * 100 / squareWavePulseCountCountX10 : 0;
+
+        encodedData = ByteUtil.concat(encodedData, beepOptions);
+        encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt16((int)Math.round(units * 200)));
+        encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt((int)timeBetweenPulses.getMillis() * 100));
+        encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt16(squareWavePulseCountCountX10));
+        encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt(timeBetweenExtendedPulses));
     }
 
     @Override

@@ -4,10 +4,10 @@ import org.joda.time.Duration;
 
 public class BasalScheduleEntry {
     public final double rate;
-    public final Duration duration;
+    public final Duration startTime;
 
-    public BasalScheduleEntry(double rate, Duration duration) {
+    public BasalScheduleEntry(double rate, Duration startTime) {
         this.rate = rate;
-        this.duration = duration;
+        this.startTime = startTime;
     }
 }
