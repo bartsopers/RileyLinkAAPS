@@ -2,24 +2,24 @@ package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
 // https://github.com/openaps/openomni/wiki/Command-06-Error-response-bad-nonce
 public enum ErrorResponseType {
-    BAD_NONCE(0x14);
+    BAD_NONCE((byte)0x14);
 
     byte value;
 
-    ErrorResponseType(int value) {
-        this.value = (byte)value;
+    ErrorResponseType(byte value) {
+        this.value = value;
     }
 
     public byte getValue() {
         return value;
     }
 
-    public static ErrorResponseType fromByte(byte input) {
+    public static ErrorResponseType fromByte(byte value) {
         for (ErrorResponseType type : values()) {
-            if (type.value == input) {
+            if (type.value == value) {
                 return type;
             }
         }
-        return null;
+        throw new IllegalArgumentException("ErrorResponseType not implemented: "+ value);
     }
 }

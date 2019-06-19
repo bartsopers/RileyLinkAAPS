@@ -60,4 +60,6 @@ public class BasalScheduleExtraCommandUnitTests {
         assertEquals(60, rateEntry.getDelayBetweenPulses().getStandardMinutes());
         assertEquals(24, rateEntry.getTotalPulses(), 0.001);
     }
+    // TODO add tests
+
 }

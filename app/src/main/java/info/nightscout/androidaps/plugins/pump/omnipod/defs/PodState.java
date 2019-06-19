@@ -2,7 +2,6 @@ package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
 import org.joda.time.DateTime;
 
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.FirmwareVersion;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniCRC;
 
 public class PodState {

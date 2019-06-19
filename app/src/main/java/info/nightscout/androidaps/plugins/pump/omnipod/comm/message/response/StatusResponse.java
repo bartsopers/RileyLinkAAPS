@@ -6,23 +6,29 @@ import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlockType;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertSet;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryStatus;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodAlarm;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressState;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressStatus;
 
 public class StatusResponse extends MessageBlock {
+    private static final int MINIMUM_MESSAGE_LENGTH = 10;
+
     public final DeliveryStatus deliveryStatus;
-    public final PodProgressState podProgressState;
+    public final PodProgressStatus podProgressStatus;
     public final Duration activeTime;
     public final double insulin;
     public final double insulinNotDelivered;
     public final byte podMessageCounter;
-    public final PodAlarm alarms;
+    public final AlertSet alerts;
     public final double reservoirLevel;
 
     public StatusResponse(byte[] encodedData) {
+        if(encodedData.length < MINIMUM_MESSAGE_LENGTH) {
+            throw new IllegalArgumentException("Not enough data");
+        }
+
         this.deliveryStatus = DeliveryStatus.fromByte((byte) ((encodedData[1] & 0xF0) >>> 4));
-        this.podProgressState = PodProgressState.fromByte((byte) (encodedData[1] & 0x0F));
+        this.podProgressStatus = PodProgressStatus.fromByte((byte) (encodedData[1] & 0x0F));
         int minutes = ((encodedData[7] & 0x7F) << 6) | ((encodedData[8] & 0xFC) >>> 2);
         this.activeTime = Duration.standardMinutes(minutes);
 
@@ -33,7 +39,7 @@ public class StatusResponse extends MessageBlock {
         this.podMessageCounter = (byte) ((encodedData[4] & 0x78) >>> 3);
 
         this.insulinNotDelivered = Constants.POD_PULSE_SIZE * (((encodedData[4] & 0x03) << 8) | (encodedData[5] & 0xFF));
-        this.alarms = new PodAlarm((byte) (((encodedData[6] & 0x7f) << 1) | ((encodedData[7] & 0x80) >>> 7)));
+        this.alerts = new AlertSet((byte) (((encodedData[6] & 0x7f) << 1) | (encodedData[7] >> 7)));
 
         int resHighBits = ((encodedData[8] & 0x03) << 6);
         int resLowBits = ((encodedData[9] & 0xFC) >>> 2);

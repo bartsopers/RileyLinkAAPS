@@ -45,7 +45,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.Basa
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.BolusDeliverySchedule;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.BolusExtraCommand;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PacketType;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressState;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressStatus;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodState;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniPodConst;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.Utils;
@@ -310,8 +310,8 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
                 Collections.singletonList(confirmPairing), messageNumber);
         VersionResponse config2 = exchangeMessages(confirmPairingMessage, DEFAULT_ADDRESS, newAddress);
 
-        if (config2.podProgressState != PodProgressState.PAIRING_SUCCESS) {
-            throw new OmnipodCommunicationException("Pairing failed, state: "+ config2.podProgressState.name());
+        if (config2.podProgressStatus != PodProgressStatus.PAIRING_SUCCESS) {
+            throw new OmnipodCommunicationException("Pairing failed, state: "+ config2.podProgressStatus.name());
         }
 
         this.podState = new PodState(newAddress, activationDate, config2.piVersion,
@@ -327,7 +327,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
         int nonce = nonceValue();
 
-        ConfigureAlertsCommand lowReservoirCommand = new ConfigureAlertsCommand(nonce, new AlertConfiguration[] { lweReservoir });
+        ConfigureAlertsCommand lowReservoirCommand = new ConfigureAlertsCommand(nonce, Collections.singletonList( lweReservoir ));
         StatusResponse status = sendCommand(lowReservoirCommand);
         advanceToNextNonce();
 
@@ -336,7 +336,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         AlertConfiguration insertionTimer = new AlertConfiguration(AlertType.TIMER_LIMIT,true,false,
                 Duration.standardMinutes(55), insertionTimerExpirationAdvisory, BeepType.BIP_BEEP_BIP_BEEP_BIP_BEEP_BIP_BEEP, BeepRepeat.EVERY_5_MINUTES);
 
-        ConfigureAlertsCommand insertionTimerCommand = new ConfigureAlertsCommand(nonceValue(), new AlertConfiguration[] { insertionTimer });
+        ConfigureAlertsCommand insertionTimerCommand = new ConfigureAlertsCommand(nonceValue(), Collections.singletonList(insertionTimer));
         status = sendCommand(insertionTimerCommand);
         advanceToNextNonce();
 
@@ -363,7 +363,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         AlertConfiguration alert = new AlertConfiguration(AlertType.EXPIRATION_ADVISORY,true,false,Duration.ZERO, expirationAdvisory,
                 BeepType.BIP_BEEP_BIP_BEEP_BIP_BEEP_BIP_BEEP, BeepRepeat.EVERY_MINUTE_FOR_3_MINUTES_REPEAT_EVERY_15_MINUTES);
 
-        ConfigureAlertsCommand alertCommand = new ConfigureAlertsCommand(nonceValue(), new AlertConfiguration[] { alert });
+        ConfigureAlertsCommand alertCommand = new ConfigureAlertsCommand(nonceValue(), Collections.singletonList(alert));
 
         StatusResponse status = sendCommand(alertCommand);
 

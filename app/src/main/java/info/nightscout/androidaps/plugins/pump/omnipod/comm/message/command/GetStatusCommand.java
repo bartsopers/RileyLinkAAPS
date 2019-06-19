@@ -1,19 +1,19 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command;
 
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.StatusRequestType;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodInfoType;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlockType;
 
 public class GetStatusCommand extends MessageBlock {
-    private final StatusRequestType statusRequestType;
+    private final PodInfoType podInfoType;
 
-    public GetStatusCommand(StatusRequestType statusRequestType) {
-        this.statusRequestType = statusRequestType;
+    public GetStatusCommand(PodInfoType podInfoType) {
+        this.podInfoType = podInfoType;
         encode();
     }
 
     private void encode() {
-        encodedData = new byte[] {statusRequestType.getValue()};
+        encodedData = new byte[] {podInfoType.getValue()};
     }
 
     @Override

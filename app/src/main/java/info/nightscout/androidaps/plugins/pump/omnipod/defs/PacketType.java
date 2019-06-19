@@ -1,16 +1,16 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
 public enum PacketType {
-    INVALID(0),
-    POD(0b111),
-    PDM(0b101),
-    CON(0b100),
-    ACK(0b010);
+    INVALID((byte)0),
+    POD((byte)0b111),
+    PDM((byte)0b101),
+    CON((byte)0b100),
+    ACK((byte)0b010);
 
     byte value;
 
-    PacketType(int value) {
-        this.value = (byte) value;
+    PacketType(byte value) {
+        this.value = value;
     }
 
     public static PacketType fromByte(byte input) {

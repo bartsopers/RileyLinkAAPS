@@ -2,17 +2,17 @@ package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
 // https://github.com/openaps/openomni/wiki/Command-1D-Status-response
 public enum DeliveryStatus {
-    DELIVERY_INTERRUPTED( 0),
-    BASAL_RUNNING( 1),
-    TEMP_BASAL_RUNNING( 2),
-    PURGING( 4),
-    BOLUS_IN_PROGRESS( 5),
-    BOLUS_AND_TEMP_BASAL( 6);
+    DELIVERY_INTERRUPTED((byte)0x00),
+    BASAL_RUNNING((byte)0x01),
+    TEMP_BASAL_RUNNING((byte)0x02),
+    PURGING((byte)0x04),
+    BOLUS_IN_PROGRESS((byte)0x05),
+    BOLUS_AND_TEMP_BASAL((byte)0x06);
 
     byte value;
 
-    DeliveryStatus(int value) {
-        this.value = (byte)value;
+    DeliveryStatus(byte value) {
+        this.value = value;
     }
 
     public byte getValue() {

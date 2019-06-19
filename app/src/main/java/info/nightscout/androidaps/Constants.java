@@ -7,6 +7,7 @@ package info.nightscout.androidaps;
  */
 public class Constants {
     public static final double POD_PULSE_SIZE = 0.05;
+    public static final double MAX_RSERVOIR_READING = 50.0;
 
 
 //    public static final String MGDL = "mg/dl"; // This is Nightscout's representation

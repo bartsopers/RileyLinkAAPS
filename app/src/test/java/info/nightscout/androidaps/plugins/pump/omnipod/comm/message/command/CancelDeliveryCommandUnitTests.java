@@ -16,4 +16,6 @@ public class CancelDeliveryCommandUnitTests {
         byte[] expected = ByteUtil.fromHexString("1F051020304035");
         assertArrayEquals(expected, command.getRawData());
     }
+
+    // TODO add tests
 }

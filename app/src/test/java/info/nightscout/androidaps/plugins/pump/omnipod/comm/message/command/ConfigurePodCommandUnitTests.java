@@ -20,4 +20,6 @@ public class ConfigurePodCommandUnitTests {
                 ByteUtil.fromHexString("03131f00ee87140404050d16340000a3770003ab37"), // From https://github.com/openaps/openomni/wiki/Command-03-Setup-Pod
                 configurePodCommand.getRawData());
     }
+
+    // TODO add tests
 }

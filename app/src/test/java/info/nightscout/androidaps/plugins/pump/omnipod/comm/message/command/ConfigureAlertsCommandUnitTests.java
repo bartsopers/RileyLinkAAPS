@@ -3,6 +3,9 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command;
 import org.joda.time.Duration;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.AlertConfiguration;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertType;
@@ -60,10 +63,12 @@ public class ConfigureAlertsCommandUnitTests {
 
         ConfigureAlertsCommand configureAlertsCommand = new ConfigureAlertsCommand( //
                 0xfeb6268b, //
-                new AlertConfiguration[]{ alertConfiguration1, alertConfiguration2, alertConfiguration3 });
+                Arrays.asList(alertConfiguration1, alertConfiguration2, alertConfiguration3));
 
         assertArrayEquals( //
                 ByteUtil.fromHexString("1916feb6268b79a410df0502280012830602020f00000202"), //
                 configureAlertsCommand.getRawData());
     }
+
+    // TODO add tests
 }

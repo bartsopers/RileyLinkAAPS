@@ -37,4 +37,6 @@ public class AcknowledgeAlertsCommandUnitTests {
                 (byte)0x20 // alerts (bit 5)
         }, rawData);
     }
+
+    // TODO add tests
 }

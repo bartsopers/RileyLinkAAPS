@@ -2,7 +2,7 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message;
 
 import org.apache.commons.lang3.NotImplementedException;
 
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.PodInfoResponse;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.VersionResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.ErrorResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;

@@ -45,4 +45,6 @@ public class SetInsulineScheduleCommandUnitTests {
                 ByteUtil.createByteArrayFromHexString("1a0ebed2e16b02010a0101a000340034"), // from https://github.com/ps2/rileylink_ios/blob/omnipod-testing/OmniKitTests/BolusTests.swift
                 setInsulineScheduleCommand.getRawData());
     }
+
+    // TODO add tests
 }

@@ -18,4 +18,6 @@ public class BolusExtraCommandUnitTests {
                 ByteUtil.createByteArrayFromHexString("170d7c00fa00030d40000000000000"), // From https://github.com/openaps/openomni/wiki/Bolus
                 bolusExtraCommand.getRawData());
     }
+
+    // TODO add tests
 }

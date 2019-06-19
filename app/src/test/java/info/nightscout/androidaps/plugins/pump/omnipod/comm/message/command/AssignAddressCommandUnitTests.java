@@ -17,4 +17,6 @@ public class AssignAddressCommandUnitTests {
         assertEquals(0x44, rawData[5]);
     }
 
+    // TODO add tests
+
 }

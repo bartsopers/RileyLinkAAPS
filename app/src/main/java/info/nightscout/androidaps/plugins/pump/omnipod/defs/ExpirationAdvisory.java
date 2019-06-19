@@ -3,6 +3,7 @@ package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 import org.joda.time.Duration;
 
 // https://github.com/openaps/openomni/wiki/Command-19-Configure-Alerts
+// TODO can this be replaced by AlertTrigger?
 public class ExpirationAdvisory {
 
     public Duration timeToExpire;
@@ -22,8 +23,8 @@ public class ExpirationAdvisory {
         public byte getValue() {
             return value;
         }
-
     }
+
     public ExpirationAdvisory(ExpirationType type, double reservoirLevel) {
 
         if (type != ExpirationType.RESERVOIR) {

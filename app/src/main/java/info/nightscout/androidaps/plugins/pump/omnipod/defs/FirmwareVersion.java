@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response;
+package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
 public class FirmwareVersion {
     private int major;

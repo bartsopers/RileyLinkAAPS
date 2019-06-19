@@ -16,4 +16,6 @@ public class DeactivatePodCommandUnitTests {
                 (byte)0x10, (byte)0x20, (byte)0x30, (byte)0x40 // nonce
         }, rawData);
     }
+
+    // TODO add tests
 }
