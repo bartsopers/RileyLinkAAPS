@@ -1,5 +1,6 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule;
 
+import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.IRawRepresentable;
 
 public class BasalTableEntry implements IRawRepresentable {
@@ -17,15 +18,15 @@ public class BasalTableEntry implements IRawRepresentable {
     @Override
     public byte[] getRawData() {
         byte[] rawData = new byte[2];
-        byte pulsesHighByte = (byte) ((pulses >> 8) & 0b11);
-        byte pulsesLowByte = (byte) (pulses & 0xFF);
+        byte pulsesHighByte = (byte) ((pulses >>> 8) & 0b11);
+        byte pulsesLowByte = (byte) pulses;
         rawData[0] = (byte) ((byte)((segments - 1) << 4) + (byte)((alternateSegmentPulse ? 1 : 0) << 3) + pulsesHighByte);
-        rawData[1] = (byte)pulsesLowByte;
+        rawData[1] = pulsesLowByte;
         return rawData;
     }
 
     public int getChecksum() {
-        int checksumPerSegment = (pulses & 0xff) + (pulses >> 8);
+        int checksumPerSegment = ByteUtil.convertUnsignedByteToInt((byte)pulses) + (pulses >>> 8);
         return (checksumPerSegment * segments + (alternateSegmentPulse ? segments / 2 : 0));
     }
 

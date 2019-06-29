@@ -40,7 +40,7 @@ public class BolusDeliverySchedule extends DeliverySchedule implements IRawRepre
         int checksum = 0;
         byte[] rawData = getRawData();
         for(int i = 0; i < rawData.length && i < 7; i++) {
-            checksum += rawData[i] & 0xFF;
+            checksum += ByteUtil.convertUnsignedByteToInt(rawData[i]);
         }
         return checksum;
     }

@@ -46,8 +46,7 @@ public class PodInfoFaultEvent extends PodInfo {
         totalInsulinDelivered = Constants.POD_PULSE_SIZE * ((encodedData[6] << 8) | encodedData[7]);
         currentStatus = FaultEventCode.fromByte(encodedData[8]);
 
-        byte[] minutesSinceActivationBytes = ByteUtil.substring(getEncodedData(), 9, 2);
-        int minutesSinceActivation = ByteUtil.toInt(minutesSinceActivationBytes[0], minutesSinceActivationBytes[2]);
+        int minutesSinceActivation = ByteUtil.toInt(encodedData[9], encodedData[10]);
         if(minutesSinceActivation == 0xffff) {
             faultEventTimeSinceActivation = null;
         } else {
@@ -55,21 +54,20 @@ public class PodInfoFaultEvent extends PodInfo {
         }
 
         double reservoirValue = ((encodedData[11] & 0x3) << 8) + encodedData[12] * Constants.POD_PULSE_SIZE;
-        if(reservoirValue > Constants.MAX_RSERVOIR_READING) {
+        if(reservoirValue > Constants.MAX_RESERVOIR_READING) {
             reservoirLevel = null;
         } else {
             reservoirLevel = reservoirValue;
         }
 
-        byte[] timeActiveBytes = ByteUtil.substring(encodedData, 13, 2);
-        int minutesActive = ByteUtil.toInt(timeActiveBytes[0], timeActiveBytes[1]);
+        int minutesActive = ByteUtil.toInt(encodedData[13], encodedData[14]);
         timeActive = Duration.standardMinutes(minutesActive);
 
         unacknowledgedAlerts = new AlertSet(encodedData[15]);
         faultAccessingTables = encodedData[16] == 0x02;
-        logEventErrorType = LogEventErrorCode.fromByte((byte)(encodedData[17] >> 4));
+        logEventErrorType = LogEventErrorCode.fromByte((byte)(encodedData[17] >>> 4));
         logEventErrorPodProgressStatus = PodProgressStatus.fromByte((byte)(encodedData[17] & 0xf));
-        receiverLowGain = (byte)(encodedData[18] >> 6);
+        receiverLowGain = (byte)(encodedData[18] >>> 6);
         radioRSSI = (byte)(encodedData[18] & 0x3f);
         previousPodProgressStatus = PodProgressStatus.fromByte((byte)(encodedData[19] & 0xf));
         unknownValue = ByteUtil.substring(encodedData, 20, 2);

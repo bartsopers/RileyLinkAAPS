@@ -15,38 +15,39 @@ public class StatusResponse extends MessageBlock {
 
     public final DeliveryStatus deliveryStatus;
     public final PodProgressStatus podProgressStatus;
-    public final Duration activeTime;
+    public final Duration timeActive;
+    public final Double reservoirLevel;
     public final double insulin;
     public final double insulinNotDelivered;
     public final byte podMessageCounter;
     public final AlertSet alerts;
-    public final double reservoirLevel;
 
     public StatusResponse(byte[] encodedData) {
         if(encodedData.length < MINIMUM_MESSAGE_LENGTH) {
             throw new IllegalArgumentException("Not enough data");
         }
 
-        this.deliveryStatus = DeliveryStatus.fromByte((byte) ((encodedData[1] & 0xF0) >>> 4));
+        this.deliveryStatus = DeliveryStatus.fromByte((byte) (encodedData[1] >>> 4));
         this.podProgressStatus = PodProgressStatus.fromByte((byte) (encodedData[1] & 0x0F));
+
         int minutes = ((encodedData[7] & 0x7F) << 6) | ((encodedData[8] & 0xFC) >>> 2);
-        this.activeTime = Duration.standardMinutes(minutes);
+        this.timeActive = Duration.standardMinutes(minutes);
 
-        int highInsulinBits = (encodedData[2] & 0x0F) << 9;
-        int middleInsulinBits = (encodedData[3] & 0xFF) << 1;
-        int lowInsulinBits = (encodedData[4] & 0x80) >>> 7;
+        int highInsulinBits = (encodedData[2] & 0xF) << 9;
+        int middleInsulinBits = ByteUtil.convertUnsignedByteToInt(encodedData[3]) << 1;
+        int lowInsulinBits = ByteUtil.convertUnsignedByteToInt(encodedData[4]) >>> 7;
         this.insulin = Constants.POD_PULSE_SIZE * (highInsulinBits | middleInsulinBits | lowInsulinBits);
-        this.podMessageCounter = (byte) ((encodedData[4] & 0x78) >>> 3);
+        this.podMessageCounter = (byte) ((encodedData[4] >>> 3) & 0xf);
 
-        this.insulinNotDelivered = Constants.POD_PULSE_SIZE * (((encodedData[4] & 0x03) << 8) | (encodedData[5] & 0xFF));
-        this.alerts = new AlertSet((byte) (((encodedData[6] & 0x7f) << 1) | (encodedData[7] >> 7)));
+        this.insulinNotDelivered = Constants.POD_PULSE_SIZE * (((encodedData[4] & 0x03) << 8) | ByteUtil.convertUnsignedByteToInt(encodedData[5]));
+        this.alerts = new AlertSet((byte) (((encodedData[6] & 0x7f) << 1) | (encodedData[7] >>> 7)));
 
-        int resHighBits = ((encodedData[8] & 0x03) << 6);
-        int resLowBits = ((encodedData[9] & 0xFC) >>> 2);
-
-        this.reservoirLevel = Math.round((double)((resHighBits | resLowBits)) * 50 / 255);
-
-        this.encodedData = ByteUtil.substring(encodedData, 1, 9);
+        double reservoirValue = (((encodedData[8] & 0x3) << 8) + ByteUtil.convertUnsignedByteToInt(encodedData[9])) * Constants.POD_PULSE_SIZE;
+        if(reservoirValue > Constants.MAX_RESERVOIR_READING) {
+            reservoirLevel = null;
+        } else {
+            reservoirLevel = reservoirValue;
+        }
     }
 
     @Override

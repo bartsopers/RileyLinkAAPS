@@ -30,7 +30,7 @@ public class BasalDeliveryTable {
         for(int i = 0; i < NUM_SEGMENTS; i++) {
             double rate = schedule.rateAt(Duration.standardMinutes(i * 30));
             int pulsesPerHour = (int)Math.round(rate / Constants.POD_PULSE_SIZE);
-            int pulsesPerSegment = pulsesPerHour >> 1;
+            int pulsesPerSegment = pulsesPerHour >>> 1;
             boolean halfPulse = (pulsesPerHour & 0b1) != 0;
 
             expandedSegments[i] = new TempSegment(pulsesPerSegment + (halfPulseRemainder && halfPulse ? 1 : 0));

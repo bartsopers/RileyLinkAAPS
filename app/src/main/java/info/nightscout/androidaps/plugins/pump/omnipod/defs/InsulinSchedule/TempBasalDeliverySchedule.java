@@ -37,7 +37,7 @@ public class TempBasalDeliverySchedule extends DeliverySchedule implements IRawR
         int checksum = 0;
         byte[] rawData = getRawData();
         for(int i = 0; i < rawData.length && i < 5; i++) {
-            checksum += rawData[i] & 0xFF;
+            checksum += ByteUtil.convertUnsignedByteToInt(rawData[i]);
         }
         for(BasalTableEntry entry : basalTable.getEntries()) {
             checksum += entry.getChecksum();

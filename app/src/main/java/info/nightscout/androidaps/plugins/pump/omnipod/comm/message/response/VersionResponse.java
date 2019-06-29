@@ -8,47 +8,55 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressStatus;
 
 // https://github.com/openaps/openomni/wiki/Command-01-Version-response
 public class VersionResponse extends MessageBlock {
-    public PodProgressStatus podProgressStatus;
-    public FirmwareVersion pmVersion;
-    public FirmwareVersion piVersion;
-    public int lot;
-    public int tid;
-    public int address;
-    public Integer gain;
-    public Integer rssi;
+    public final PodProgressStatus podProgressStatus;
+    public final FirmwareVersion pmVersion;
+    public final FirmwareVersion piVersion;
+    public final int lot;
+    public final int tid;
+    public final int address;
+    public final Integer gain;
+    public final Integer rssi;
 
     public VersionResponse(byte[] encodedData) {
         int length = encodedData[1] + 2;
+
+        boolean extraByte;
+        byte[] truncatedData;
+
         switch (length) {
             case 0x17:
-                initializeMembers(2, encodedData, true);
+                truncatedData = ByteUtil.substring(encodedData, 2);
+                extraByte = true;
                 break;
             case 0x1D:
-                initializeMembers(9, encodedData, false);
+                truncatedData = ByteUtil.substring(encodedData, 9);
+                extraByte = false;
                 break;
             default:
-                return;
+                throw new IllegalArgumentException("Unrecognized VersionResponse message length");
         }
-        this.encodedData = ByteUtil.substring(encodedData, 1, length - 1);
-    }
 
-    private void initializeMembers(int startOffset, byte[] data, boolean extraByte) {
-        this.podProgressStatus = PodProgressStatus.fromByte(data[startOffset + 7]);
-        this.pmVersion = new FirmwareVersion(data[startOffset], data[startOffset + 1], data[startOffset + 2]);
-        this.piVersion = new FirmwareVersion(data[startOffset + 3], data[startOffset + 4], data[startOffset + 5]);
-        this.lot = ByteUtil.toInt((int) data[startOffset + 8], (int) data[startOffset + 9],
-                (int) data[startOffset + 10], (int) data[startOffset + 11], ByteUtil.BitConversion.BIG_ENDIAN);
-        this.tid = ByteUtil.toInt((int) data[startOffset + 12], (int) data[startOffset + 13],
-                (int) data[startOffset + 14], (int) data[startOffset + 15], ByteUtil.BitConversion.BIG_ENDIAN);
+        this.podProgressStatus = PodProgressStatus.fromByte(truncatedData[7]);
+        this.pmVersion = new FirmwareVersion(truncatedData[0], truncatedData[1], truncatedData[2]);
+        this.piVersion = new FirmwareVersion(truncatedData[3], truncatedData[4], truncatedData[5]);
+        this.lot = ByteUtil.toInt((int) truncatedData[8], (int) truncatedData[9],
+                (int) truncatedData[10], (int) truncatedData[11], ByteUtil.BitConversion.BIG_ENDIAN);
+        this.tid = ByteUtil.toInt((int) truncatedData[12], (int) truncatedData[13],
+                (int) truncatedData[14], (int) truncatedData[15], ByteUtil.BitConversion.BIG_ENDIAN);
 
         if (extraByte) {
-            this.gain = (data[startOffset + 16] & 0b11000000) >> 6;
-            this.rssi = (data[startOffset + 16] & 0b00111111);
-            startOffset++;
+            this.gain = (truncatedData[16] & 0b11000000) >> 6;
+            this.rssi = (truncatedData[16] & 0b00111111);
+        } else {
+            gain = null;
+            rssi = null;
         }
 
-        this.address = ByteUtil.toInt((int) data[startOffset + 16], (int) data[startOffset + 17],
-                (int) data[startOffset + 18], (int) data[startOffset + 19], ByteUtil.BitConversion.BIG_ENDIAN);
+        int indexIncrementor = extraByte ? 1 : 0;
+
+        this.address = ByteUtil.toInt((int) truncatedData[16 + indexIncrementor], (int) truncatedData[17 + indexIncrementor],
+                (int) truncatedData[18 + indexIncrementor], (int) truncatedData[19 + indexIncrementor], ByteUtil.BitConversion.BIG_ENDIAN);
+        
     }
 
     @Override

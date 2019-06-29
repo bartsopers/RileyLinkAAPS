@@ -21,7 +21,6 @@ public class PodInfoFault extends PodInfo {
 
         faultEventCode = FaultEventCode.fromByte(encodedData[1]);
         activationTime = Duration.standardMinutes(((encodedData[2] & 0b1) << 8) + encodedData[3]);
-        // 12 = 0
         dateTime = new DateTime(2000 + encodedData[14], encodedData[12], encodedData[13], encodedData[15], encodedData[16]);
     }
 

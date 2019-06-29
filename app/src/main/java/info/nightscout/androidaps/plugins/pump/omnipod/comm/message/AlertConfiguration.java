@@ -41,11 +41,11 @@ public class AlertConfiguration{
             firstByte += 1 << 1;
         }
 
-        firstByte += ((int)duration.getStandardMinutes() >> 8) & 0x1;
+        firstByte += ((int)duration.getStandardMinutes() >>> 8) & 0x1;
 
         byte[] encodedData = new byte[] {
                 (byte)firstByte,
-                (byte)(duration.getStandardMinutes() & 0xff)
+                (byte)duration.getStandardMinutes()
         };
 
         switch (expirationType.expirationType) {
