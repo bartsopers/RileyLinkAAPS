@@ -11,8 +11,7 @@ public class ErrorResponse extends MessageBlock {
 
     public ErrorResponse(byte[] encodedData) {
         this.errorResponseType = ErrorResponseType.fromByte(encodedData[2]);
-        this.nonceSearchKey = ByteUtil.toInt((int)encodedData[3], (int)encodedData[4],
-                (int)encodedData[5], (int)encodedData[6], ByteUtil.BitConversion.BIG_ENDIAN);
+        this.nonceSearchKey = ByteUtil.makeUnsignedShort((int)encodedData[3], (int)encodedData[4]);
         int length = encodedData[1] + 2;
         this.encodedData = ByteUtil.substring(encodedData, 1, length - 1);
     }
