@@ -20,6 +20,6 @@ public enum ErrorResponseType {
                 return type;
             }
         }
-        throw new IllegalArgumentException("ErrorResponseType not implemented: "+ value);
+        throw new IllegalArgumentException("Unknown ErrorResponseType: "+ value);
     }
 }

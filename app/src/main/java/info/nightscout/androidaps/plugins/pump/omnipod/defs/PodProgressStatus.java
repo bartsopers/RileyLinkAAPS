@@ -26,12 +26,12 @@ public enum PodProgressStatus {
         return value;
     }
 
-    public static PodProgressStatus fromByte(byte input) {
+    public static PodProgressStatus fromByte(byte value) {
         for (PodProgressStatus type : values()) {
-            if (type.value == input) {
+            if (type.value == value) {
                 return type;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown PodProgressStatus: "+ value);
     }
 }

@@ -2,58 +2,60 @@ package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
 import org.joda.time.Duration;
 
+import info.nightscout.androidaps.Constants;
+import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
+
 public class AlertConfiguration {
-    public static final int LENGTH = 6;
+    private AlertType alertType;
+    private boolean audible;
+    private boolean autoOffModifier;
+    private Duration duration;
+    private AlertTrigger<?> alertTrigger;
+    private BeepRepeat beepRepeat;
+    private BeepType beepType;
 
-    private final AlertSlot alertSlot;
-    private final Duration duration;
-    private final AlertTrigger alertTrigger;
-    private final BeepRepeat beepRepeat;
-    private final BeepType beepType;
-    private final boolean active;
-    private final boolean autoOffModifier;
-
-    public AlertConfiguration(AlertSlot alertSlot, Duration duration, AlertTrigger alertTrigger,
-                              BeepRepeat beepRepeat, BeepType beepType, boolean active, boolean autoOffModifier) {
-        this.alertSlot = alertSlot;
+    public AlertConfiguration(AlertType alertType, boolean audible, boolean autoOffModifier,
+                              Duration duration, AlertTrigger alertTrigger,
+                              BeepType beepType, BeepRepeat beepRepeat) {
+        this.alertType = alertType;
+        this.audible = audible;
+        this.autoOffModifier = autoOffModifier;
         this.duration = duration;
         this.alertTrigger = alertTrigger;
         this.beepRepeat = beepRepeat;
         this.beepType = beepType;
-        this.active = active;
-        this.autoOffModifier = autoOffModifier;
     }
 
-    public AlertConfiguration(AlertSlot alertSlot, Duration duration, AlertTrigger alertTrigger,
-                              BeepRepeat beepRepeat, BeepType beepType) {
-        this(alertSlot, duration, alertTrigger, beepRepeat, beepType, true, false);
-    }
+    public byte[] getRawData() {
+        int firstByte = (alertType.getValue() << 4);
+        firstByte += audible ? (1 << 3) : 0;
 
-    public AlertSlot getAlertSlot() {
-        return alertSlot;
-    }
+        if(alertTrigger instanceof UnitsRemainingAlertTrigger) {
+            firstByte += 1 << 2;
+        }
 
-    public Duration getDuration() {
-        return duration;
-    }
+        if(autoOffModifier) {
+            firstByte += 1 << 1;
+        }
 
-    public AlertTrigger<?> getAlertTrigger() {
-        return alertTrigger;
-    }
+        firstByte += ((int)duration.getStandardMinutes() >>> 8) & 0x1;
 
-    public BeepRepeat getBeepRepeat() {
-        return beepRepeat;
-    }
+        byte[] encodedData = new byte[] {
+                (byte)firstByte,
+                (byte)duration.getStandardMinutes()
+        };
 
-    public BeepType getBeepType() {
-        return beepType;
-    }
+        if(alertTrigger instanceof UnitsRemainingAlertTrigger) {
+            int ticks = (int)(((UnitsRemainingAlertTrigger)alertTrigger).getValue() / Constants.POD_PULSE_SIZE / 2);
+            encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt16(ticks));
+        } else if(alertTrigger instanceof TimerAlertTrigger) {
+            int durationInMinutes = (int) ((TimerAlertTrigger)alertTrigger).getValue().getStandardMinutes();
+            encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt16(durationInMinutes));
+        }
 
-    public boolean isActive() {
-        return active;
-    }
+        encodedData = ByteUtil.concat(encodedData, beepType.getValue());
+        encodedData = ByteUtil.concat(encodedData, beepRepeat.getValue());
 
-    public boolean isAutoOffModifier() {
-        return autoOffModifier;
+        return encodedData;
     }
 }

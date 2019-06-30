@@ -2,7 +2,7 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response;
 
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlockType;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.ErrorResponseType;
 
 public class ErrorResponse extends MessageBlock {

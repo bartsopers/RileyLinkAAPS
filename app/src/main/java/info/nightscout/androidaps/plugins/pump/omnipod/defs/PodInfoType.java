@@ -36,7 +36,7 @@ public enum PodInfoType {
                 return type;
             }
         }
-        throw new IllegalArgumentException("PodInfoType not implemented: "+ value);
+        throw new IllegalArgumentException("Unknown PodInfoType: "+ value);
     }
 
     public PodInfo decode(byte[] encodedData) {
@@ -61,7 +61,7 @@ public enum PodInfoType {
             case OLDER_FLASH_LOG_DUMP:
                 // TODO
             default:
-                throw new IllegalArgumentException("PodInfoType not implemented: "+ encodedData);
+                throw new IllegalArgumentException("Cannot decode "+ this.getClass().getName());
         }
     }
 }

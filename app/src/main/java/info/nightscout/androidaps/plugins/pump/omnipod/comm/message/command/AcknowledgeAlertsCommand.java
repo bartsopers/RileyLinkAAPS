@@ -1,12 +1,11 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlockType;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertType;
 
 public class AcknowledgeAlertsCommand extends MessageBlock {

@@ -2,7 +2,7 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command;
 
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodInfoType;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlockType;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 
 public class GetStatusCommand extends MessageBlock {
     private final PodInfoType podInfoType;

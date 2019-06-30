@@ -3,9 +3,9 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command;
 import java.util.List;
 
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.AlertConfiguration;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertConfiguration;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlockType;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 
 public class ConfigureAlertsCommand extends MessageBlock {
     private int nonce;

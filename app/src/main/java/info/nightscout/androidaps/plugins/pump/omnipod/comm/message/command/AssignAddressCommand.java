@@ -3,7 +3,7 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command;
 import java.nio.ByteBuffer;
 
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlockType;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 
 // https://github.com/openaps/openomni/wiki/Command-07-Assign-ID
 public class AssignAddressCommand extends MessageBlock {

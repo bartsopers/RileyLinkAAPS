@@ -1,7 +1,7 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command;
 
 import org.junit.Test;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlockType;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import static org.junit.Assert.assertArrayEquals;
 
 public class DeactivatePodCommandUnitTests {

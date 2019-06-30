@@ -3,6 +3,8 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
+
 public abstract class MessageBlock {
     protected byte[] encodedData = new byte[0];
 

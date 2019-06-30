@@ -18,12 +18,12 @@ public enum DeliveryType {
         return value;
     }
 
-    public static DeliveryType fromByte(byte input) {
+    public static DeliveryType fromByte(byte value) {
         for (DeliveryType type : values()) {
-            if (type.value == input) {
+            if (type.value == value) {
                 return type;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown DeliveryType: "+ value);
     }
 }

@@ -26,6 +26,6 @@ public enum AlertSlot {
                 return type;
             }
         }
-        throw new IllegalArgumentException("AlertSlot not implemented: "+ value);
+        throw new IllegalArgumentException("Unknown AlertSlot: "+ value);
     }
 }

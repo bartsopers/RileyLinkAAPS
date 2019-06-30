@@ -20,13 +20,13 @@ public enum AlertType {
         return value;
     }
 
-    public static AlertType fromByte(byte input) {
+    public static AlertType fromByte(byte value) {
         for (AlertType type : values()) {
-            if (type.value == input) {
+            if (type.value == value) {
                 return type;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown AlertType: "+ value);
     }
 
 

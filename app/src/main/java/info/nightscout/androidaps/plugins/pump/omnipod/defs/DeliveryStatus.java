@@ -19,12 +19,12 @@ public enum DeliveryStatus {
         return value;
     }
 
-    public static DeliveryStatus fromByte(byte input) {
+    public static DeliveryStatus fromByte(byte value) {
         for (DeliveryStatus type : values()) {
-            if (type.value == input) {
+            if (type.value == value) {
                 return type;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown DeliveryStatus: "+ value);
     }
 }

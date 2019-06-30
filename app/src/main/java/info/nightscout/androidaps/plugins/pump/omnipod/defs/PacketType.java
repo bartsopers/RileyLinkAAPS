@@ -13,13 +13,13 @@ public enum PacketType {
         this.value = value;
     }
 
-    public static PacketType fromByte(byte input) {
+    public static PacketType fromByte(byte value) {
         for (PacketType type : values()) {
-            if (type.value == input) {
+            if (type.value == value) {
                 return type;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown PacketType: "+ value);
     }
 
     public int maxBodyLength() {

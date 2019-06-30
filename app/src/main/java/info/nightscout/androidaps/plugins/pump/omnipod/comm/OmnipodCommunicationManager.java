@@ -23,14 +23,14 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RLMe
 
 
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.AlertConfiguration;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertConfiguration;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.AssignAddressCommand;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.ConfigureAlertsCommand;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.ConfigurePodCommand;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.SetInsulinScheduleCommand;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.VersionResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlockType;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.OmnipodMessage;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.OmnipodPacket;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.ErrorResponse;
@@ -39,7 +39,6 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.Sta
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepRepeat;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepType;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.ExpirationAdvisory;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.BasalSchedule;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.BasalScheduleEntry;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.BolusDeliverySchedule;
@@ -47,6 +46,8 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.Bolu
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PacketType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressStatus;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodState;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.TimerAlertTrigger;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.UnitsRemainingAlertTrigger;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniPodConst;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.Utils;
 import info.nightscout.androidaps.utils.SP;
@@ -319,22 +320,22 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
         packetNumber = messageNumber = null;
 
-        ExpirationAdvisory expirationAdvisory =
-                new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.RESERVOIR, 50);
-        AlertConfiguration lweReservoir =
+        UnitsRemainingAlertTrigger lowReservoirAlertTrigger = new UnitsRemainingAlertTrigger(50.0D);
+
+        AlertConfiguration lowReservoirAlertConfiguration =
                 new AlertConfiguration(AlertType.LOW_RESERVOIR,true,false,Duration.ZERO,
-                expirationAdvisory, BeepType.BIP_BEEP_BIP_BEEP_BIP_BEEP_BIP_BEEP, BeepRepeat.EVERY_MINUTE_FOR_3_MINUTES_REPEAT_EVERY_60_MINUTES);
+                lowReservoirAlertTrigger, BeepType.BIP_BEEP_BIP_BEEP_BIP_BEEP_BIP_BEEP, BeepRepeat.EVERY_MINUTE_FOR_3_MINUTES_REPEAT_EVERY_60_MINUTES);
 
         int nonce = nonceValue();
 
-        ConfigureAlertsCommand lowReservoirCommand = new ConfigureAlertsCommand(nonce, Collections.singletonList( lweReservoir ));
+        ConfigureAlertsCommand lowReservoirCommand = new ConfigureAlertsCommand(nonce, Collections.singletonList( lowReservoirAlertConfiguration ));
         StatusResponse status = sendCommand(lowReservoirCommand);
         advanceToNextNonce();
 
-        ExpirationAdvisory insertionTimerExpirationAdvisory = new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.TIMER, new Duration(5 * 60 * 1000));
+        TimerAlertTrigger insertionAlertTrigger = new TimerAlertTrigger(Duration.standardDays(5));
 
         AlertConfiguration insertionTimer = new AlertConfiguration(AlertType.TIMER_LIMIT,true,false,
-                Duration.standardMinutes(55), insertionTimerExpirationAdvisory, BeepType.BIP_BEEP_BIP_BEEP_BIP_BEEP_BIP_BEEP, BeepRepeat.EVERY_5_MINUTES);
+                Duration.standardMinutes(55), insertionAlertTrigger, BeepType.BIP_BEEP_BIP_BEEP_BIP_BEEP_BIP_BEEP, BeepRepeat.EVERY_5_MINUTES);
 
         ConfigureAlertsCommand insertionTimerCommand = new ConfigureAlertsCommand(nonceValue(), Collections.singletonList(insertionTimer));
         status = sendCommand(insertionTimerCommand);
@@ -358,12 +359,12 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
             throw new IllegalStateException("Pod state cannot be null");
         }
 
-        ExpirationAdvisory expirationAdvisory = new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.TIMER, new Duration(70 * 60 * 60 * 1000 + 58 * 60 * 1000));
+        TimerAlertTrigger expirationAlertTrigger = new TimerAlertTrigger(Duration.standardHours(70).plus(Duration.standardMinutes(58)));
 
-        AlertConfiguration alert = new AlertConfiguration(AlertType.EXPIRATION_ADVISORY,true,false,Duration.ZERO, expirationAdvisory,
+        AlertConfiguration expirationAlertConfiguration = new AlertConfiguration(AlertType.EXPIRATION_ADVISORY,true,false,Duration.ZERO, expirationAlertTrigger,
                 BeepType.BIP_BEEP_BIP_BEEP_BIP_BEEP_BIP_BEEP, BeepRepeat.EVERY_MINUTE_FOR_3_MINUTES_REPEAT_EVERY_15_MINUTES);
 
-        ConfigureAlertsCommand alertCommand = new ConfigureAlertsCommand(nonceValue(), Collections.singletonList(alert));
+        ConfigureAlertsCommand alertCommand = new ConfigureAlertsCommand(nonceValue(), Collections.singletonList(expirationAlertConfiguration));
 
         StatusResponse status = sendCommand(alertCommand);
 

@@ -19,6 +19,6 @@ public enum LogEventErrorCode {
                 return type;
             }
         }
-        throw new IllegalArgumentException("LogEventErrorCode not implemented: "+ value);
+        throw new IllegalArgumentException("Unknown LogEventErrorCode: "+ value);
     }
 }

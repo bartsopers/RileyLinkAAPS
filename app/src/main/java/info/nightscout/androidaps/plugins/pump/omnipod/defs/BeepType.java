@@ -33,7 +33,7 @@ public enum BeepType {
                 return type;
             }
         }
-        throw new IllegalArgumentException("BeepType not implemented: "+ value);
+        throw new IllegalArgumentException("Unknown BeepType: "+ value);
     }
 
 }

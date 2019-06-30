@@ -2,7 +2,7 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response;
 
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlockType;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.FirmwareVersion;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressStatus;
 
@@ -14,11 +14,9 @@ public class VersionResponse extends MessageBlock {
     public final int lot;
     public final int tid;
     public final int address;
-    public final Integer gain;
-    public final Integer rssi;
 
     public VersionResponse(byte[] encodedData) {
-        int length = encodedData[1] + 2;
+        int length = ByteUtil.convertUnsignedByteToInt(encodedData[1]) + 2;
 
         boolean extraByte;
         byte[] truncatedData;
@@ -33,7 +31,7 @@ public class VersionResponse extends MessageBlock {
                 extraByte = false;
                 break;
             default:
-                throw new IllegalArgumentException("Unrecognized VersionResponse message length");
+                throw new IllegalArgumentException("Unrecognized VersionResponse message length: "+ length);
         }
 
         this.podProgressStatus = PodProgressStatus.fromByte(truncatedData[7]);
@@ -44,19 +42,12 @@ public class VersionResponse extends MessageBlock {
         this.tid = ByteUtil.toInt((int) truncatedData[12], (int) truncatedData[13],
                 (int) truncatedData[14], (int) truncatedData[15], ByteUtil.BitConversion.BIG_ENDIAN);
 
-        if (extraByte) {
-            this.gain = (truncatedData[16] & 0b11000000) >> 6;
-            this.rssi = (truncatedData[16] & 0b00111111);
-        } else {
-            gain = null;
-            rssi = null;
-        }
-
         int indexIncrementor = extraByte ? 1 : 0;
 
         this.address = ByteUtil.toInt((int) truncatedData[16 + indexIncrementor], (int) truncatedData[17 + indexIncrementor],
                 (int) truncatedData[18 + indexIncrementor], (int) truncatedData[19 + indexIncrementor], ByteUtil.BitConversion.BIG_ENDIAN);
-        
+
+        this.encodedData = encodedData;
     }
 
     @Override

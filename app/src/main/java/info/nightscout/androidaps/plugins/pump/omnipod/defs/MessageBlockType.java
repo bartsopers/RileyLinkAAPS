@@ -1,7 +1,8 @@
-package info.nightscout.androidaps.plugins.pump.omnipod.comm.message;
+package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
 import org.apache.commons.lang3.NotImplementedException;
 
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.VersionResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.ErrorResponse;
@@ -37,13 +38,13 @@ public enum MessageBlockType {
         return value;
     }
 
-    public static MessageBlockType fromByte(byte input) {
+    public static MessageBlockType fromByte(byte value) {
         for (MessageBlockType type : values()) {
-            if (type.value == input) {
+            if (type.value == value) {
                 return type;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown MessageBlockType: "+ value);
     }
 
     public MessageBlock decode(byte[] encodedData) {

@@ -4,14 +4,13 @@ import org.joda.time.Duration;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.AlertConfiguration;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertConfiguration;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepRepeat;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepType;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.ExpirationAdvisory;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.TimerAlertTrigger;
 
 import static org.junit.Assert.assertArrayEquals;
 
@@ -26,7 +25,7 @@ public class ConfigureAlertsCommandUnitTests {
                 true, //
                 false, //
                 Duration.standardHours(7), //
-                new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.TIMER, softExpirationTime), //
+                new TimerAlertTrigger(softExpirationTime), //
                 BeepType.BEEP_BEEP_BEEP, //
                 BeepRepeat.EVERY_MINUTE_FOR_15_MINUTES);
 
@@ -40,7 +39,7 @@ public class ConfigureAlertsCommandUnitTests {
                 true, //
                 false, //
                 Duration.ZERO, //
-                new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.TIMER, hardExpirationTime), //
+                new TimerAlertTrigger(hardExpirationTime), //
                 BeepType.BEEEEEEP, //
                 BeepRepeat.EVERY_MINUTE_FOR_15_MINUTES);
 
@@ -53,7 +52,7 @@ public class ConfigureAlertsCommandUnitTests {
                 false, //
                 true, //
                 Duration.standardMinutes(15), //
-                new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.TIMER, Duration.ZERO), //
+                new TimerAlertTrigger(Duration.ZERO), //
                 BeepType.BIP_BEEP_BIP_BEEP_BIP_BEEP_BIP_BEEP, //
                 BeepRepeat.EVERY_MINUTE_FOR_15_MINUTES);
 

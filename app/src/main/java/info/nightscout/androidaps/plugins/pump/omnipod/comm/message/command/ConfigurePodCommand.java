@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlockType;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 
 // https://github.com/openaps/openomni/wiki/Command-03-Setup-Pod
 public class ConfigurePodCommand extends MessageBlock {

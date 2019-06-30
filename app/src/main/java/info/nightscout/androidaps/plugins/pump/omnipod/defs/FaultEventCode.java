@@ -132,6 +132,6 @@ public enum FaultEventCode {
                 return type;
             }
         }
-        throw new IllegalArgumentException("FaultEventCode not implemented: "+ value);
+        throw new IllegalArgumentException("Unknown FaultEventCode: "+ value);
     }
 }
