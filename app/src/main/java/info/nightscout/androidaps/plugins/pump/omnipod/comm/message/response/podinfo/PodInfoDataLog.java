@@ -2,6 +2,7 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.po
 
 import org.joda.time.Duration;
 
+import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.FaultEventCode;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodInfoType;
 
@@ -22,8 +23,8 @@ public class PodInfoDataLog extends PodInfo {
         }
 
         faultEventCode = FaultEventCode.fromByte(encodedData[1]);
-        timeFaultEvent = Duration.standardSeconds(((encodedData[2] & 0b1) << 8) * 60 + encodedData[3]);
-        timeActivation = Duration.standardSeconds(((encodedData[4] & 0b1) << 8) * 60 + encodedData[5]);
+        timeFaultEvent = Duration.standardMinutes(((encodedData[2] & 0b1) << 8) + ByteUtil.convertUnsignedByteToInt(encodedData[3]));
+        timeActivation = Duration.standardMinutes(((encodedData[4] & 0b1) << 8) + ByteUtil.convertUnsignedByteToInt(encodedData[5]));
         dataChunkSize = encodedData[6];
         dataChunkWords = encodedData[7];
     }

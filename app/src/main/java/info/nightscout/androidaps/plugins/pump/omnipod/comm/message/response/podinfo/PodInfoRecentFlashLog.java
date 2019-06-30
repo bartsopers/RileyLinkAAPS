@@ -6,7 +6,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodInfoType;
 public class PodInfoRecentFlashLog extends PodInfo {
     private static final int MINIMUM_MESSAGE_LENGTH = 166;
 
-    private final byte lastEntryIndex;
+    private final int lastEntryIndex;
     private final byte[] hexWordLog;
 
     public PodInfoRecentFlashLog(byte[] encodedData) {
@@ -16,8 +16,8 @@ public class PodInfoRecentFlashLog extends PodInfo {
             throw new IllegalArgumentException("Not enough data");
         }
 
-        lastEntryIndex = encodedData[2];
-        hexWordLog = ByteUtil.substring(encodedData, 3, lastEntryIndex);
+        lastEntryIndex = ByteUtil.convertUnsignedByteToInt(encodedData[2]);
+        hexWordLog = ByteUtil.substring(encodedData, 3, lastEntryIndex - 3);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class PodInfoRecentFlashLog extends PodInfo {
         return null;
     }
 
-    public byte getLastEntryIndex() {
+    public int getLastEntryIndex() {
         return lastEntryIndex;
     }
 

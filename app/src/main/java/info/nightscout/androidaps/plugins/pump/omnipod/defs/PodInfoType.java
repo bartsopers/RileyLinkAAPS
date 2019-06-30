@@ -1,6 +1,5 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfo;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoConfiguredAlerts;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoDataLog;
@@ -43,9 +42,9 @@ public enum PodInfoType {
     public PodInfo decode(byte[] encodedData) {
         switch(this) {
             case NORMAL:
-                // The PodInfoType.NORMAL isn't actually a PodInfoResponse, but a StatusResponse
-                // It's a PodInfoType because it can be requested in the GetStatusCommand
-                throw new IllegalArgumentException("PodInfoType.NORMAL is not a decodable PodInfoType");
+                // TODO Refactor StatusResponse to also allow a PodInfo subclass for
+                //  PodInfoType.NORMAL, as the contents of these responses should be identical
+                throw new UnsupportedOperationException("Cannot decode PodInfoType.NORMAL");
             case CONFIGURED_ALERTS:
                 return new PodInfoConfiguredAlerts(encodedData);
             case FAULT_EVENTS:

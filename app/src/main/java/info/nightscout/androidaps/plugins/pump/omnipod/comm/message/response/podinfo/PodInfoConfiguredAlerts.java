@@ -29,7 +29,7 @@ public class PodInfoConfiguredAlerts extends PodInfo {
         for(byte alarmType = 0; alarmType < AlertSlot.values().length; alarmType++) {
             BeepType beepType = BeepType.fromByte(alarmType);
             byte timeFromStart = encodedData[3 + 2 * alarmType];
-            double unitsLeft = encodedData[4 + 2 * alarmType] * Constants.POD_PULSE_SIZE;
+            double unitsLeft = ByteUtil.convertUnsignedByteToInt(encodedData[4 + 2 * alarmType]) * Constants.POD_PULSE_SIZE;
             alertActivations.add(new AlertActivation(beepType, timeFromStart, unitsLeft));
         }
     }

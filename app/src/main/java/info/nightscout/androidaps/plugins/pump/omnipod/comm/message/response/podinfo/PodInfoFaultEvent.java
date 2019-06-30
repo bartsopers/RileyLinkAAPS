@@ -40,10 +40,10 @@ public class PodInfoFaultEvent extends PodInfo {
         }
 
         podProgressStatus = PodProgressStatus.fromByte(encodedData[1]);
-        deliveryStatus = DeliveryStatus.fromByte((byte)(encodedData[2] & 0xf));
-        insulinNotDelivered = Constants.POD_PULSE_SIZE * (((encodedData[3] & 0x3) << 8) | encodedData[4]);
+        deliveryStatus = DeliveryStatus.fromByte((byte)(encodedData[2] & 0x0f));
+        insulinNotDelivered = Constants.POD_PULSE_SIZE * (((encodedData[3] & 0x03) << 8) | ByteUtil.convertUnsignedByteToInt(encodedData[4]));
         podMessageCounter = encodedData[5];
-        totalInsulinDelivered = Constants.POD_PULSE_SIZE * ((encodedData[6] << 8) | encodedData[7]);
+        totalInsulinDelivered = Constants.POD_PULSE_SIZE * ByteUtil.toInt(encodedData[6], encodedData[7]);
         currentStatus = FaultEventCode.fromByte(encodedData[8]);
 
         int minutesSinceActivation = ByteUtil.toInt(encodedData[9], encodedData[10]);
@@ -53,7 +53,7 @@ public class PodInfoFaultEvent extends PodInfo {
             faultEventTimeSinceActivation = Duration.standardMinutes(minutesSinceActivation);
         }
 
-        double reservoirValue = ((encodedData[11] & 0x3) << 8) + encodedData[12] * Constants.POD_PULSE_SIZE;
+        double reservoirValue = ((encodedData[11] & 0x03) << 8) + ByteUtil.convertUnsignedByteToInt(encodedData[12]) * Constants.POD_PULSE_SIZE;
         if(reservoirValue > Constants.MAX_RESERVOIR_READING) {
             reservoirLevel = null;
         } else {
@@ -66,10 +66,10 @@ public class PodInfoFaultEvent extends PodInfo {
         unacknowledgedAlerts = new AlertSet(encodedData[15]);
         faultAccessingTables = encodedData[16] == 0x02;
         logEventErrorType = LogEventErrorCode.fromByte((byte)(encodedData[17] >>> 4));
-        logEventErrorPodProgressStatus = PodProgressStatus.fromByte((byte)(encodedData[17] & 0xf));
-        receiverLowGain = (byte)(encodedData[18] >>> 6);
+        logEventErrorPodProgressStatus = PodProgressStatus.fromByte((byte)(encodedData[17] & 0x0f));
+        receiverLowGain = (byte)(ByteUtil.convertUnsignedByteToInt(encodedData[18]) >>> 6);
         radioRSSI = (byte)(encodedData[18] & 0x3f);
-        previousPodProgressStatus = PodProgressStatus.fromByte((byte)(encodedData[19] & 0xf));
+        previousPodProgressStatus = PodProgressStatus.fromByte((byte)(encodedData[19] & 0x0f));
         unknownValue = ByteUtil.substring(encodedData, 20, 2);
     }
 

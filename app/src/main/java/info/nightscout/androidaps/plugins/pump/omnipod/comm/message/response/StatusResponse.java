@@ -27,7 +27,7 @@ public class StatusResponse extends MessageBlock {
             throw new IllegalArgumentException("Not enough data");
         }
 
-        this.deliveryStatus = DeliveryStatus.fromByte((byte) (encodedData[1] >>> 4));
+        this.deliveryStatus = DeliveryStatus.fromByte((byte) (ByteUtil.convertUnsignedByteToInt(encodedData[1]) >>> 4));
         this.podProgressStatus = PodProgressStatus.fromByte((byte) (encodedData[1] & 0x0F));
 
         int minutes = ((encodedData[7] & 0x7F) << 6) | ((encodedData[8] & 0xFC) >>> 2);
@@ -40,7 +40,7 @@ public class StatusResponse extends MessageBlock {
         this.podMessageCounter = (byte) ((encodedData[4] >>> 3) & 0xf);
 
         this.insulinNotDelivered = Constants.POD_PULSE_SIZE * (((encodedData[4] & 0x03) << 8) | ByteUtil.convertUnsignedByteToInt(encodedData[5]));
-        this.alerts = new AlertSet((byte) (((encodedData[6] & 0x7f) << 1) | (encodedData[7] >>> 7)));
+        this.alerts = new AlertSet((byte) (((encodedData[6] & 0x7f) << 1) | (ByteUtil.convertUnsignedByteToInt(encodedData[7]) >>> 7)));
 
         double reservoirValue = (((encodedData[8] & 0x3) << 8) + ByteUtil.convertUnsignedByteToInt(encodedData[9])) * Constants.POD_PULSE_SIZE;
         if(reservoirValue > Constants.MAX_RESERVOIR_READING) {
