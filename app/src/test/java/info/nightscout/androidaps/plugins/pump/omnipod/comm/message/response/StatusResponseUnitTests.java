@@ -10,6 +10,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressStatus;
 import info.nightscout.androidaps.Constants;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class StatusResponseUnitTests {
     // TODO add /extend tests
@@ -50,5 +51,19 @@ public class StatusResponseUnitTests {
         assertEquals(Constants.POD_PULSE_SIZE * 8191, statusResponse.insulin, 0.0000001);
         assertEquals(15, statusResponse.podMessageCounter);
         assertEquals(8, statusResponse.alerts.getAlertSlots().size());
+    }
+
+    @Test
+    public void testWithReservoirLevel() {
+        byte[] bytes = ByteUtil.fromHexString("1d19050ec82c08376f9801dc");
+        StatusResponse statusResponse = new StatusResponse(bytes);
+
+        assertTrue(Duration.standardMinutes(3547).isEqual(statusResponse.timeActive));
+        assertEquals(DeliveryStatus.NORMAL, statusResponse.deliveryStatus);
+        assertEquals(PodProgressStatus.RUNNING_BELOW_FIFTY_UNITS, statusResponse.podProgressStatus);
+        assertEquals(129.45, statusResponse.insulin, 0.00001);
+        assertEquals(46.00, statusResponse.reservoirLevel, 0.00001);
+        assertEquals(2.2, statusResponse.insulinNotDelivered, 0.0001);
+        assertEquals(9, statusResponse.podMessageCounter);
     }
 }
