@@ -14,9 +14,6 @@ public class BeepConfigCommandUnitTests {
         BeepConfigCommand beepConfigCommand = new BeepConfigCommand(BeepType.BIP_BEEP_BIP_BEEP_BIP_BEEP_BIP_BEEP, true,
                 Duration.ZERO, true, Duration.ZERO,
                 true, Duration.ZERO);
-
-        System.out.println(ByteUtil.shortHexString( beepConfigCommand.getRawData()));
-
         assertArrayEquals(ByteUtil.fromHexString("1e0402404040"), beepConfigCommand.getRawData());
     }
 
@@ -25,9 +22,6 @@ public class BeepConfigCommandUnitTests {
         BeepConfigCommand beepConfigCommand = new BeepConfigCommand(BeepType.BEEP_CONFIG_NO_BEEP, true,
                 Duration.ZERO, false, Duration.standardMinutes(60),
                 false, Duration.standardMinutes(60));
-
-        System.out.println(ByteUtil.shortHexString( beepConfigCommand.getRawData()));
-
         assertArrayEquals(ByteUtil.fromHexString("1e040f403c3c"), beepConfigCommand.getRawData());
     }
 }

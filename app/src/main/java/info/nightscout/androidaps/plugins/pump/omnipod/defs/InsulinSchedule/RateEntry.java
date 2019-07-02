@@ -12,11 +12,12 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.IRawRepresen
 public class RateEntry implements IRawRepresentable {
 
     private final double totalPulses;
-    private final Duration delayBetweenPulses;
+    // We use a double for the delay between pulses because the Joda time API lacks precision for our calculations
+    private final double delayBetweenPulsesInSeconds;
 
-    public RateEntry(double totalPulses, Duration delayBetweenPulses) {
+    public RateEntry(double totalPulses, double delayBetweenPulsesInSeconds) {
         this.totalPulses = totalPulses;
-        this.delayBetweenPulses = delayBetweenPulses;
+        this.delayBetweenPulsesInSeconds = delayBetweenPulsesInSeconds;
     }
 
     public static List<RateEntry> createEntries(double rate, Duration duration) {
@@ -28,11 +29,11 @@ public class RateEntry implements IRawRepresentable {
         double durationInHours = duration.getStandardSeconds() / 3600.0;
 
         double remainingPulses = rate * durationInHours / Constants.POD_PULSE_SIZE;
-        Duration delayBetweenPulses = Duration.millis((long)(3600 / rate * Constants.POD_PULSE_SIZE * 1000));
+        double delayBetweenPulses = 3600 / rate * Constants.POD_PULSE_SIZE;
 
         while(remainingSegments > 0) {
             if(rate == 0.0) {
-                entries.add(new RateEntry(0, Duration.standardMinutes(30)));
+                entries.add(new RateEntry(0, 30D * 60));
                 remainingSegments -= 1;
             } else {
                 int numSegments = Math.min(maxSegmentsPerEntry, (int)Math.round(remainingPulses / pulsesPerSegment));
@@ -50,8 +51,8 @@ public class RateEntry implements IRawRepresentable {
         return totalPulses;
     }
 
-    public Duration getDelayBetweenPulses() {
-        return delayBetweenPulses;
+    public double getDelayBetweenPulsesInSeconds() {
+        return delayBetweenPulsesInSeconds;
     }
 
     @Override
@@ -59,9 +60,9 @@ public class RateEntry implements IRawRepresentable {
         byte[] rawData = new byte[0];
         rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt16((int)Math.round(totalPulses * 10)));
         if(totalPulses == 0) {
-            rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt((int) (delayBetweenPulses.getMillis() * 10)));
+            rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt((int) (delayBetweenPulsesInSeconds * 1000 * 1000)));
         } else {
-            rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt((int)(delayBetweenPulses.getMillis() * 100)));
+            rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt((int)(delayBetweenPulsesInSeconds * 1000 * 100)));
         }
         return rawData;
     }

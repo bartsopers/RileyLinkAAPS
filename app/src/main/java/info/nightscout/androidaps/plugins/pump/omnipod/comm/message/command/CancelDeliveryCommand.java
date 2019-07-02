@@ -1,7 +1,10 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command;
 
+import java.util.EnumSet;
+
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepType;
 
@@ -9,23 +12,22 @@ public class CancelDeliveryCommand extends MessageBlock {
 
     private int nonce;
     private BeepType beepType;
-    private boolean cancelBolus;
-    private boolean cancelTempBasal;
-    private boolean cancelBasalProgram;
+    private EnumSet<DeliveryType> deliveryTypes;
 
     @Override
     public MessageBlockType getType() {
         return MessageBlockType.CANCEL_DELIVERY;
     }
 
-    public CancelDeliveryCommand(int nonce, BeepType beepType, boolean cancelBolus,
-                                 boolean cancelTempBasal, boolean cancelBasalProgram) {
+    public CancelDeliveryCommand(int nonce, BeepType beepType, EnumSet<DeliveryType> deliveryTypes) {
         this.nonce = nonce;
         this.beepType = beepType;
-        this.cancelBolus = cancelBolus;
-        this.cancelTempBasal = cancelTempBasal;
-        this.cancelBasalProgram = cancelBasalProgram;
+        this.deliveryTypes = deliveryTypes;
         encode();
+    }
+
+    public CancelDeliveryCommand(int nonce, BeepType beepType, DeliveryType deliveryType) {
+        this(nonce, beepType, EnumSet.of(deliveryType));
     }
 
     private void encode() {
@@ -34,14 +36,14 @@ public class CancelDeliveryCommand extends MessageBlock {
         byte beepTypeValue = beepType.getValue();
         if (beepTypeValue > 8) beepTypeValue = 0;
         encodedData[4] = (byte)((beepTypeValue & 0x0F) << 4);
-        if (cancelBolus) {
-            encodedData[4] |= 4;
+        if(deliveryTypes.contains(DeliveryType.BASAL)) {
+            encodedData[4] |= 1;
         }
-        if (cancelTempBasal) {
+        if(deliveryTypes.contains(DeliveryType.TEMP_BASAL)) {
             encodedData[4] |= 2;
         }
-        if (cancelBasalProgram) {
-            encodedData[4] |= 1;
+        if(deliveryTypes.contains(DeliveryType.BOLUS)) {
+            encodedData[4] |= 4;
         }
     }
 }

@@ -3,6 +3,7 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command;
 import org.joda.time.Duration;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,13 +19,13 @@ import static org.junit.Assert.assertTrue;
 
 public class BasalScheduleExtraCommandUnitTests {
     @Test
-    public void testMessageCorrect() {
+    public void testBasalEncodingFromBasalSchedule() {
         List<RateEntry> rateEntries = RateEntry.createEntries(3.0, Duration.standardHours(24));
         BasalScheduleExtraCommand basalScheduleExtraCommand = new BasalScheduleExtraCommand( //
                 false, //
                 true, //
                 Duration.ZERO, //
-                (byte)0, //
+                (byte) 0, //
                 689, //
                 Duration.standardSeconds(20), //
                 rateEntries);
@@ -57,8 +58,22 @@ public class BasalScheduleExtraCommandUnitTests {
 
         RateEntry rateEntry = rateEntries.get(0);
 
-        assertEquals(60, rateEntry.getDelayBetweenPulses().getStandardMinutes());
+        assertEquals(3600.0, rateEntry.getDelayBetweenPulsesInSeconds(), 0.00000001);
         assertEquals(24, rateEntry.getTotalPulses(), 0.001);
+    }
+
+    @Test
+    public void testEncodingFromBasalScheduleWithMultipleEntries() {
+        BasalSchedule schedule = new BasalSchedule(Arrays.asList( //
+                new BasalScheduleEntry(1.05, Duration.ZERO), //
+                new BasalScheduleEntry(0.9, Duration.standardHours(10).plus(Duration.standardMinutes(30))), //
+                new BasalScheduleEntry(1.0, Duration.standardHours(18).plus(Duration.standardMinutes(30)))));
+
+        BasalScheduleExtraCommand basalScheduleExtraCommand = new BasalScheduleExtraCommand(schedule, Duration.standardMinutes((0x2e + 1) * 30).minus(Duration.standardSeconds(0x1be8 / 8)),
+                false, true, Duration.ZERO);
+
+        assertArrayEquals(ByteUtil.fromHexString("131a4002009600a7d8c0089d0105944905a001312d00044c0112a880"),
+                basalScheduleExtraCommand.getRawData());
     }
     // TODO add tests
 
