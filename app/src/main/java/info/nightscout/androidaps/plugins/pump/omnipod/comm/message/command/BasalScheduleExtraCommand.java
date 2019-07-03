@@ -18,19 +18,19 @@ public class BasalScheduleExtraCommand extends MessageBlock {
     private final Duration programReminderInterval;
     private final byte currentEntryIndex;
     private final double remainingPulses;
-    private final Duration delayUntilNextTenthOfPulse;
+    private final double delayUntilNextTenthOfPulseInSeconds;
     private final List<RateEntry> rateEntries;
 
     public BasalScheduleExtraCommand(boolean acknowledgementBeep, boolean completionBeep,
                                      Duration programReminderInterval, byte currentEntryIndex,
-                                     double remainingPulses, Duration delayUntilNextTenthOfPulse, List<RateEntry> rateEntries) {
+                                     double remainingPulses, double delayUntilNextTenthOfPulseInSeconds, List<RateEntry> rateEntries) {
 
         this.acknowledgementBeep = acknowledgementBeep;
         this.completionBeep = completionBeep;
         this.programReminderInterval = programReminderInterval;
         this.currentEntryIndex = currentEntryIndex;
         this.remainingPulses = remainingPulses;
-        this.delayUntilNextTenthOfPulse = delayUntilNextTenthOfPulse;
+        this.delayUntilNextTenthOfPulseInSeconds = delayUntilNextTenthOfPulseInSeconds;
         this.rateEntries = rateEntries;
         encode();
     }
@@ -41,6 +41,7 @@ public class BasalScheduleExtraCommand extends MessageBlock {
         this.acknowledgementBeep = acknowledgementBeep;
         this.completionBeep = completionBeep;
         this.programReminderInterval = programReminderInterval;
+        Duration scheduleOffsetNearestSecond = Duration.standardSeconds(Math.round(scheduleOffset.getMillis() / 1000.0));
 
         BasalSchedule mergedSchedule = new BasalSchedule(schedule.adjacentEqualRatesMergedEntries());
         List<BasalSchedule.BasalScheduleDurationEntry> durations = mergedSchedule.getDurations();
@@ -49,14 +50,14 @@ public class BasalScheduleExtraCommand extends MessageBlock {
             rateEntries.addAll(RateEntry.createEntries(entry.getRate(), entry.getDuration()));
         }
 
-        BasalSchedule.BasalScheduleLookupResult entryLookupResult = mergedSchedule.lookup(scheduleOffset);
+        BasalSchedule.BasalScheduleLookupResult entryLookupResult = mergedSchedule.lookup(scheduleOffsetNearestSecond);
         currentEntryIndex = (byte)entryLookupResult.getIndex();
-        Duration timeRemainingInEntry = entryLookupResult.getStartTime().minus(scheduleOffset.minus(entryLookupResult.getDuration()));
-        double rate = mergedSchedule.rateAt(scheduleOffset);
+        double timeRemainingInEntryInSeconds = entryLookupResult.getStartTime().minus(scheduleOffsetNearestSecond.minus(entryLookupResult.getDuration())).getMillis() / 1000.0;
+        double rate = mergedSchedule.rateAt(scheduleOffsetNearestSecond);
         int pulsesPerHour = (int)Math.round(rate / Constants.POD_PULSE_SIZE);
         double timeBetweenPulses = 3600.0 / pulsesPerHour;
-        delayUntilNextTenthOfPulse = Duration.millis(timeRemainingInEntry.getMillis() % ((long)(timeBetweenPulses * 1000) / 10));
-        remainingPulses = pulsesPerHour * timeRemainingInEntry.minus(delayUntilNextTenthOfPulse).getMillis() / 3600.0 / 1000 + 0.1;
+        delayUntilNextTenthOfPulseInSeconds = (timeRemainingInEntryInSeconds % (timeBetweenPulses / 10.0));
+        remainingPulses = pulsesPerHour * (timeRemainingInEntryInSeconds - delayUntilNextTenthOfPulseInSeconds) / 3600.0 + 0.1;
 
         encode();
     }
@@ -70,7 +71,7 @@ public class BasalScheduleExtraCommand extends MessageBlock {
         };
 
         encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt16((int)Math.round(remainingPulses * 10)));
-        encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt(Math.round(delayUntilNextTenthOfPulse.getMillis() * 1000)));
+        encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt((int)Math.round(delayUntilNextTenthOfPulseInSeconds * 1000 * 1000)));
 
         for(RateEntry entry : rateEntries) {
             encodedData = ByteUtil.concat(encodedData, entry.getRawData());
@@ -108,8 +109,8 @@ public class BasalScheduleExtraCommand extends MessageBlock {
     }
 
     // For testing
-    Duration getDelayUntilNextTenthOfPulse() {
-        return delayUntilNextTenthOfPulse;
+    double getDelayUntilNextTenthOfPulseInSeconds() {
+        return delayUntilNextTenthOfPulseInSeconds;
     }
 
     // For testing
