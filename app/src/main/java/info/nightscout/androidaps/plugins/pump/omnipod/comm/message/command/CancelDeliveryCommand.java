@@ -10,9 +10,9 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepType;
 
 public class CancelDeliveryCommand extends MessageBlock {
 
-    private int nonce;
-    private BeepType beepType;
-    private EnumSet<DeliveryType> deliveryTypes;
+    private final int nonce;
+    private final BeepType beepType;
+    private final EnumSet<DeliveryType> deliveryTypes;
 
     @Override
     public MessageBlockType getType() {

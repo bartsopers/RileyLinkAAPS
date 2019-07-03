@@ -1,11 +1,11 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
 public class NonceState {
-    private long[] table;
+    private final long[] table = new long[21];
     private int index;
 
     public NonceState(int lot, int tid) {
-        initializeTable(lot, tid, (byte)0);
+        initializeTable(lot, tid, (byte)0x00);
     }
 
     public NonceState(int lot, int tid, byte seed) {
@@ -13,7 +13,6 @@ public class NonceState {
     }
 
     private void initializeTable(int lot, int tid, byte seed) {
-        table = new long[21];
         table[0] = (long)(lot & 0xFFFF) + 0x55543DC3l + (((long)(lot) & 0xFFFFFFFFl) >> 16);
         table[0] = table[0] & 0xFFFFFFFFl;
         table[1] = (tid & 0xFFFF) + 0xAAAAE44El + (((long)(tid) & 0xFFFFFFFFl) >> 16);

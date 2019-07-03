@@ -9,7 +9,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 public class ConfigurePodCommandUnitTests {
     @Test
-    public void testMessageCorrect() {
+    public void testEncoding() {
         ConfigurePodCommand configurePodCommand = new ConfigurePodCommand( //
                 0x1f00ee87, //
                 new DateTime(2013, 4, 5, 22, 52, 0), //

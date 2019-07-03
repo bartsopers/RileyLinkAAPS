@@ -17,7 +17,7 @@ public enum BeepType {
     FIVE_SECONDS_BEEP((byte)0xE),
     BEEP_CONFIG_NO_BEEP((byte)0xF);
 
-    byte value;
+    private byte value;
 
     BeepType(byte value) {
         this.value = value;

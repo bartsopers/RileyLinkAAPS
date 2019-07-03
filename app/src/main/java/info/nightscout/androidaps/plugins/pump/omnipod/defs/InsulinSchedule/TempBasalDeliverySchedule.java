@@ -45,4 +45,16 @@ public class TempBasalDeliverySchedule extends DeliverySchedule implements IRawR
 
         return checksum;
     }
+
+    public int getSecondsRemaining() {
+        return secondsRemaining;
+    }
+
+    public int getFirstSegmentPulses() {
+        return firstSegmentPulses;
+    }
+
+    public BasalDeliveryTable getBasalTable() {
+        return basalTable;
+    }
 }

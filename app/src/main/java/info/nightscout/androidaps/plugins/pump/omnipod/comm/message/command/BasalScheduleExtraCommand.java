@@ -18,6 +18,7 @@ public class BasalScheduleExtraCommand extends MessageBlock {
     private final Duration programReminderInterval;
     private final byte currentEntryIndex;
     private final double remainingPulses;
+    // We use a double for the delay between pulses because the Joda time API lacks precision for our calculations
     private final double delayUntilNextTenthOfPulseInSeconds;
     private final List<RateEntry> rateEntries;
 
@@ -83,38 +84,31 @@ public class BasalScheduleExtraCommand extends MessageBlock {
         return MessageBlockType.BASAL_SCHEDULE_EXTRA;
     }
 
-    // For testing
-    boolean isAcknowledgementBeep() {
+    public boolean isAcknowledgementBeep() {
         return acknowledgementBeep;
     }
 
-    // For testing
-    boolean isCompletionBeep() {
+    public boolean isCompletionBeep() {
         return completionBeep;
     }
 
-    // For testing
-    Duration getProgramReminderInterval() {
+    public Duration getProgramReminderInterval() {
         return programReminderInterval;
     }
 
-    // For testing
-    byte getCurrentEntryIndex() {
+    public byte getCurrentEntryIndex() {
         return currentEntryIndex;
     }
 
-    // For testing
-    double getRemainingPulses() {
+    public double getRemainingPulses() {
         return remainingPulses;
     }
 
-    // For testing
-    double getDelayUntilNextTenthOfPulseInSeconds() {
+    public double getDelayUntilNextTenthOfPulseInSeconds() {
         return delayUntilNextTenthOfPulseInSeconds;
     }
 
-    // For testing
-    List<RateEntry> getRateEntries() {
-        return rateEntries;
+    public List<RateEntry> getRateEntries() {
+        return new ArrayList<>(rateEntries);
     }
 }

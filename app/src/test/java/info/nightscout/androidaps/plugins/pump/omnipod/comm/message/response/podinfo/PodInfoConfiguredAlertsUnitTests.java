@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 
 public class PodInfoConfiguredAlertsUnitTests {
     @Test
-    public void testMessageCorrect() {
+    public void testDecoding() {
         byte[] encodedMessage = ByteUtil.fromHexString("010000000000001285000011c700000000119c"); // from https://github.com/ps2/rileylink_ios/blob/omnipod-testing/OmniKitTests/PodInfoTests.swift
         PodInfoConfiguredAlerts podInfoConfiguredAlerts = new PodInfoConfiguredAlerts(encodedMessage);
 

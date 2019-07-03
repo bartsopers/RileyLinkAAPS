@@ -13,14 +13,14 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressStatus;
 public class StatusResponse extends MessageBlock {
     private static final int MINIMUM_MESSAGE_LENGTH = 10;
 
-    public final DeliveryStatus deliveryStatus;
-    public final PodProgressStatus podProgressStatus;
-    public final Duration timeActive;
-    public final Double reservoirLevel;
-    public final double insulin;
-    public final double insulinNotDelivered;
-    public final byte podMessageCounter;
-    public final AlertSet alerts;
+    private final DeliveryStatus deliveryStatus;
+    private final PodProgressStatus podProgressStatus;
+    private final Duration timeActive;
+    private final Double reservoirLevel;
+    private final double insulin;
+    private final double insulinNotDelivered;
+    private final byte podMessageCounter;
+    private final AlertSet alerts;
 
     public StatusResponse(byte[] encodedData) {
         if(encodedData.length < MINIMUM_MESSAGE_LENGTH) {
@@ -53,5 +53,37 @@ public class StatusResponse extends MessageBlock {
     @Override
     public MessageBlockType getType() {
         return MessageBlockType.STATUS_RESPONSE;
+    }
+
+    public DeliveryStatus getDeliveryStatus() {
+        return deliveryStatus;
+    }
+
+    public PodProgressStatus getPodProgressStatus() {
+        return podProgressStatus;
+    }
+
+    public Duration getTimeActive() {
+        return timeActive;
+    }
+
+    public Double getReservoirLevel() {
+        return reservoirLevel;
+    }
+
+    public double getInsulin() {
+        return insulin;
+    }
+
+    public double getInsulinNotDelivered() {
+        return insulinNotDelivered;
+    }
+
+    public byte getPodMessageCounter() {
+        return podMessageCounter;
+    }
+
+    public AlertSet getAlerts() {
+        return alerts;
     }
 }

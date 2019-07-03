@@ -10,7 +10,7 @@ public enum AlertType {
     SUSPEND_ENDED((byte)0x06),
     TIMER_LIMIT((byte)0x07);
 
-    byte value;
+    private byte value;
 
     AlertType(byte value) {
         this.value = value;

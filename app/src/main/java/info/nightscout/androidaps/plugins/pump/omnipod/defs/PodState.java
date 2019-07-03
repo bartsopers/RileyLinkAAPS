@@ -6,14 +6,15 @@ import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniCRC;
 
 public class PodState {
 
-    public int address;
-    public DateTime activatedAt;
-    public FirmwareVersion piVersion;
-    public FirmwareVersion PmVersion;
-    public int lot;
-    public int tid;
-    public int messageNumber;
-    public int packetNumber;
+    private final int address;
+    private final DateTime activatedAt;
+    private final FirmwareVersion piVersion;
+    private final FirmwareVersion PmVersion;
+    private final int lot;
+    private final int tid;
+
+    private int messageNumber;
+    private int packetNumber;
     private NonceState nonceState;
 
     public PodState(int address, DateTime activatedAt, FirmwareVersion piVersion,
@@ -27,6 +28,46 @@ public class PodState {
         this.packetNumber = packetNumber;
         this.messageNumber = messageNumber;
         this.nonceState = new NonceState(lot, tid);
+    }
+
+    public int getAddress() {
+        return address;
+    }
+
+    public DateTime getActivatedAt() {
+        return activatedAt;
+    }
+
+    public FirmwareVersion getPiVersion() {
+        return piVersion;
+    }
+
+    public FirmwareVersion getPmVersion() {
+        return PmVersion;
+    }
+
+    public int getLot() {
+        return lot;
+    }
+
+    public int getTid() {
+        return tid;
+    }
+
+    public int getMessageNumber() {
+        return messageNumber;
+    }
+
+    public int getPacketNumber() {
+        return packetNumber;
+    }
+
+    public void setMessageNumber(int messageNumber) {
+        this.messageNumber = messageNumber;
+    }
+
+    public void setPacketNumber(int packetNumber) {
+        this.packetNumber = packetNumber;
     }
 
     public void resyncNonce(int syncWord, int sentNonce, int sequenceNumber) {

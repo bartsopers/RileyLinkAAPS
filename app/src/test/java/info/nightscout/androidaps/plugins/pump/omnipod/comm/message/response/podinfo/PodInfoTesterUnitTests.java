@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 public class PodInfoTesterUnitTests {
     @Test
-    public void testMessageCorrect() {
+    public void testDecoding() {
         PodInfoTester podInfoTester = new PodInfoTester(ByteUtil.fromHexString("0601003FA8"));
 
         assertEquals((byte)0x01, podInfoTester.getByte1());

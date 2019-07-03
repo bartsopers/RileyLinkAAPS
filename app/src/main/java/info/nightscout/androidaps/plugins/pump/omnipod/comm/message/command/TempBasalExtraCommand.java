@@ -2,6 +2,7 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command;
 
 import org.joda.time.Duration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
@@ -14,6 +15,7 @@ public class TempBasalExtraCommand extends MessageBlock {
     private final boolean completionBeep;
     private final Duration programReminderInterval;
     private final double remainingPulses;
+    // We use a double for the delay until next pulse because the Joda time API lacks precision for our calculations
     private final double delayUntilNextPulse;
     private final List<RateEntry> rateEntries;
 
@@ -58,33 +60,27 @@ public class TempBasalExtraCommand extends MessageBlock {
         return MessageBlockType.TEMP_BASAL_EXTRA;
     }
 
-    // For testing
-    boolean isAcknowledgementBeep() {
+    public boolean isAcknowledgementBeep() {
         return acknowledgementBeep;
     }
 
-    // For testing
-    boolean isCompletionBeep() {
+    public boolean isCompletionBeep() {
         return completionBeep;
     }
 
-    // For testing
-    Duration getProgramReminderInterval() {
+    public Duration getProgramReminderInterval() {
         return programReminderInterval;
     }
 
-    // For testing
-    double getRemainingPulses() {
+    public double getRemainingPulses() {
         return remainingPulses;
     }
 
-    // For testing
-    double getDelayUntilNextPulse() {
+    public double getDelayUntilNextPulse() {
         return delayUntilNextPulse;
     }
 
-    // For testing
-    List<RateEntry> getRateEntries() {
-        return rateEntries;
+    public List<RateEntry> getRateEntries() {
+        return new ArrayList<>(rateEntries);
     }
 }

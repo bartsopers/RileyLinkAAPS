@@ -3,9 +3,9 @@ package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 import java.util.Locale;
 
 public class FirmwareVersion {
-    private int major;
-    private int minor;
-    private int patch;
+    private final int major;
+    private final int minor;
+    private final int patch;
 
     public FirmwareVersion(int major, int minor, int patch) {
         this.major = major;
@@ -16,5 +16,17 @@ public class FirmwareVersion {
     @Override
     public String toString() {
         return String.format(Locale.getDefault(), "%d.%d.%d", major, minor, patch);
+    }
+
+    public int getMajor() {
+        return major;
+    }
+
+    public int getMinor() {
+        return minor;
+    }
+
+    public int getPatch() {
+        return patch;
     }
 }

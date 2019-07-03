@@ -7,8 +7,7 @@ import static org.junit.Assert.assertEquals;
 public class AssignAddressCommandUnitTests {
 
     @Test
-    public void StatusResponse_EnumsCorrect() {
-
+    public void testEncoding() {
         AssignAddressCommand assignAddressCommand = new AssignAddressCommand(0x11223344);
         byte[] rawData = assignAddressCommand.getRawData();
         assertEquals(0x11, rawData[2]);

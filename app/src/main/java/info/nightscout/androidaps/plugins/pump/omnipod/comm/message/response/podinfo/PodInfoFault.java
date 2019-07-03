@@ -8,9 +8,9 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodInfoType;
 
 public class PodInfoFault extends PodInfo {
     private static final int MINIMUM_MESSAGE_LENGTH = 17;
-    private FaultEventCode faultEventCode;
-    private Duration activationTime;
-    private DateTime dateTime;
+    private final FaultEventCode faultEventCode;
+    private final Duration activationTime;
+    private final DateTime dateTime;
 
     public PodInfoFault(byte[] encodedData) {
         super(encodedData);

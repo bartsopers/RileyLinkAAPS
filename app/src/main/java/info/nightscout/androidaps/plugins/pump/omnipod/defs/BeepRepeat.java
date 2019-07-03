@@ -12,7 +12,7 @@ public enum BeepRepeat {
     EVERY_15_MINUTES_DELAYED((byte)0x07),
     EVERY_5_MINUTES((byte)0x08);
 
-    byte value;
+    private byte value;
 
     BeepRepeat(byte value) {
         this.value = value;

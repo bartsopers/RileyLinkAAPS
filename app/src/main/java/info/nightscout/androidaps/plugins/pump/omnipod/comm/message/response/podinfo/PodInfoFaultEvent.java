@@ -21,7 +21,7 @@ public class PodInfoFaultEvent extends PodInfo {
     private final double totalInsulinDelivered;
     private final FaultEventCode currentStatus;
     private final Duration faultEventTimeSinceActivation;
-    private Double reservoirLevel;
+    private final Double reservoirLevel;
     private final Duration timeActive;
     private final AlertSet unacknowledgedAlerts;
     private final boolean faultAccessingTables;

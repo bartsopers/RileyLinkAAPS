@@ -5,7 +5,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 
 public class DeactivatePodCommand extends MessageBlock {
-    private int nonce;
+    private final int nonce;
 
     @Override
     public MessageBlockType getType() {

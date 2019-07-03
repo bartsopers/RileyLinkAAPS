@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.RLMessage;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationManager;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PacketType;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniCRC;
 
@@ -19,7 +18,7 @@ public class OmnipodPacket implements RLMessage {
     private PacketType packetType = PacketType.INVALID;
     private int sequenceNumber = 0;
     private byte[] encodedMessage = null;
-    private Boolean _isValid = false;
+    private Boolean valid = false;
 
     public OmnipodPacket(byte[] encoded) {
         if (encoded.length < 7) {
@@ -33,7 +32,7 @@ public class OmnipodPacket implements RLMessage {
         }
         this.sequenceNumber = (encoded[4] & 0b11111);
 //        if (packetType == PacketType.ACK) {
-//            _isValid = true;
+//            valid = true;
 //
 //        }
         int crc = OmniCRC.crc8(ByteUtil.substring(encoded,0, encoded.length - 1));
@@ -41,7 +40,7 @@ public class OmnipodPacket implements RLMessage {
             throw new OmnipodEncodingException("CRC mismatch");
         }
         this.encodedMessage = ByteUtil.substring(encoded, 5, encoded.length - 1 - 5);
-        _isValid = true;
+        valid = true;
     }
 
     public PacketType getPacketType() {
@@ -53,10 +52,10 @@ public class OmnipodPacket implements RLMessage {
         this.packetType = packetType;
         this.sequenceNumber = packetNumber;
         this.encodedMessage = encodedMessage;
-        if (encodedMessage.length > packetType.maxBodyLength()) {
-            this.encodedMessage = ByteUtil.substring(encodedMessage, 0, packetType.maxBodyLength());
+        if (encodedMessage.length > packetType.getMaxBodyLength()) {
+            this.encodedMessage = ByteUtil.substring(encodedMessage, 0, packetType.getMaxBodyLength());
         }
-        this._isValid = true;
+        this.valid = true;
     }
 
     public int getAddress() {
@@ -83,7 +82,7 @@ public class OmnipodPacket implements RLMessage {
 
     @Override
     public boolean isValid() {
-        return _isValid;
+        return valid;
     }
 
 }

@@ -7,7 +7,7 @@ public enum PacketType {
     CON((byte)0b100),
     ACK((byte)0b010);
 
-    byte value;
+    private byte value;
 
     PacketType(byte value) {
         this.value = value;
@@ -22,7 +22,7 @@ public enum PacketType {
         throw new IllegalArgumentException("Unknown PacketType: "+ value);
     }
 
-    public int maxBodyLength() {
+    public int getMaxBodyLength() {
         switch(this) {
             case ACK:
                 return 4;

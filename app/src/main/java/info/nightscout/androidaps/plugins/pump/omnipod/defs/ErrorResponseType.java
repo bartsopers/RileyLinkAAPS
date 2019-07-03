@@ -4,7 +4,7 @@ package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 public enum ErrorResponseType {
     BAD_NONCE((byte)0x14);
 
-    byte value;
+    private byte value;
 
     ErrorResponseType(byte value) {
         this.value = value;

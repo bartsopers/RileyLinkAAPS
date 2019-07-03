@@ -104,7 +104,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     protected <T extends MessageBlock> T exchangeMessages(OmnipodMessage message, Integer addressOverride, Integer ackAddressOverride) {
         int packetAddress = DEFAULT_ADDRESS;
         if (this.podState != null) {
-            packetAddress = this.podState.address;
+            packetAddress = this.podState.getAddress();
         }
         if (addressOverride != null) {
             packetAddress = addressOverride;
@@ -116,7 +116,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         OmnipodPacket response = null;
         while(encodedMessage.length > 0) {
             PacketType packetType = firstPacket? PacketType.PDM : PacketType.CON;
-            OmnipodPacket packet = new OmnipodPacket(packetAddress, packetType, podState == null? packetNumber : podState.packetNumber, encodedMessage);
+            OmnipodPacket packet = new OmnipodPacket(packetAddress, packetType, podState == null? packetNumber : podState.getPacketNumber(), encodedMessage);
             byte[] encodedMessageInPacket = packet.getEncodedMessage();
             //getting the data remaining to be sent
             encodedMessage = ByteUtil.substring(encodedMessage, encodedMessageInPacket.length, encodedMessage.length - encodedMessageInPacket.length);
@@ -185,7 +185,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         if (podState == null) {
             messageNumber = (messageNumber + increment) & 0b1111;
         } else {
-            podState.messageNumber = (podState.messageNumber + increment) & 0b1111;
+            podState.setMessageNumber((podState.getMessageNumber() + increment) & 0b1111);
         }
     }
 
@@ -193,7 +193,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         if (podState == null) {
             packetNumber = (packetNumber + increment) & 0b11111;
         } else {
-            podState.packetNumber = (podState.packetNumber + increment) & 0b11111;
+            podState.setPacketNumber((podState.getPacketNumber() + increment) & 0b11111);
         }
     }
 
@@ -201,7 +201,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         int pktAddress = DEFAULT_ADDRESS;
         int msgAddress = DEFAULT_ADDRESS;
         if (this.podState != null) {
-            pktAddress = msgAddress = podState.address;
+            pktAddress = msgAddress = podState.getAddress();
         }
         if (packetAddress != null) {
             pktAddress = packetAddress;
@@ -209,7 +209,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         if (messageAddress != null) {
             msgAddress = messageAddress;
         }
-        return new OmnipodPacket(pktAddress, PacketType.ACK, podState == null ? packetNumber : podState.packetNumber, ByteUtil.getBytesFromInt(msgAddress));
+        return new OmnipodPacket(pktAddress, PacketType.ACK, podState == null ? packetNumber : podState.getPacketNumber(), ByteUtil.getBytesFromInt(msgAddress));
     }
 
     private void ackUntilQuiet(Integer packetAddress, Integer messageAddress) {
@@ -248,7 +248,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
             if (response.getAddress() != packet.getAddress()) {
                 continue;
             }
-            if (response.getSequenceNumber() != (((podState == null ? packetNumber : podState.packetNumber) + 1) & 0b11111)) {
+            if (response.getSequenceNumber() != (((podState == null ? packetNumber : podState.getPacketNumber()) + 1) & 0b11111)) {
                 continue;
             }
 
@@ -261,9 +261,9 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     public <T extends MessageBlock> T sendCommand(MessageBlock command) {
         int msgAddress = DEFAULT_ADDRESS;
         if (this.podState != null) {
-            msgAddress = podState.address;
+            msgAddress = podState.getAddress();
         }
-        OmnipodMessage message = new OmnipodMessage(msgAddress, Collections.singletonList(command), podState == null ? messageNumber : podState.messageNumber);
+        OmnipodMessage message = new OmnipodMessage(msgAddress, Collections.singletonList(command), podState == null ? messageNumber : podState.getMessageNumber());
         return exchangeMessages(message);
     }
 
@@ -345,7 +345,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         BolusDeliverySchedule primeBolus = new BolusDeliverySchedule(primeUnits, Duration.standardSeconds(1));
         SetInsulinScheduleCommand primeCommand = new SetInsulinScheduleCommand(nonceValue(), primeBolus);
         BolusExtraCommand extraBolusCommand = new BolusExtraCommand(primeUnits);
-        OmnipodMessage prime = new OmnipodMessage(newAddress, Arrays.asList(primeCommand, extraBolusCommand), podState.messageNumber);
+        OmnipodMessage prime = new OmnipodMessage(newAddress, Arrays.asList(primeCommand, extraBolusCommand), podState.getMessageNumber());
         status = exchangeMessages(prime);
         advanceToNextNonce();
 

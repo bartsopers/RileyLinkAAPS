@@ -6,8 +6,8 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.ErrorResponseType;
 
 public class ErrorResponse extends MessageBlock {
-    private ErrorResponseType errorResponseType;
-    private int nonceSearchKey;
+    private final ErrorResponseType errorResponseType;
+    private final int nonceSearchKey;
 
     public ErrorResponse(byte[] encodedData) {
         this.errorResponseType = ErrorResponseType.fromByte(encodedData[2]);

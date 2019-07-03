@@ -55,4 +55,27 @@ public class VersionResponse extends MessageBlock {
         return MessageBlockType.VERSION_RESPONSE;
     }
 
+    public PodProgressStatus getPodProgressStatus() {
+        return podProgressStatus;
+    }
+
+    public FirmwareVersion getPmVersion() {
+        return pmVersion;
+    }
+
+    public FirmwareVersion getPiVersion() {
+        return piVersion;
+    }
+
+    public int getLot() {
+        return lot;
+    }
+
+    public int getTid() {
+        return tid;
+    }
+
+    public int getAddress() {
+        return address;
+    }
 }

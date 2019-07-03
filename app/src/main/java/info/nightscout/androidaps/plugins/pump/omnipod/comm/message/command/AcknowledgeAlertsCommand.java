@@ -10,8 +10,8 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertType;
 
 public class AcknowledgeAlertsCommand extends MessageBlock {
 
-    private int nonce;
-    private List<AlertType> alertTypes;
+    private final int nonce;
+    private final List<AlertType> alertTypes;
 
     @Override
     public MessageBlockType getType() {

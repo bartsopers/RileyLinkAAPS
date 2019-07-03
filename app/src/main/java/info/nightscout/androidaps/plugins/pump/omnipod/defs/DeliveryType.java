@@ -8,7 +8,7 @@ public enum DeliveryType {
     BOLUS((byte)0x04),
     EXTENDED_BOLUS((byte)0x08);
 	
-    byte value;
+    private byte value;
 
     DeliveryType(byte value) {
         this.value = value;

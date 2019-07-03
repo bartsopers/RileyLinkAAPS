@@ -6,13 +6,13 @@ import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 
 public class AlertConfiguration {
-    private AlertType alertType;
-    private boolean audible;
-    private boolean autoOffModifier;
-    private Duration duration;
-    private AlertTrigger<?> alertTrigger;
-    private BeepRepeat beepRepeat;
-    private BeepType beepType;
+    private final AlertType alertType;
+    private final boolean audible;
+    private final boolean autoOffModifier;
+    private final Duration duration;
+    private final AlertTrigger<?> alertTrigger;
+    private final BeepRepeat beepRepeat;
+    private final BeepType beepType;
 
     public AlertConfiguration(AlertType alertType, boolean audible, boolean autoOffModifier,
                               Duration duration, AlertTrigger alertTrigger,

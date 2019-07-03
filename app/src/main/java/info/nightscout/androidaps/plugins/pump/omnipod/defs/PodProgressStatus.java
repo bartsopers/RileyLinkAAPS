@@ -16,7 +16,7 @@ public enum PodProgressStatus {
     DELAYED_PRIME((byte)0x0e),
     INACTIVE((byte)0x0f);
 
-    byte value;
+    private byte value;
 
     PodProgressStatus(byte value) {
         this.value = value;

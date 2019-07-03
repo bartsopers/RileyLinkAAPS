@@ -15,8 +15,8 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.Temp
 
 public class SetInsulinScheduleCommand extends MessageBlock {
 
-    private int nonce;
-    private DeliverySchedule schedule;
+    private final int nonce;
+    private final DeliverySchedule schedule;
 
     // Bolus
     public SetInsulinScheduleCommand(int nonce, BolusDeliverySchedule schedule) {

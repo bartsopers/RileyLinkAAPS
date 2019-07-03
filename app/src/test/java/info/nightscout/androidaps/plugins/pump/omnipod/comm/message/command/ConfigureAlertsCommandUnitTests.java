@@ -16,7 +16,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 public class ConfigureAlertsCommandUnitTests {
     @Test
-    public void testMessageCorrect() {
+    public void testEncoding() {
         // from https://github.com/ps2/rileylink_ios/blob/master/OmniKitTests/MessageTests.swift
 
         Duration softExpirationTime = Duration.standardHours(72).minus(Duration.standardMinutes(1));

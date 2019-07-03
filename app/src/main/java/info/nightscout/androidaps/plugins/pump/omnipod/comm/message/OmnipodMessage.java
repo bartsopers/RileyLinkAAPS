@@ -14,9 +14,9 @@ import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniCRC;
 public class OmnipodMessage {
 
     private static final Logger LOG = LoggerFactory.getLogger(OmnipodCommunicationManager.class);
-    private int address;
-    private List<MessageBlock> messageBlocks;
-    private int sequenceNumber;
+    private final int address;
+    private final List<MessageBlock> messageBlocks;
+    private final int sequenceNumber;
 
     public OmnipodMessage(int address, List<MessageBlock> messageBlocks, int sequenceNumber) {
         this.address = address;

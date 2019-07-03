@@ -9,12 +9,12 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 // https://github.com/openaps/openomni/wiki/Command-03-Setup-Pod
 public class ConfigurePodCommand extends MessageBlock {
 
-    private static byte PACKET_TIMEOUT_LIMIT = 0x04;
+    private static final byte PACKET_TIMEOUT_LIMIT = 0x04;
 
-    private int lot;
-    private int tid;
-    private DateTime date;
-    private int address;
+    private final int lot;
+    private final int tid;
+    private final DateTime date;
+    private final int address;
 
     //FIXME: We should take care of timezones
     public ConfigurePodCommand(int address, DateTime date, int lot, int tid) {

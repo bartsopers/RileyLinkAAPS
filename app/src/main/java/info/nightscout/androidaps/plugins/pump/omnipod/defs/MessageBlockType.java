@@ -28,7 +28,7 @@ public enum MessageBlockType {
     BEEP_CONFIG(0x1e),
     CANCEL_DELIVERY(0x1f);
 
-    byte value;
+    private byte value;
 
     MessageBlockType(int value) {
         this.value = (byte)value;

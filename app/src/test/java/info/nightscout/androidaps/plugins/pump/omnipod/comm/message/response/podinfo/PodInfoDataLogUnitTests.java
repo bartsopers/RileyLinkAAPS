@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 public class PodInfoDataLogUnitTests {
     @Test
-    public void testMessageCorrect() {
+    public void testDecoding() {
         PodInfoDataLog podInfoDataLog = new PodInfoDataLog(ByteUtil.fromHexString("030100010001043c")); // From https://github.com/ps2/rileylink_ios/blob/omnipod-testing/OmniKitTests/PodInfoTests.swift
 
         assertEquals(FaultEventCode.FAILED_FLASH_ERASE, podInfoDataLog.getFaultEventCode());

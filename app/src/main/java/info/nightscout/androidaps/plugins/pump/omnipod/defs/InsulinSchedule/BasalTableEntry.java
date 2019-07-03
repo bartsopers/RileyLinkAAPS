@@ -34,4 +34,11 @@ public class BasalTableEntry implements IRawRepresentable {
         return this.segments;
     }
 
+    public int getPulses() {
+        return pulses;
+    }
+
+    public boolean isAlternateSegmentPulse() {
+        return alternateSegmentPulse;
+    }
 }
