@@ -28,16 +28,15 @@ public class BolusExtraCommandUnitTests {
     }
 
     @Test
-    public void testBolusExtraCommandWithextraOddPulseCount() {
+    public void testBolusExtraCommandWithExtraOddPulseCount() {
         BolusExtraCommand bolusExtraCommand = new BolusExtraCommand(1.25, 0D, Duration.ZERO, //
                 false, true, Duration.standardHours(1), Duration.standardSeconds(2));
         assertArrayEquals(ByteUtil.fromHexString("170d7c00fa00030d40000000000000"), //
                 bolusExtraCommand.getRawData());
     }
 
-
     @Test
-    public void testBolusExtraCommandWithextraOddPulseCount2() {
+    public void testBolusExtraCommandWithExtraOddPulseCount2() {
         BolusExtraCommand bolusExtraCommand = new BolusExtraCommand(2.05, 0D, Duration.ZERO, //
                 false, false, Duration.standardHours(1), Duration.standardSeconds(2));
         assertArrayEquals(ByteUtil.fromHexString("170d3c019a00030d40000000000000"), //
