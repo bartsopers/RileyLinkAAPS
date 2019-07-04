@@ -29,7 +29,7 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.bluetooth.adapter.action.STATE_CHANGED" />
+                <!-- <action android:name="android.bluetooth.adapter.action.STATE_CHANGED" /> -->
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -80,10 +80,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".HistoryActivity.HistoryPageListActivity" />
         </activity>
+
         <activity
             android:name=".ServiceMessageViewActivity.ServiceMessageViewListActivity"
             android:label="@string/title_servicemessageview_list"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".ServiceMessageViewActivity.ServiceMessageViewDetailActivity"
             android:label="@string/title_servicemessageview_detail"
@@ -104,15 +106,14 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
+
+        <activity android:name="info.nightscout.androidaps.plugins.pump.common.dialog.RileyLinkBLEScanActivity" />
+
+
         <activity
-            android:name=".RileyLinkScan"
-            android:label="@string/title_activity_riley_link_scan"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".ShowAAPSActivity"
+            android:name=".ShowAAPS2Activity"
             android:label="@string/title_activity_show_aaps"
             android:theme="@style/AppTheme" />
-        <activity android:name=".ShowAAPS2Activity"></activity>
     </application>
 
 </manifest>

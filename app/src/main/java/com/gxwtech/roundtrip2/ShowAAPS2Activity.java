@@ -1,14 +1,5 @@
 package com.gxwtech.roundtrip2;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.joda.time.Hours;
-import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -23,19 +14,15 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
-import info.nightscout.androidaps.plugins.pump.medtronic.comm.MedtronicCommunicationManager;
-import info.nightscout.androidaps.plugins.pump.medtronic.comm.history.pump.PumpHistoryEntry;
-import info.nightscout.androidaps.plugins.pump.medtronic.comm.history.pump.PumpHistoryResult;
-import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.BasalProfile;
-import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.BasalProfileEntry;
-import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.BatteryStatusDTO;
-import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.ClockDTO;
-import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.PumpSettingDTO;
 import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.TempBasalPair;
-import info.nightscout.androidaps.plugins.pump.medtronic.defs.BatteryType;
-import info.nightscout.androidaps.plugins.pump.medtronic.defs.MedtronicDeviceType;
-import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationManager;
 
 public class ShowAAPS2Activity extends AppCompatActivity {
 
@@ -50,47 +37,48 @@ public class ShowAAPS2Activity extends AppCompatActivity {
     private TextView tvDuration, tvAmount, tvCommandStatusText, textViewComm;
     private EditText tfDuration, tfAmount;
     CommandAction selectedCommandAction = null;
-    private PumpHistoryEntry lastEntry;
 
 
     public ShowAAPS2Activity() {
-
-        addCommandAction("Get Model", ImplementationStatus.Done, "RefreshData.PumpModel");
-
-        addCommandAction("Set TBR", ImplementationStatus.Done, "RefreshData.SetTBR");
-        addCommandAction("Cancel TBR", ImplementationStatus.Done, "RefreshData.CancelTBR");
-        addCommandAction("Status - TBR", ImplementationStatus.Done, "RefreshData.GetTBR");
-
-        addCommandAction("Get Basal Profile", ImplementationStatus.Done, "RefreshData.BasalProfile");
-        addCommandAction("Set Bolus", ImplementationStatus.Done, "RefreshData.SetBolus");
-
-        addCommandAction("Status - Remaining Insulin", ImplementationStatus.Done, "RefreshData.RemainingInsulin");
-        addCommandAction("Status - Get Time", ImplementationStatus.Done, "RefreshData.GetTime");
-        addCommandAction("Status - Settings", ImplementationStatus.Done, "RefreshData.GetSettings");
-        addCommandAction("Status - Remaining Power", ImplementationStatus.Done, "RefreshData.RemainingPower");
-
-        // addCommandAction("Status - Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetStatus"); // weird on
-        // 512?
-
-        // STATUS: has Bolus / is running / is beeing primed
-
-        // WORK IN PROGRESS - waiting for something
-
-        // LOW PRIORITY
-        addCommandAction("Read History", ImplementationStatus.WorkInProgress, "RefreshData.GetHistory");
-        addCommandAction("Read History 2", ImplementationStatus.WorkInProgress, "RefreshData.GetHistory2");
-        // addCommandAction("Set Extended Bolus", ImplementationStatus.WorkInProgress, "RefreshData.SetExtendedBolus");
-        // addCommandAction("Status - Ext. Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetBolus");
-        // addCommandAction("Load TDD", ImplementationStatus.NotStarted, null); Not needed, we have good history
-
-        // DONE
-
-        // TODO
-        addCommandAction("Set Basal Profile", ImplementationStatus.WorkInProgress, "RefreshData.SetBasalProfile");
-
-        // NOT SUPPORTED
-        // addCommandAction("Cancel Ext Bolus", ImplementationStatus.NotSupportedByDevice, null);
-        // addCommandAction("Cancel Bolus", ImplementationStatus.NotSupportedByDevice, null);
+        addCommandAction("Initialize new POD", ImplementationStatus.Done, "RefreshData.InitializePod");
+        addCommandAction("Finish prime", ImplementationStatus.Done, "RefreshData.FinishPrime");
+//
+//        addCommandAction("Get Model", ImplementationStatus.Done, "RefreshData.PumpModel");
+//
+//        addCommandAction("Set TBR", ImplementationStatus.Done, "RefreshData.SetTBR");
+//        addCommandAction("Cancel TBR", ImplementationStatus.Done, "RefreshData.CancelTBR");
+//        addCommandAction("Status - TBR", ImplementationStatus.Done, "RefreshData.GetTBR");
+//
+//        addCommandAction("Get Basal Profile", ImplementationStatus.Done, "RefreshData.BasalProfile");
+//        addCommandAction("Set Bolus", ImplementationStatus.Done, "RefreshData.SetBolus");
+//
+//        addCommandAction("Status - Remaining Insulin", ImplementationStatus.Done, "RefreshData.RemainingInsulin");
+//        addCommandAction("Status - Get Time", ImplementationStatus.Done, "RefreshData.GetTime");
+//        addCommandAction("Status - Settings", ImplementationStatus.Done, "RefreshData.GetSettings");
+//        addCommandAction("Status - Remaining Power", ImplementationStatus.Done, "RefreshData.RemainingPower");
+//
+//        // addCommandAction("Status - Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetStatus"); // weird on
+//        // 512?
+//
+//        // STATUS: has Bolus / is running / is beeing primed
+//
+//        // WORK IN PROGRESS - waiting for something
+//
+//        // LOW PRIORITY
+//        addCommandAction("Read History", ImplementationStatus.WorkInProgress, "RefreshData.GetHistory");
+//        addCommandAction("Read History 2", ImplementationStatus.WorkInProgress, "RefreshData.GetHistory2");
+//        // addCommandAction("Set Extended Bolus", ImplementationStatus.WorkInProgress, "RefreshData.SetExtendedBolus");
+//        // addCommandAction("Status - Ext. Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetBolus");
+//        // addCommandAction("Load TDD", ImplementationStatus.NotStarted, null); Not needed, we have good history
+//
+//        // DONE
+//
+//        // TODO
+//        addCommandAction("Set Basal Profile", ImplementationStatus.WorkInProgress, "RefreshData.SetBasalProfile");
+//
+//        // NOT SUPPORTED
+//        // addCommandAction("Cancel Ext Bolus", ImplementationStatus.NotSupportedByDevice, null);
+//        // addCommandAction("Cancel Bolus", ImplementationStatus.NotSupportedByDevice, null);
 
     }
 
@@ -169,7 +157,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             }
         }
 
-        intentFilter.addAction("RefreshData.ErrorCode");
+        intentFilter.addAction("RefreshData.Error");
 
         LocalBroadcastManager.getInstance(MainApp.instance().getApplicationContext()).registerReceiver(
             mBroadcastReceiver, intentFilter);
@@ -263,174 +251,175 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
     }
 
-    MedtronicCommunicationManager mcmInstance = null;
+    OmnipodCommunicationManager communicationManager = null;
 
-
-    private MedtronicCommunicationManager getCommunicationManager() {
-        if (mcmInstance == null) {
-            mcmInstance = MedtronicCommunicationManager.getInstance();
+    private OmnipodCommunicationManager getCommunicationManager() {
+        if (communicationManager == null) {
+            communicationManager = OmnipodCommunicationManager.getInstance();
         }
 
-        return mcmInstance;
+        return communicationManager;
     }
 
     Object data;
-    String errorCode;
-
+    String errorMessage;
 
     public void sendData(String action) {
 
-        // FIXME
         switch (action) {
-            case "RefreshData.PumpModel": {
-                MedtronicDeviceType pumpModel = (MedtronicDeviceType)data;
-                putOnDisplay("Model: " + pumpModel.name());
-            }
+            case "RefreshData.InitializePod":
+            case "RefreshData.FinishPrime":
+                putOnDisplay(data.toString());
+                break;
+            case "RefreshData.Error":
+                putOnDisplay("Error: " + errorMessage);
                 break;
 
-            case "RefreshData.BasalProfile": {
-                BasalProfile basalProfile = (BasalProfile)data;
-                putOnDisplay("Basal Profile: " + basalProfile.getBasalProfileAsString());
-            }
-                break;
-
-            case "RefreshData.RemainingInsulin": {
-                Float remainingInsulin = (Float)data;
-                putOnDisplay("Remaining Insulin: " + remainingInsulin);
-            }
-                break;
-
-            case "RefreshData.RemainingPower": {
-                BatteryStatusDTO status = (BatteryStatusDTO)data;
-                putOnDisplay("Remaining Battery: " + status.batteryStatusType.name() + //
-                    ", voltage=" + status.voltage + //
-                    ", percent(Alkaline)=" + status.getCalculatedPercent(BatteryType.Alkaline) + //
-                    ", percent(Lithium)=" + status.getCalculatedPercent(BatteryType.Lithium));
-            }
-                break;
-
-            case "RefreshData.GetTime": {
-                ClockDTO ldt = (ClockDTO)data;
-                putOnDisplay("Pump Time: " + ldt.pumpTime.toString("dd.MM.yyyy HH:mm:ss"));
-                putOnDisplay("Local Time: " + ldt.localDeviceTime.toString("dd.MM.yyyy HH:mm:ss"));
-                //long diff = ldt.pumpTime.minus(ldt.localDeviceTime);
-                //putOnDisplay("Difference: " + ldt.pumpTime.toString("dd.MM.yyyy HH:mm:ss"));
-            }
-                break;
-
-            case "RefreshData.ErrorCode": {
-                putOnDisplay("Error: " + errorCode);
-            }
-                break;
-
-            case "RefreshData.SetTBR": {
-                Boolean response = (Boolean)data;
-                TempBasalPair tbr = getTBRSettings();
-
-                putOnDisplay(String.format("TBR: Amount: %.3f, Duration: %s - %s", tbr.getInsulinRate(),
-                    "" + tbr.getDurationMinutes(), (response ? "Was set." : "Was NOT set.")));
-            }
-                break;
-
-            case "RefreshData.GetTBR": {
-                TempBasalPair tbr = (TempBasalPair)data;
-
-                putOnDisplay(String.format("TBR: Amount: %s, Duration: %s", "" + tbr.getInsulinRate(),
-                    "" + tbr.getDurationMinutes()));
-            }
-                break;
-
-            case "RefreshData.SetBolus": {
-                Boolean response = (Boolean)data;
-
-                Float amount = getAmount();
-
-                putOnDisplay(String.format("Bolus: %.2f - %s", amount, (response ? "Was set." : "Was NOT set.")));
-            }
-                break;
-
-            case "RefreshData.SetExtendedBolus": {
-                Boolean response = (Boolean)data;
-
-                TempBasalPair tbr = new TempBasalPair(0.5d, false, 30); // getTBRSettings();
-
-                putOnDisplay(String.format("Extended Bolus: Amount: %.3f, Duration: %s - %s", tbr.getInsulinRate(), ""
-                    + tbr.getDurationMinutes(), (response ? "Was set." : "Was NOT set.")));
-            }
-                break;
-
-            case "RefreshData.CancelTBR": {
-                Boolean response = (Boolean)data;
-
-                putOnDisplay(String.format("TBR %s cancelled.", (response ? "was" : "was NOT")));
-            }
-                break;
-
-            case "RefreshData.SetBasalProfile": {
-                Boolean response = (Boolean)data;
-
-                putOnDisplay(String.format("Basal profile %s set.", (response ? "was" : "was NOT")));
-            }
-                break;
-
-            case "RefreshData.GetStatus": {
-                // FIXME
-                putOnDisplay("Status undefined ?");
-            }
-                break;
-
-            case "RefreshData.GetHistory": {
-
-                PumpHistoryResult result = (PumpHistoryResult)data;
-
-                List<PumpHistoryEntry> validEntries = result.getValidEntries();
-
-                if (validEntries != null) {
-
-                    putOnDisplay("History Entries: (" + validEntries.size() + ")");
-                    LOG.debug("History Entries: (" + validEntries.size() + ")");
-                    for (PumpHistoryEntry entry : validEntries) {
-                        putOnDisplay(entry.DT + "   " + entry.getEntryType().name());
-                    }
-
-                    if (validEntries.size() > 6) {
-                        this.lastEntry = validEntries.get(5);
-                    }
-                } else {
-                    putOnDisplay("No History entries.");
-                }
-
-            }
-                break;
-
-            case "RefreshData.GetHistory2": {
-
-                PumpHistoryResult result = (PumpHistoryResult)data;
-
-                List<PumpHistoryEntry> validEntries = result.getValidEntries();
-
-                if (validEntries != null) {
-
-                    putOnDisplay("History Entries 2: (" + validEntries.size() + ")");
-                    LOG.debug("History Entries: (" + validEntries.size() + ")");
-                    for (PumpHistoryEntry entry : validEntries) {
-                        putOnDisplay(entry.DT + "   " + entry.getEntryType().name());
-                    }
-                }
-
-            }
-                break;
-
-            case "RefreshData.GetSettings": {
-                Map<String, PumpSettingDTO> settings = (Map<String, PumpSettingDTO>)data;
-
-                putOnDisplay("Settings on pump: (" + settings.size() + "/" + settings.values().size() + ")");
-                LOG.debug("Settings on front: " + settings);
-                for (PumpSettingDTO entry : settings.values()) {
-                    putOnDisplay(entry.key + " = " + entry.value);
-                }
-            }
-                break;
+//
+//            case "RefreshData.PumpModel": {
+//                MedtronicDeviceType pumpModel = (MedtronicDeviceType)data;
+//                putOnDisplay("Model: " + pumpModel.name());
+//            }
+//                break;
+//
+//            case "RefreshData.BasalProfile": {
+//                BasalProfile basalProfile = (BasalProfile)data;
+//                putOnDisplay("Basal Profile: " + basalProfile.getBasalProfileAsString());
+//            }
+//                break;
+//
+//            case "RefreshData.RemainingInsulin": {
+//                Float remainingInsulin = (Float)data;
+//                putOnDisplay("Remaining Insulin: " + remainingInsulin);
+//            }
+//                break;
+//
+//            case "RefreshData.RemainingPower": {
+//                BatteryStatusDTO status = (BatteryStatusDTO)data;
+//                putOnDisplay("Remaining Battery: " + status.batteryStatusType.name() + //
+//                    ", voltage=" + status.voltage + //
+//                    ", percent(Alkaline)=" + status.getCalculatedPercent(BatteryType.Alkaline) + //
+//                    ", percent(Lithium)=" + status.getCalculatedPercent(BatteryType.Lithium));
+//            }
+//                break;
+//
+//            case "RefreshData.GetTime": {
+//                ClockDTO ldt = (ClockDTO)data;
+//                putOnDisplay("Pump Time: " + ldt.pumpTime.toString("dd.MM.yyyy HH:mm:ss"));
+//                putOnDisplay("Local Time: " + ldt.localDeviceTime.toString("dd.MM.yyyy HH:mm:ss"));
+//                //long diff = ldt.pumpTime.minus(ldt.localDeviceTime);
+//                //putOnDisplay("Difference: " + ldt.pumpTime.toString("dd.MM.yyyy HH:mm:ss"));
+//            }
+//                break;
+//
+//            case "RefreshData.SetTBR": {
+//                Boolean response = (Boolean)data;
+//                TempBasalPair tbr = getTBRSettings();
+//
+//                putOnDisplay(String.format("TBR: Amount: %.3f, Duration: %s - %s", tbr.getInsulinRate(),
+//                    "" + tbr.getDurationMinutes(), (response ? "Was set." : "Was NOT set.")));
+//            }
+//                break;
+//
+//            case "RefreshData.GetTBR": {
+//                TempBasalPair tbr = (TempBasalPair)data;
+//
+//                putOnDisplay(String.format("TBR: Amount: %s, Duration: %s", "" + tbr.getInsulinRate(),
+//                    "" + tbr.getDurationMinutes()));
+//            }
+//                break;
+//
+//            case "RefreshData.SetBolus": {
+//                Boolean response = (Boolean)data;
+//
+//                Float amount = getAmount();
+//
+//                putOnDisplay(String.format("Bolus: %.2f - %s", amount, (response ? "Was set." : "Was NOT set.")));
+//            }
+//                break;
+//
+//            case "RefreshData.SetExtendedBolus": {
+//                Boolean response = (Boolean)data;
+//
+//                TempBasalPair tbr = new TempBasalPair(0.5d, false, 30); // getTBRSettings();
+//
+//                putOnDisplay(String.format("Extended Bolus: Amount: %.3f, Duration: %s - %s", tbr.getInsulinRate(), ""
+//                    + tbr.getDurationMinutes(), (response ? "Was set." : "Was NOT set.")));
+//            }
+//                break;
+//
+//            case "RefreshData.CancelTBR": {
+//                Boolean response = (Boolean)data;
+//
+//                putOnDisplay(String.format("TBR %s cancelled.", (response ? "was" : "was NOT")));
+//            }
+//                break;
+//
+//            case "RefreshData.SetBasalProfile": {
+//                Boolean response = (Boolean)data;
+//
+//                putOnDisplay(String.format("Basal profile %s set.", (response ? "was" : "was NOT")));
+//            }
+//                break;
+//
+//            case "RefreshData.GetStatus": {
+//                // FIXME
+//                putOnDisplay("Status undefined ?");
+//            }
+//                break;
+//
+//            case "RefreshData.GetHistory": {
+//
+//                PumpHistoryResult result = (PumpHistoryResult)data;
+//
+//                List<PumpHistoryEntry> validEntries = result.getValidEntries();
+//
+//                if (validEntries != null) {
+//
+//                    putOnDisplay("History Entries: (" + validEntries.size() + ")");
+//                    LOG.debug("History Entries: (" + validEntries.size() + ")");
+//                    for (PumpHistoryEntry entry : validEntries) {
+//                        putOnDisplay(entry.DT + "   " + entry.getEntryType().name());
+//                    }
+//
+//                    if (validEntries.size() > 6) {
+//                        this.lastEntry = validEntries.get(5);
+//                    }
+//                } else {
+//                    putOnDisplay("No History entries.");
+//                }
+//
+//            }
+//                break;
+//
+//            case "RefreshData.GetHistory2": {
+//
+//                PumpHistoryResult result = (PumpHistoryResult)data;
+//
+//                List<PumpHistoryEntry> validEntries = result.getValidEntries();
+//
+//                if (validEntries != null) {
+//
+//                    putOnDisplay("History Entries 2: (" + validEntries.size() + ")");
+//                    LOG.debug("History Entries: (" + validEntries.size() + ")");
+//                    for (PumpHistoryEntry entry : validEntries) {
+//                        putOnDisplay(entry.DT + "   " + entry.getEntryType().name());
+//                    }
+//                }
+//
+//            }
+//                break;
+//
+//            case "RefreshData.GetSettings": {
+//                Map<String, PumpSettingDTO> settings = (Map<String, PumpSettingDTO>)data;
+//
+//                putOnDisplay("Settings on pump: (" + settings.size() + "/" + settings.values().size() + ")");
+//                LOG.debug("Settings on front: " + settings);
+//                for (PumpSettingDTO entry : settings.values()) {
+//                    putOnDisplay(entry.key + " = " + entry.value);
+//                }
+//            }
+//                break;
 
             default:
                 putOnDisplay("Unsupported action: " + action);
@@ -456,138 +445,149 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
                 LOG.info("start Action: " + selectedCommandAction.action);
 
-                Object returnData = null;
+                data = null;
+                errorMessage = null;
 
                 switch (selectedCommandAction.intentString) {
-                    case "RefreshData.PumpModel": {
-                        returnData = getCommunicationManager().getPumpModel();
-                    }
-                        break;
-
-                    case "RefreshData.BasalProfile": {
-                        returnData = getCommunicationManager().getBasalProfile();
-                    }
-                        break;
-
-                    case "RefreshData.RemainingInsulin": {
-                        returnData = getCommunicationManager().getRemainingInsulin();
-                    }
-                        break;
-
-                    case "RefreshData.GetTime": {
-                        returnData = getCommunicationManager().getPumpTime();
-                    }
-                        break;
-
-                    case "RefreshData.RemainingPower": {
-                        returnData = getCommunicationManager().getRemainingBattery();
-                    }
-                        break;
-
-                    case "RefreshData.SetTBR": {
-                        TempBasalPair tbr = getTBRSettings();
-                        if (tbr != null) {
-                            returnData = getCommunicationManager().setTBR(tbr);
+                    case "RefreshData.InitializePod":
+                        try {
+                            data = getCommunicationManager().initializePod();
+                        } catch(RuntimeException ex) {
+                            errorMessage = ex.getMessage();
+                            LOG.error("Caught exception: "+ errorMessage);
+                            ex.printStackTrace();
                         }
-                    }
                         break;
-
-                    // case "RefreshData.SetExtendedBolus": {
-                    // // TempBasalPair tbr = getTBRSettings();
-                    // // if (tbr != null) {
-                    // // returnData = getCommunicationManager().setExtendedBolus(tbr.getInsulinRate(),
-                    // // tbr.getDurationMinutes());
-                    // // }
-                    //
-                    // //returnData = getCommunicationManager().setExtendedBolus(0.5d, 30);
-                    //
-                    // }
-                    // break;
-
-                    case "RefreshData.GetTBR": {
-                        returnData = getCommunicationManager().getTemporaryBasal();
-                    }
-                        break;
-
-                    case "RefreshData.GetStatus": {
-                        //returnData = getCommunicationManager().getPumpState();
-                    }
-                        break;
-
-                    case "RefreshData.GetHistory": {
-                        LocalDateTime ldt = new LocalDateTime();
-                        ldt = ldt.minus(Hours.hours(36));
-
-                        returnData = getCommunicationManager().getPumpHistory(null, ldt);
-                    }
-                        break;
-
-                    case "RefreshData.GetHistory2": {
-                        returnData = getCommunicationManager().getPumpHistory(lastEntry, null);
-                    }
-                        break;
-
-                    case "RefreshData.GetBolus": {
-                        //returnData = getCommunicationManager().getBolusStatus();
-                    }
-                        break;
-
-                    case "RefreshData.GetSettings": {
-                        returnData = getCommunicationManager().getPumpSettings();
-                    }
-                        break;
-
-                    case "RefreshData.SetBolus": {
-                        Float amount = getAmount();
-
-                        if (amount != null)
-                            returnData = getCommunicationManager().setBolus(amount);
-                    }
-                        break;
-
-                    case "RefreshData.CancelTBR": {
-                        returnData = getCommunicationManager().cancelTBR();
-                    }
-                        break;
-
-                    case "RefreshData.SetBasalProfile": {
-
-                        Float amount = getAmount();
-
-                        if (amount != null) {
-
-                            BasalProfile profile = new BasalProfile();
-
-                            int basalStrokes1 = MedtronicUtil.getBasalStrokesInt(amount);
-                            int basalStrokes2 = MedtronicUtil.getBasalStrokesInt(amount * 2);
-
-                            for (int i = 0; i < 24; i++) {
-                                profile.addEntry(new BasalProfileEntry(i % 2 == 0 ? amount : amount * 2.0d, i, 0));
-                            }
-
-                            profile.generateRawDataFromEntries();
-
-                            returnData = getCommunicationManager().setBasalProfile(profile);
+                    case "RefreshData.FinishPrime":
+                        try {
+                            data = getCommunicationManager().finishPrime();
+                        } catch(RuntimeException ex) {
+                            errorMessage = ex.getMessage();
+                            LOG.error("Caught exception: "+ errorMessage);
+                            ex.printStackTrace();
                         }
-
-                    }
-                        break;
+//                    case "RefreshData.PumpModel": {
+//                        returnData = getCommunicationManager().getPumpModel();
+//                    }
+//                        break;
+//
+//                    case "RefreshData.BasalProfile": {
+//                        returnData = getCommunicationManager().getBasalProfile();
+//                    }
+//                        break;
+//
+//                    case "RefreshData.RemainingInsulin": {
+//                        returnData = getCommunicationManager().getRemainingInsulin();
+//                    }
+//                        break;
+//
+//                    case "RefreshData.GetTime": {
+//                        returnData = getCommunicationManager().getPumpTime();
+//                    }
+//                        break;
+//
+//                    case "RefreshData.RemainingPower": {
+//                        returnData = getCommunicationManager().getRemainingBattery();
+//                    }
+//                        break;
+//
+//                    case "RefreshData.SetTBR": {
+//                        TempBasalPair tbr = getTBRSettings();
+//                        if (tbr != null) {
+//                            returnData = getCommunicationManager().setTBR(tbr);
+//                        }
+//                    }
+//                        break;
+//
+//                    // case "RefreshData.SetExtendedBolus": {
+//                    // // TempBasalPair tbr = getTBRSettings();
+//                    // // if (tbr != null) {
+//                    // // returnData = getCommunicationManager().setExtendedBolus(tbr.getInsulinRate(),
+//                    // // tbr.getDurationMinutes());
+//                    // // }
+//                    //
+//                    // //returnData = getCommunicationManager().setExtendedBolus(0.5d, 30);
+//                    //
+//                    // }
+//                    // break;
+//
+//                    case "RefreshData.GetTBR": {
+//                        returnData = getCommunicationManager().getTemporaryBasal();
+//                    }
+//                        break;
+//
+//                    case "RefreshData.GetStatus": {
+//                        //returnData = getCommunicationManager().getPumpState();
+//                    }
+//                        break;
+//
+//                    case "RefreshData.GetHistory": {
+//                        LocalDateTime ldt = new LocalDateTime();
+//                        ldt = ldt.minus(Hours.hours(36));
+//
+//                        returnData = getCommunicationManager().getPumpHistory(null, ldt);
+//                    }
+//                        break;
+//
+//                    case "RefreshData.GetHistory2": {
+//                        returnData = getCommunicationManager().getPumpHistory(lastEntry, null);
+//                    }
+//                        break;
+//
+//                    case "RefreshData.GetBolus": {
+//                        //returnData = getCommunicationManager().getBolusStatus();
+//                    }
+//                        break;
+//
+//                    case "RefreshData.GetSettings": {
+//                        returnData = getCommunicationManager().getPumpSettings();
+//                    }
+//                        break;
+//
+//                    case "RefreshData.SetBolus": {
+//                        Float amount = getAmount();
+//
+//                        if (amount != null)
+//                            returnData = getCommunicationManager().setBolus(amount);
+//                    }
+//                        break;
+//
+//                    case "RefreshData.CancelTBR": {
+//                        returnData = getCommunicationManager().cancelTBR();
+//                    }
+//                        break;
+//
+//                    case "RefreshData.SetBasalProfile": {
+//
+//                        Float amount = getAmount();
+//
+//                        if (amount != null) {
+//
+//                            BasalProfile profile = new BasalProfile();
+//
+//                            int basalStrokes1 = MedtronicUtil.getBasalStrokesInt(amount);
+//                            int basalStrokes2 = MedtronicUtil.getBasalStrokesInt(amount * 2);
+//
+//                            for (int i = 0; i < 24; i++) {
+//                                profile.addEntry(new BasalProfileEntry(i % 2 == 0 ? amount : amount * 2.0d, i, 0));
+//                            }
+//
+//                            profile.generateRawDataFromEntries();
+//
+//                            returnData = getCommunicationManager().setBasalProfile(profile);
+//                        }
+//
+//                    }
+//                        break;
 
                     default:
                         LOG.warn("Action is not supported {}.", selectedCommandAction);
 
                 }
 
-                if (returnData == null) {
-                    data = null;
-
-                    // TODO
-                    //errorCode = OmnipodCommunicationManager.getInstance().getErrorResponse();
-                    errorCode = "TODO";
-                    RileyLinkUtil.sendBroadcastMessage("RefreshData.ErrorCode");
+                if (data == null) {
+                    RileyLinkUtil.sendBroadcastMessage("RefreshData.Error");
                 } else {
-                    data = returnData;
-                    errorCode = null;
                     RileyLinkUtil.sendBroadcastMessage(selectedCommandAction.intentString);
                 }
 

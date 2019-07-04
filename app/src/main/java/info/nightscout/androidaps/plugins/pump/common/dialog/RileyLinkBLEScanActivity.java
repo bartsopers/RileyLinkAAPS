@@ -103,8 +103,8 @@ public class RileyLinkBLEScanActivity extends AppCompatActivity {
 
             RileyLinkUtil.getRileyLinkSelectPreference().setSummary(bleAddress);
 
-            MedtronicPumpStatus pumpStatus = MedtronicUtil.getPumpStatus();
-            pumpStatus.verifyConfiguration(); // force reloading of address
+//            MedtronicPumpStatus pumpStatus = MedtronicUtil.getPumpStatus();
+//            pumpStatus.verifyConfiguration(); // force reloading of address
 
             // MainApp.bus().post(new EventMedtronicPumpConfigurationChanged());
 

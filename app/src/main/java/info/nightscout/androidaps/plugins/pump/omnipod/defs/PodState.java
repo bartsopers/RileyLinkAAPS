@@ -87,4 +87,19 @@ public class PodState {
     public void advanceToNextNonce() {
         nonceState.advanceToNextNonce();
     }
+
+    @Override
+    public String toString() {
+        return "PodState{" +
+                "address=" + address +
+                ", activatedAt=" + activatedAt +
+                ", piVersion=" + piVersion +
+                ", PmVersion=" + PmVersion +
+                ", lot=" + lot +
+                ", tid=" + tid +
+                ", messageNumber=" + messageNumber +
+                ", packetNumber=" + packetNumber +
+                ", nonce=" + nonceState.getCurrentNonce() +
+                '}';
+    }
 }
