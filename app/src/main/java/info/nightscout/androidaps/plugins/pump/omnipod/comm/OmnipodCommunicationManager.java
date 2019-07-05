@@ -218,15 +218,17 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         Boolean quiet = false;
         while(!quiet) {
             try {
-                OmnipodPacket response = sendAndListen(ack, 600, 5, 40, OmnipodPacket.class);
+                OmnipodPacket response = sendAndListen(ack, 300, 1, 40, OmnipodPacket.class);
+                if(!response.isValid() && response.getPacketType() == PacketType.INVALID) {
                 //FIXME: instead of this crappy core we should make a proper timeout handling (exception-based?)
-                if (response == null || (!response.isValid() && response.getPacketType() == PacketType.INVALID)) {
                     quiet = true;
                 }
+                // FIXME should be a more specific exception
             } catch(Exception ex) {
-                LOG.warn("Caught exception while trying to ack until quiet: "+ ex.getMessage());
+                quiet = true;
             }
         }
+
         increasePacketNumber(1);
     }
 

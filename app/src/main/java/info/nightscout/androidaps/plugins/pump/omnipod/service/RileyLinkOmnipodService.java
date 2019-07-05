@@ -39,10 +39,6 @@ public class RileyLinkOmnipodService extends RileyLinkService {
     OmnipodCommunicationManager omnipodCommunicationManager;
     private IBinder mBinder = new LocalBinder();
 
-    @Override
-    public RileyLinkEncodingType getEncoding() {
-        return RileyLinkEncodingType.FourByteSixByteRileyLink;
-    }
 
     public RileyLinkOmnipodService() {
         super(MainApp.instance().getApplicationContext());
@@ -86,6 +82,18 @@ public class RileyLinkOmnipodService extends RileyLinkService {
 
         omnipodCommunicationManager = new OmnipodCommunicationManager(context, rfspy);
     }
+
+
+    public static OmnipodCommunicationManager getCommunicationManager() {
+        return instance.omnipodCommunicationManager;
+    }
+
+
+    @Override
+    public RileyLinkEncodingType getEncoding() {
+        return RileyLinkEncodingType.Manchester;
+    }
+
 
     // TODO
     @Override
@@ -133,11 +141,6 @@ public class RileyLinkOmnipodService extends RileyLinkService {
         return false;
     }
 
-    //@Nullable
-    //@Override
-    //public IBinder onBind(Intent intent) {
-    //    return mBinder;
-    //}
 
     @Nullable
     @Override

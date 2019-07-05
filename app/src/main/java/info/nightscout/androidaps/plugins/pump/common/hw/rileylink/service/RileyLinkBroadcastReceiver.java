@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.gxwtech.roundtrip2.RT2Const;
 import com.gxwtech.roundtrip2.RoundtripService.RileyLinkIPCConnection;
@@ -26,7 +27,9 @@ import com.gxwtech.roundtrip2.RoundtripService.RileyLinkIPCConnection;
 import info.nightscout.androidaps.logging.L;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkEncodingType;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.defs.RileyLinkError;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.defs.RileyLinkServiceState;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceNotification;
@@ -189,10 +192,25 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
                 LOG.debug("RfSpy Radio version (CC110): " + rlVersion.name());
             this.serviceInstance.rileyLinkServiceData.versionCC110 = rlVersion;
 
-            ServiceTask task = new InitializePumpManagerTask(RileyLinkUtil.getTargetDevice());
-            ServiceTaskExecutor.startTask(task);
-            if (isLoggingEnabled())
-                LOG.info("Announcing RileyLink open For business");
+            if (this.serviceInstance.getEncoding() == RileyLinkEncodingType.Manchester) {
+                RileyLinkUtil.getRileyLinkServiceData().lastGoodFrequency = RileyLinkTargetFrequency.Omnipod.getFirstFrequency();
+                RileyLinkUtil.setServiceState(RileyLinkServiceState.RileyLinkReady);
+                RileyLinkUtil.getRileyLinkCommunicationManager().setRadioFrequencyForPump(RileyLinkTargetFrequency.Omnipod.getFirstFrequency());
+
+                RileyLinkUtil.setServiceState(RileyLinkServiceState.PumpConnectorReady);
+                //RileyLinkUtil.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_PUMP_pumpFound), null);
+                RileyLinkUtil.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_note_Idle), null);
+
+                if (isLoggingEnabled())
+                    LOG.info("Announcing RileyLink open For business - Omnipod");
+
+            } else {
+                ServiceTask task = new InitializePumpManagerTask(RileyLinkUtil.getTargetDevice());
+                ServiceTaskExecutor.startTask(task);
+                if (isLoggingEnabled())
+                    LOG.info("Announcing RileyLink open For business - Medtronic");
+            }
+
 
             return true;
         } else if (action.equals(RileyLinkConst.Intents.RileyLinkNewAddressSet)) {

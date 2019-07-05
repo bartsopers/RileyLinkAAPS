@@ -22,4 +22,8 @@ public enum RileyLinkTargetFrequency {
     public double[] getScanFrequencies() {
         return frequencies;
     }
+
+    public double getFirstFrequency() {
+        return frequencies[0];
+    }
 }
