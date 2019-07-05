@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RFSpy;
@@ -291,10 +292,10 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
             SP.remove(OmniPodConst.Prefs.POD_STATE);
         }
 
-        packetNumber = 0x0A;
+        packetNumber = 0x00;
         messageNumber = 0;
 
-        int newAddress = 0x1f0b3557;
+        int newAddress = 0x1f000000 | (new Random().nextInt() & 0x000fffff);
 
         AssignAddressCommand assignAddress = new AssignAddressCommand(newAddress);
         OmnipodMessage assignAddressMessage = new OmnipodMessage(DEFAULT_ADDRESS, Collections.singletonList(assignAddress), messageNumber);
