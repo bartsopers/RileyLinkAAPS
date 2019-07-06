@@ -59,7 +59,7 @@ public class OmnipodMessage {
         byte b9 = data[4];
         byte bodyLength = data[5];
         if (data.length - 8 < bodyLength) {
-            throw new IllegalArgumentException("not enough data");
+            throw new IllegalArgumentException("not enough data: "+ ByteUtil.shortHexString(data));
         }
         int sequenceNumber = (((int)b9 >> 2) & 0b11111);
         int crc = ByteUtil.toInt(data[data.length - 2], data[data.length - 1]);
@@ -77,7 +77,7 @@ public class OmnipodMessage {
     }
 
     private static List<MessageBlock> decodeBlocks(byte[] data) {
-        ArrayList<MessageBlock> blocks = new  ArrayList<>();
+        List<MessageBlock> blocks = new ArrayList<>();
         int index = 0;
         while (index < data.length) {
             MessageBlockType blockType = MessageBlockType.fromByte(data[index]);

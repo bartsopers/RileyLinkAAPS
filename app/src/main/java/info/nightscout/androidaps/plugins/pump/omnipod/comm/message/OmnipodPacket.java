@@ -18,11 +18,11 @@ public class OmnipodPacket implements RLMessage {
     private PacketType packetType = PacketType.INVALID;
     private int sequenceNumber = 0;
     private byte[] encodedMessage = null;
-    private Boolean valid = false;
+    private boolean valid = false;
 
     public OmnipodPacket(byte[] encoded) {
         if (encoded.length < 7) {
-            throw new OmnipodEncodingException("Not enough data");
+            return;
         }
         this.packetAddress = ByteUtil.toInt(new Integer(encoded[0]), new Integer(encoded[1]),
                 new Integer(encoded[2]), new Integer(encoded[3]), ByteUtil.BitConversion.BIG_ENDIAN);

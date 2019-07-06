@@ -18,8 +18,6 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.Radi
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RLMessageType;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkBLEError;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.RileyLinkServiceData;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.ServiceTaskExecutor;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.WakeAndTuneTask;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.medtronic.defs.PumpDeviceState;
 import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
@@ -73,8 +71,14 @@ public abstract class RileyLinkCommunicationManager {
         return sendAndListen(msg, timeout_ms, 0, extendPreamble_ms, clazz);
     }
 
-    // All pump communications go through this function.
+    // For backward compatibility
     protected <E extends RLMessage> E sendAndListen(RLMessage msg, int timeout_ms, int repeatCount, Integer extendPreamble_ms, Class<E> clazz)
+            throws RileyLinkCommunicationException {
+        return sendAndListen(msg, timeout_ms, repeatCount, 0, extendPreamble_ms, clazz);
+    }
+
+    // All pump communications go through this function.
+    protected <E extends RLMessage> E sendAndListen(RLMessage msg, int timeout_ms, int repeatCount, int retryCount, Integer extendPreamble_ms, Class<E> clazz)
             throws RileyLinkCommunicationException {
 
         if (showPumpMessages) {
@@ -82,7 +86,7 @@ public abstract class RileyLinkCommunicationManager {
                 LOG.info("Sent:" + ByteUtil.shortHexString(msg.getTxData()));
         }
 
-        RFSpyResponse rfSpyResponse = rfspy.transmitThenReceive(new RadioPacket(msg.getTxData()), (byte)0, (byte)repeatCount, (byte)0, (byte)0, timeout_ms, (byte)0, extendPreamble_ms);
+        RFSpyResponse rfSpyResponse = rfspy.transmitThenReceive(new RadioPacket(msg.getTxData()), (byte)0, (byte)repeatCount, (byte)0, (byte)0, timeout_ms, (byte)retryCount, extendPreamble_ms);
 
         RadioResponse radioResponse = rfSpyResponse.getRadioResponse();
 
@@ -99,7 +103,7 @@ public abstract class RileyLinkCommunicationManager {
             if (rfSpyResponse.wasTimeout()) {
                 timeoutCount++;
 
-                long diff = System.currentTimeMillis() - pumpStatus.lastConnection;
+                long diff = System.currentTimeMillis() - getLastGoodReceiverCommunicationTime();
 
                 if (diff > ALLOWED_PUMP_UNREACHABLE) {
                     if (isLogEnabled())
@@ -302,19 +306,28 @@ public abstract class RileyLinkCommunicationManager {
         }
     }
 
-
     public abstract byte[] createPumpMessageContent(RLMessageType type);
 
     protected void rememberLastGoodDeviceCommunicationTime() {
         lastGoodReceiverCommunicationTime = System.currentTimeMillis();
 
         SP.putLong(RileyLinkConst.Prefs.LastGoodDeviceCommunicationTime, lastGoodReceiverCommunicationTime);
-
         if(pumpStatus != null) {
             pumpStatus.setLastCommunicationToNow();
         }
     }
 
+    private long getLastGoodReceiverCommunicationTime() {
+        // If we have a value of zero, we need to load from prefs.
+        if (lastGoodReceiverCommunicationTime == 0L) {
+            lastGoodReceiverCommunicationTime = SP.getLong(RileyLinkConst.Prefs.LastGoodDeviceCommunicationTime, 0L);
+            // Might still be zero, but that's fine.
+        }
+        double minutesAgo = (System.currentTimeMillis() - lastGoodReceiverCommunicationTime) / (1000.0 * 60.0);
+        if (isLogEnabled())
+            LOG.trace("Last good pump communication was " + minutesAgo + " minutes ago.");
+        return lastGoodReceiverCommunicationTime;
+    }
 
     public void clearNotConnectedCount() {
         if (rfspy != null) {

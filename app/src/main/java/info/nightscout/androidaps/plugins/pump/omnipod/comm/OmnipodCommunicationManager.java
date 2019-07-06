@@ -17,12 +17,15 @@ import java.util.List;
 import java.util.Random;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkCommunicationManager;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RileyLinkCommunicationException;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.RLMessage;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RLMessageType;
 
 
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkBLEError;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.BasalScheduleExtraCommand;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertConfiguration;
@@ -76,7 +79,6 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
     @Override
     protected void configurePumpSpecificSettings() {
-        // TODO
     }
 
     @Override
@@ -130,10 +132,6 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
             }
             //We actually ignore (ack) responses if it is not last packet to send
         }
-        if (response == null) {
-            throw new OmnipodCommunicationException("Timeout on receive");
-        }
-
 
         if (response.getPacketType() == PacketType.ACK) {
             increasePacketNumber(1);
@@ -219,14 +217,13 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         Boolean quiet = false;
         while(!quiet) {
             try {
-                OmnipodPacket response = sendAndListen(ack, 300, 1, 40, OmnipodPacket.class);
-                if(!response.isValid() && response.getPacketType() == PacketType.INVALID) {
-                //FIXME: instead of this crappy core we should make a proper timeout handling (exception-based?)
+                sendAndListen(ack, 300, 0, 0, 40, OmnipodPacket.class);
+            } catch(RileyLinkCommunicationException ex) {
+                if(RileyLinkBLEError.Timeout.equals(ex.getErrorCode())) {
                     quiet = true;
+                } else {
+                    ex.printStackTrace();
                 }
-                // FIXME should be a more specific exception
-            } catch(Exception ex) {
-                quiet = true;
             }
         }
 
@@ -245,7 +242,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         long timeoutTime = System.currentTimeMillis() + exchangeTimeoutMilliseconds;
         
         while(System.currentTimeMillis() < timeoutTime) {
-            OmnipodPacket response = sendAndListen(packet, responseTimeoutMilliseconds, repeatCount, preambleExtensionMilliseconds, OmnipodPacket.class);
+            OmnipodPacket response = sendAndListen(packet, responseTimeoutMilliseconds, repeatCount, 9, preambleExtensionMilliseconds, OmnipodPacket.class);
             if (response == null || !response.isValid()) {
                 continue;
             }
@@ -295,7 +292,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         packetNumber = 0x00;
         messageNumber = 0;
 
-        int newAddress = 0x1f000000 | (new Random().nextInt() & 0x000fffff);
+        int newAddress = generateRandomAddress();
 
         AssignAddressCommand assignAddress = new AssignAddressCommand(newAddress);
         OmnipodMessage assignAddressMessage = new OmnipodMessage(DEFAULT_ADDRESS, Collections.singletonList(assignAddress), messageNumber);
@@ -358,6 +355,10 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         SP.putString(OmniPodConst.Prefs.POD_STATE, gson.toJson(podState));
 
         return status;
+    }
+
+    private int generateRandomAddress() {
+        return 0x1f000000 | (new Random().nextInt() & 0x000fffff);
     }
 
     public StatusResponse finishPrime() {
