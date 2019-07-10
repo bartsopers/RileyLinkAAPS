@@ -1,7 +1,5 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.comm;
 
-import android.content.Context;
-
 import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
@@ -17,7 +15,6 @@ import java.util.List;
 import java.util.Random;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkCommunicationManager;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RileyLinkCommunicationException;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.RLMessage;
@@ -25,7 +22,6 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RLMe
 
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkBLEError;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.BasalScheduleExtraCommand;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertConfiguration;
@@ -72,8 +68,8 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
     static OmnipodCommunicationManager omnipodCommunicationManager;
 
-    public OmnipodCommunicationManager(Context context, RFSpy rfspy) {
-        super(context, rfspy);
+    public OmnipodCommunicationManager(RFSpy rfspy) {
+        super(rfspy);
         omnipodCommunicationManager = this;
     }
 

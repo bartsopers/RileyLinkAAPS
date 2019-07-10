@@ -3,8 +3,6 @@ package info.nightscout.androidaps.plugins.pump.common.hw.rileylink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import android.content.Context;
-
 import info.nightscout.androidaps.logging.L;
 import info.nightscout.androidaps.plugins.pump.common.data.PumpStatus;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RFSpy;
@@ -36,7 +34,6 @@ public abstract class RileyLinkCommunicationManager {
     private static final int ALLOWED_PUMP_UNREACHABLE = 10 * 60 * 1000; // 10 minutes
 
     protected final RFSpy rfspy;
-    protected final Context context;
     protected int receiverDeviceAwakeForMinutes = 1; // override this in constructor of specific implementation
     protected String receiverDeviceID; // String representation of receiver device (ex. Pump (xxxxxx) or Pod (yyyyyy))
     protected long lastGoodReceiverCommunicationTime = 0;
@@ -49,8 +46,7 @@ public abstract class RileyLinkCommunicationManager {
     private int timeoutCount = 0;
 
 
-    public RileyLinkCommunicationManager(Context context, RFSpy rfspy) {
-        this.context = context;
+    public RileyLinkCommunicationManager(RFSpy rfspy) {
         this.rfspy = rfspy;
         this.rileyLinkServiceData = RileyLinkUtil.getRileyLinkServiceData();
         RileyLinkUtil.setRileyLinkCommunicationManager(this);

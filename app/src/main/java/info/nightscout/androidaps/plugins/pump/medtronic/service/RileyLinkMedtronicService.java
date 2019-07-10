@@ -1,6 +1,5 @@
 package info.nightscout.androidaps.plugins.pump.medtronic.service;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,11 +14,9 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.annotation.Nullable;
 
 import com.gxwtech.roundtrip2.MainApp;
-import com.gxwtech.roundtrip2.R;
 import com.gxwtech.roundtrip2.RT2Const;
 import com.gxwtech.roundtrip2.RoundtripService.Tasks.FetchPumpHistoryTask;
 import com.gxwtech.roundtrip2.RoundtripService.Tasks.ReadBolusWizardCarbProfileTask;
@@ -35,7 +32,6 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.RileyLinkBLE;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkEncodingType;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.defs.RileyLinkTargetDevice;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.RileyLinkService;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.RileyLinkServiceData;
@@ -49,7 +45,6 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.medtronic.comm.MedtronicCommunicationManager;
 import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.Page;
-import info.nightscout.androidaps.plugins.pump.medtronic.defs.MedtronicDeviceType;
 import info.nightscout.androidaps.plugins.pump.medtronic.defs.PumpDeviceState;
 import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicConst;
 import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
@@ -258,7 +253,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
         RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
 
         // init rileyLinkCommunicationManager
-        medtronicCommunicationManager = new MedtronicCommunicationManager(context, rfspy);
+        medtronicCommunicationManager = new MedtronicCommunicationManager(rfspy);
 
         // FIXME remove
         pumpHistoryManager = new PumpHistoryManager(this.context);

@@ -80,7 +80,7 @@ public class RileyLinkOmnipodService extends RileyLinkService {
 
         RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
 
-        omnipodCommunicationManager = new OmnipodCommunicationManager(context, rfspy);
+        omnipodCommunicationManager = new OmnipodCommunicationManager(rfspy);
     }
 
 

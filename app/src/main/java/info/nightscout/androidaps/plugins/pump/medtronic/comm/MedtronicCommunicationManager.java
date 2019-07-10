@@ -1,15 +1,12 @@
 package info.nightscout.androidaps.plugins.pump.medtronic.comm;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.Instant;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import android.content.Context;
 import android.os.SystemClock;
 
 import info.nightscout.androidaps.logging.L;
@@ -22,19 +19,15 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.RLMe
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.RadioPacket;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.RadioResponse;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RLMessageType;
-import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.ServiceTaskExecutor;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.WakeAndTuneTask;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.common.utils.DateTimeUtil;
 import info.nightscout.androidaps.plugins.pump.common.utils.HexDump;
-import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.Page;
-import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.history_old.Record;
 import info.nightscout.androidaps.plugins.pump.medtronic.comm.history.RawHistoryPage;
 import info.nightscout.androidaps.plugins.pump.medtronic.comm.history.pump.MedtronicPumpHistoryDecoder;
 import info.nightscout.androidaps.plugins.pump.medtronic.comm.history.pump.PumpHistoryEntry;
 import info.nightscout.androidaps.plugins.pump.medtronic.comm.history.pump.PumpHistoryResult;
-import info.nightscout.androidaps.plugins.pump.medtronic.comm.message.ButtonPressCarelinkMessageBody;
 import info.nightscout.androidaps.plugins.pump.medtronic.comm.message.CarelinkLongMessageBody;
 import info.nightscout.androidaps.plugins.pump.medtronic.comm.message.CarelinkShortMessageBody;
 import info.nightscout.androidaps.plugins.pump.medtronic.comm.message.GetHistoryPageCarelinkMessageBody;
@@ -50,7 +43,6 @@ import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.TempBasalPair;
 import info.nightscout.androidaps.plugins.pump.medtronic.defs.MedtronicCommandType;
 import info.nightscout.androidaps.plugins.pump.medtronic.defs.MedtronicDeviceType;
 import info.nightscout.androidaps.plugins.pump.medtronic.defs.PumpDeviceState;
-import info.nightscout.androidaps.plugins.pump.medtronic.service.RileyLinkMedtronicService;
 import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicUtil;
 import info.nightscout.androidaps.utils.SP;
 
@@ -76,8 +68,8 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     private boolean medtronicHistoryTesting = false; // TODO remove when not needed
 
 
-    public MedtronicCommunicationManager(Context context, RFSpy rfspy) {
-        super(context, rfspy);
+    public MedtronicCommunicationManager(RFSpy rfspy) {
+        super(rfspy);
         medtronicCommunicationManager = this;
         this.medtronicConverter = new MedtronicConverter();
         this.pumpHistoryDecoder = new MedtronicPumpHistoryDecoder();
