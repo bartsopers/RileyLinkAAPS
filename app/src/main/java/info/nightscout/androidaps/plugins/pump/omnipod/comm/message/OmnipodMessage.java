@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationManager;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniCRC;
 
 public class OmnipodMessage {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OmnipodCommunicationManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OmnipodCommunicationService.class);
     private final int address;
     private final List<MessageBlock> messageBlocks;
     private final int sequenceNumber;

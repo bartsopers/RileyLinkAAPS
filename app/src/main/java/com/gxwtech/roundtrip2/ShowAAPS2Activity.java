@@ -21,8 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.RileyLinkService;
 import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.TempBasalPair;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationManager;
+import info.nightscout.androidaps.plugins.pump.omnipod.OmnipodManager;
+import info.nightscout.androidaps.plugins.pump.omnipod.service.RileyLinkOmnipodService;
 
 public class ShowAAPS2Activity extends AppCompatActivity {
 
@@ -251,14 +253,9 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
     }
 
-    OmnipodCommunicationManager communicationManager = null;
-
-    private OmnipodCommunicationManager getCommunicationManager() {
-        if (communicationManager == null) {
-            communicationManager = OmnipodCommunicationManager.getInstance();
-        }
-
-        return communicationManager;
+    private OmnipodManager getOmnipodManager() {
+        RileyLinkService rileyLinkService = RileyLinkUtil.getRileyLinkService();
+        return ((RileyLinkOmnipodService)rileyLinkService).getOmnipodManager();
     }
 
     Object data;
@@ -451,7 +448,8 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                 switch (selectedCommandAction.intentString) {
                     case "RefreshData.InitializePod":
                         try {
-                            data = getCommunicationManager().initializePod();
+                            getOmnipodManager().initializePod();
+                            data = getOmnipodManager().getPodStateAsString();
                         } catch(RuntimeException ex) {
                             errorMessage = ex.getMessage();
                             LOG.error("Caught exception: "+ errorMessage);
@@ -460,7 +458,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                         break;
                     case "RefreshData.FinishPrime":
                         try {
-                            data = getCommunicationManager().finishPrime();
+                            data = getOmnipodManager().finishPrime();
                         } catch(RuntimeException ex) {
                             errorMessage = ex.getMessage();
                             LOG.error("Caught exception: "+ errorMessage);

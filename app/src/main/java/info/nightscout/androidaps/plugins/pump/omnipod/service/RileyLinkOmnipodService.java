@@ -23,7 +23,8 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.defs.RileyLin
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.RileyLinkService;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.RileyLinkServiceData;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationManager;
+import info.nightscout.androidaps.plugins.pump.omnipod.OmnipodManager;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
 import info.nightscout.androidaps.utils.SP;
 
 /**
@@ -34,15 +35,10 @@ public class RileyLinkOmnipodService extends RileyLinkService {
 
     private static final Logger LOG = LoggerFactory.getLogger(RileyLinkOmnipodService.class);
 
-    private static RileyLinkOmnipodService instance;
-
-    OmnipodCommunicationManager omnipodCommunicationManager;
-    private IBinder mBinder = new LocalBinder();
-
+    private OmnipodManager omnipodManager;
 
     public RileyLinkOmnipodService() {
         super(MainApp.instance().getApplicationContext());
-        instance = this;
         LOG.debug("RileyLinkOmnipodService newly constructed");
         RileyLinkUtil.setRileyLinkService(this);
     }
@@ -55,39 +51,31 @@ public class RileyLinkOmnipodService extends RileyLinkService {
 
         // get most recently used RileyLink address
         rileyLinkServiceData.rileylinkAddress = SP.getString(RileyLinkConst.Prefs.RileyLinkAddress, "");
-
-        //rileyLinkBLE = new RileyLinkBLE(this.context); // or this
-        //rfspy = new RFSpy(rileyLinkBLE);
     }
 
     @Override
     public RileyLinkCommunicationManager getDeviceCommunicationManager() {
-        return this.omnipodCommunicationManager;
+        return omnipodManager.getCommunicationService();
+    }
+
+    public OmnipodManager getOmnipodManager() {
+        return omnipodManager;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        //delete when capture-debug is finished
         RileyLinkUtil.setRileyLinkService(this);
-        //rfspy = new RFSpyFake();
         rileyLinkBLE = new RileyLinkBLE(context);
         rfspy = new RFSpy(rileyLinkBLE);
-        //this.onCreate();
-        //rileyLinkBLE = new RileyLinkBLEFake();
 
         rfspy.startReader();
 
         RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
 
-        omnipodCommunicationManager = new OmnipodCommunicationManager(rfspy);
+        // TODO obtain and pass saved podstate
+        omnipodManager = new OmnipodManager(new OmnipodCommunicationService(rfspy));
     }
-
-
-    public static OmnipodCommunicationManager getCommunicationManager() {
-        return instance.omnipodCommunicationManager;
-    }
-
 
     @Override
     public RileyLinkEncodingType getEncoding() {
@@ -121,21 +109,17 @@ public class RileyLinkOmnipodService extends RileyLinkService {
         if (serviceTransport.getServiceCommand().isPumpCommand()) {
             LOG.debug("IsPumpCommand not implemented.");
         } else {
-            switch (serviceTransport.getOriginalCommandName()) {
-                case "UseThisRileylink":
-                    // If we are not connected, connect using the given address.
-                    // If we are connected and the addresses differ, disconnect, connect to new.
-                    // If we are connected and the addresses are the same, ignore.
-                    String deviceAddress = serviceTransport.getServiceCommand().getMap().getString("rlAddress", "");
-                    if ("".equals(deviceAddress)) {
-                        LOG.error("handleIPCMessage: null RL address passed");
-                    } else {
-                        return reconfigureRileyLink(deviceAddress);
-                    }
-                    break;
-                default:
-                    LOG.error("handleIncomingServiceTransport: Failed to handle service command '" + serviceTransport.getOriginalCommandName() + "'");
-                    break;
+            if ("UseThisRileylink".equals(serviceTransport.getOriginalCommandName())) {// If we are not connected, connect using the given address.
+                // If we are connected and the addresses differ, disconnect, connect to new.
+                // If we are connected and the addresses are the same, ignore.
+                String deviceAddress = serviceTransport.getServiceCommand().getMap().getString("rlAddress", "");
+                if ("".equals(deviceAddress)) {
+                    LOG.error("handleIPCMessage: null RL address passed");
+                } else {
+                    return reconfigureRileyLink(deviceAddress);
+                }
+            } else {
+                LOG.error("handleIncomingServiceTransport: Failed to handle service command '" + serviceTransport.getOriginalCommandName() + "'");
             }
         }
         return false;
