@@ -6,12 +6,12 @@ import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.BasalDeliveryTable;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.BasalSchedule;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.BasalDeliverySchedule;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.BolusDeliverySchedule;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.DeliverySchedule;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.TempBasalDeliverySchedule;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalDeliveryTable;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalSchedule;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalDeliverySchedule;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BolusDeliverySchedule;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.DeliverySchedule;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.TempBasalDeliverySchedule;
 
 public class SetInsulinScheduleCommand extends MessageBlock {
 

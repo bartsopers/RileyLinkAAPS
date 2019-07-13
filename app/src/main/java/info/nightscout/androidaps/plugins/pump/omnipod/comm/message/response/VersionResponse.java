@@ -8,12 +8,12 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressStatus;
 
 // https://github.com/openaps/openomni/wiki/Command-01-Version-response
 public class VersionResponse extends MessageBlock {
-    public final PodProgressStatus podProgressStatus;
-    public final FirmwareVersion pmVersion;
-    public final FirmwareVersion piVersion;
-    public final int lot;
-    public final int tid;
-    public final int address;
+    private final PodProgressStatus podProgressStatus;
+    private final FirmwareVersion pmVersion;
+    private final FirmwareVersion piVersion;
+    private final int lot;
+    private final int tid;
+    private final int address;
 
     public VersionResponse(byte[] encodedData) {
         int length = ByteUtil.convertUnsignedByteToInt(encodedData[1]) + 2;

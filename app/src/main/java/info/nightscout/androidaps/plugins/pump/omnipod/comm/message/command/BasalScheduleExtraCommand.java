@@ -9,8 +9,8 @@ import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.BasalSchedule;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.RateEntry;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalSchedule;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.RateEntry;
 
 public class BasalScheduleExtraCommand extends MessageBlock {
     private final boolean acknowledgementBeep;

@@ -91,4 +91,13 @@ public class OmnipodMessage {
 
         return blocks;
     }
+
+    @Override
+    public String toString() {
+        return "OmnipodMessage{" +
+                "address=" + address +
+                ", encoded=" + ByteUtil.shortHexString(getEncoded())+
+                ", sequenceNumber=" + sequenceNumber +
+                '}';
+    }
 }

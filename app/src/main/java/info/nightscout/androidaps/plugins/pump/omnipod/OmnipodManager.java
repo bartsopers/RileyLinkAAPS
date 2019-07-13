@@ -9,9 +9,10 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunication
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.FinishPrimeAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.InitializePodAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.SetBasalScheduleAction;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.InitializePodService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.BasalSchedule;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.BasalScheduleEntry;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalSchedule;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalScheduleEntry;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionState;
 
 public class OmnipodManager {
@@ -35,7 +36,7 @@ public class OmnipodManager {
     }
 
     public void initializePod() {
-        podState = communicationService.executeAction(new InitializePodAction());
+        podState = communicationService.executeAction(new InitializePodAction(new InitializePodService()));
     }
 
     public StatusResponse finishPrime() {

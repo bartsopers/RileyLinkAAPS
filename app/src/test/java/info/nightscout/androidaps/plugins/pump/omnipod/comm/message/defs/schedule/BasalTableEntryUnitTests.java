@@ -1,8 +1,8 @@
-package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.defs.InsulinSchedule;
+package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.defs.schedule;
 
 import org.junit.Test;
 
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.BasalTableEntry;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalTableEntry;
 
 import static junit.framework.Assert.assertEquals;
 

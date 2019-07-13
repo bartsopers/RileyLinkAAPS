@@ -1,17 +1,11 @@
-package info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule;
+package info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.joda.time.Duration;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import info.nightscout.androidaps.Constants;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.IRawRepresentable;
-
-import static java.lang.Math.floor;
 
 public class BasalDeliveryTable {
 

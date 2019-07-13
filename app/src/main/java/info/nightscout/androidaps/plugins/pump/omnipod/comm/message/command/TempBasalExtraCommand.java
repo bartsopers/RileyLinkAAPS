@@ -7,7 +7,7 @@ import java.util.List;
 
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.InsulinSchedule.RateEntry;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.RateEntry;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 
 public class TempBasalExtraCommand extends MessageBlock {
