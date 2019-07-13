@@ -55,6 +55,16 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
         return (E) new OmnipodPacket(payload);
     }
 
+    public <T extends MessageBlock> T sendCommand(PodState podState, MessageBlock command) {
+        OmnipodMessage message = new OmnipodMessage(podState.getAddress(), Collections.singletonList(command), podState.getMessageNumber());
+        return exchangeMessages(podState, message);
+    }
+
+    // Convenience method
+    public <T> T executeAction(OmnipodAction<T> action) {
+        return action.execute(this);
+    }
+
     public <T extends MessageBlock> T exchangeMessages(PodState podState, OmnipodMessage message) {
         return exchangeMessages(podState, message, null, null);
     }
@@ -144,7 +154,7 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
         return new OmnipodPacket(pktAddress, PacketType.ACK, podState.getPacketNumber(), ByteUtil.getBytesFromInt(msgAddress));
     }
 
-    public void ackUntilQuiet(PodState podState, Integer packetAddress, Integer messageAddress) {
+    private void ackUntilQuiet(PodState podState, Integer packetAddress, Integer messageAddress) {
         OmnipodPacket ack = createAckPacket(podState, packetAddress, messageAddress);
         boolean quiet = false;
         while (!quiet) try {
@@ -160,15 +170,15 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
         podState.increasePacketNumber(1);
     }
 
-    public OmnipodPacket exchangePackets(PodState podState, OmnipodPacket packet) throws RileyLinkCommunicationException {
+    private OmnipodPacket exchangePackets(PodState podState, OmnipodPacket packet) throws RileyLinkCommunicationException {
         return exchangePackets(podState, packet, 0, 250, 20000, 127);
     }
 
-    public OmnipodPacket exchangePackets(PodState podState, OmnipodPacket packet, int repeatCount, int preambleExtensionMilliseconds) throws RileyLinkCommunicationException {
+    private OmnipodPacket exchangePackets(PodState podState, OmnipodPacket packet, int repeatCount, int preambleExtensionMilliseconds) throws RileyLinkCommunicationException {
         return exchangePackets(podState, packet, repeatCount, 250, 20000, preambleExtensionMilliseconds);
     }
 
-    public OmnipodPacket exchangePackets(PodState podState, OmnipodPacket packet, int repeatCount, int responseTimeoutMilliseconds, int exchangeTimeoutMilliseconds, int preambleExtensionMilliseconds) throws RileyLinkCommunicationException {
+    private OmnipodPacket exchangePackets(PodState podState, OmnipodPacket packet, int repeatCount, int responseTimeoutMilliseconds, int exchangeTimeoutMilliseconds, int preambleExtensionMilliseconds) throws RileyLinkCommunicationException {
         long timeoutTime = System.currentTimeMillis() + exchangeTimeoutMilliseconds;
 
         while (System.currentTimeMillis() < timeoutTime) {
@@ -187,15 +197,5 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
             return response;
         }
         throw new OmnipodCommunicationException("Timeout when trying to exchange packets");
-    }
-
-    public <T extends MessageBlock> T sendCommand(PodState podState, MessageBlock command) {
-        OmnipodMessage message = new OmnipodMessage(podState.getAddress(), Collections.singletonList(command), podState.getMessageNumber());
-        return exchangeMessages(podState, message);
-    }
-
-    // Convenience method
-    public <T> T executeAction(OmnipodAction<T> action) {
-        return action.execute(this);
     }
 }
