@@ -40,7 +40,7 @@ public class InitializePodAction implements OmnipodAction<PodSessionState> {
 
         service.executeConfigureLowReservoirAlertCommand(communicationService, podState);
         service.executeConfigureInsertionAlertCommand(communicationService, podState);
-        service.executePrimeBolus(communicationService, podState);
+        service.executePrimeBolusCommand(communicationService, podState);
 
         return podState;
     }

@@ -82,7 +82,7 @@ public class InitializePodService {
     }
 
     // TODO maybe we should replace this with a BolusAction?
-    public void executePrimeBolus(OmnipodCommunicationService communicationService, PodSessionState podState) {
+    public void executePrimeBolusCommand(OmnipodCommunicationService communicationService, PodSessionState podState) {
         double primeUnits = 2.6;
         BolusDeliverySchedule primeBolus = new BolusDeliverySchedule(primeUnits, Duration.standardSeconds(1));
         SetInsulinScheduleCommand primeCommand = new SetInsulinScheduleCommand(podState.getCurrentNonce(), primeBolus);
