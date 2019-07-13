@@ -26,7 +26,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InitializePodActionUnitTests {
-    // from https://github.com/openaps/openomni/wiki/Priming-and-Deploying-New-Pod-%28jweismann%29
     @Mock
     private InitializePodService initializePodService;
 
