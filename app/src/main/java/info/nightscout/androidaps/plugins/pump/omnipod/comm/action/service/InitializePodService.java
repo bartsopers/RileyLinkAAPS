@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import info.nightscout.androidaps.Constants;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationException;
+import info.nightscout.androidaps.plugins.pump.omnipod.exception.OmnipodCommunicationException;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.OmnipodMessage;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.AssignAddressCommand;

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.RLMessage;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PacketType;
+import info.nightscout.androidaps.plugins.pump.omnipod.exception.OmnipodEncodingException;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniCRC;
 
 /**

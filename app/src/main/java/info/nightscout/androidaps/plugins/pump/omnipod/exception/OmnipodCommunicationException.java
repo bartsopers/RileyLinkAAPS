@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.pump.omnipod.comm;
+package info.nightscout.androidaps.plugins.pump.omnipod.exception;
 
 public class OmnipodCommunicationException extends RuntimeException {
     public OmnipodCommunicationException(String message) {

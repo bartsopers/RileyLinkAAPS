@@ -15,6 +15,8 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.Rile
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.OmnipodAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
+import info.nightscout.androidaps.plugins.pump.omnipod.exception.NonceOutOfSyncException;
+import info.nightscout.androidaps.plugins.pump.omnipod.exception.NotEnoughDataException;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.OmnipodMessage;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.OmnipodPacket;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.ErrorResponse;
@@ -22,6 +24,8 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.ErrorResponseType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PacketType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodState;
+import info.nightscout.androidaps.plugins.pump.omnipod.exception.OmnipodCommunicationException;
+import info.nightscout.androidaps.plugins.pump.omnipod.exception.PodReturnedErrorResponseException;
 
 /**
  * Created by andy on 6/29/18.
@@ -102,7 +106,12 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
         OmnipodMessage receivedMessage = null;
         byte[] receivedMessageData = response.getEncodedMessage();
         while (receivedMessage == null) {
-            receivedMessage = OmnipodMessage.decodeMessage(receivedMessageData);
+            try {
+                receivedMessage = OmnipodMessage.decodeMessage(receivedMessageData);
+            } catch(NotEnoughDataException ex) {
+                // Message is (probably) not complete yet
+                // TODO should we log this for debugging purposes?
+            }
             if (receivedMessage == null) {
                 OmnipodPacket ackForCon = createAckPacket(podState, packetAddress, ackAddressOverride);
                 try {
@@ -135,8 +144,9 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
                 if (podState.hasNonceState()) {
                     podState.resyncNonce(error.getNonceSearchKey(), podState.getCurrentNonce(), message.getSequenceNumber());
                 }
+                throw new NonceOutOfSyncException(error);
             }
-            throw new OmnipodCommunicationException("Received an error response: " + error.getErrorResponseType().name());
+            throw new PodReturnedErrorResponseException(error);
         }
 
         return (T) block;
