@@ -86,10 +86,10 @@ public class OmnipodMessage {
         while (index < data.length) {
             try {
                 MessageBlockType blockType = MessageBlockType.fromByte(data[index]);
-                // FIXME this makes no sense (passing the whole byte array)
-                MessageBlock block = blockType.decode(data);
+                MessageBlock block = blockType.decode(ByteUtil.substring(data, index));
                 blocks.add(block);
-                index += block.getRawData().length;
+                int blockLength = block.getRawData().length;
+                index += blockLength;
             } catch (Exception ex) {
                 throw new OmnipodException("Failed to decode blocks", ex);
             }

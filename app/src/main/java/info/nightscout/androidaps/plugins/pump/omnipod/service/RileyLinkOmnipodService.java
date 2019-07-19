@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import com.google.gson.Gson;
 import com.gxwtech.roundtrip2.MainApp;
 import com.gxwtech.roundtrip2.RT2Const;
 
@@ -25,6 +26,10 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.Riley
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
 import info.nightscout.androidaps.plugins.pump.omnipod.OmnipodManager;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionState;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodState;
+import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniPodConst;
+import info.nightscout.androidaps.plugins.pump.omnipod.util.Utils;
 import info.nightscout.androidaps.utils.SP;
 
 /**
@@ -73,8 +78,19 @@ public class RileyLinkOmnipodService extends RileyLinkService {
 
         RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
 
+        PodSessionState podState = null;
+        if(SP.contains(OmniPodConst.Prefs.POD_STATE)) {
+            try {
+                Gson gson = Utils.gsonDateTime();
+                String storedPodState = SP.getString(OmniPodConst.Prefs.POD_STATE, null);
+                podState = gson.fromJson(storedPodState, PodSessionState.class);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
         // TODO obtain and pass saved podstate
-        omnipodManager = new OmnipodManager(new OmnipodCommunicationService(rfspy));
+        omnipodManager = new OmnipodManager(new OmnipodCommunicationService(rfspy), podState);
     }
 
     @Override

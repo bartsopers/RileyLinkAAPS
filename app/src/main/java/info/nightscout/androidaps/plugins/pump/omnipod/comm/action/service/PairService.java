@@ -20,7 +20,7 @@ public class PairService {
         OmnipodMessage assignAddressMessage = new OmnipodMessage(Constants.DEFAULT_ADDRESS,
                 Collections.singletonList(assignAddress), setupState.getMessageNumber());
 
-        return communicationService.exchangeMessages(setupState, assignAddressMessage, Constants.DEFAULT_ADDRESS, setupState.getAddress());
+        return communicationService.exchangeMessages(VersionResponse.class, setupState, assignAddressMessage, Constants.DEFAULT_ADDRESS, setupState.getAddress());
     }
 
     public VersionResponse executeConfigurePodCommand(OmnipodCommunicationService communicationService,
@@ -33,7 +33,7 @@ public class PairService {
                 lot, tid);
         OmnipodMessage message = new OmnipodMessage(Constants.DEFAULT_ADDRESS,
                 Collections.singletonList(configurePodCommand), setupState.getMessageNumber());
-        VersionResponse configurePodResponse = communicationService.exchangeMessages(setupState,
+        VersionResponse configurePodResponse = communicationService.exchangeMessages(VersionResponse.class, setupState,
                 message, Constants.DEFAULT_ADDRESS, setupState.getAddress());
 
         if (configurePodResponse.getPodProgressStatus() != PodProgressStatus.PAIRING_SUCCESS) {

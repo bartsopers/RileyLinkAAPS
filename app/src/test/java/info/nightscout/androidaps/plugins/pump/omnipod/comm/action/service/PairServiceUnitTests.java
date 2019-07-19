@@ -11,6 +11,7 @@ import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.OmnipodMessage;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.VersionResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSetupState;
 
@@ -41,13 +42,13 @@ public class PairServiceUnitTests {
         VersionResponse response = mock(VersionResponse.class);
         ArgumentCaptor<OmnipodMessage> messageCaptor = ArgumentCaptor.forClass(OmnipodMessage.class);
 
-        when(communicationService.exchangeMessages(any(), any(), any(), any())).thenReturn(response);
+        when(communicationService.exchangeMessages(any(), any(), any(), any(), any())).thenReturn(response);
 
         // SUT
         VersionResponse versionResponse = new PairService().executeAssignAddressCommand(communicationService, setupState);
 
         // verify
-        verify(communicationService).exchangeMessages(eq(setupState), messageCaptor.capture(), eq(Constants.DEFAULT_ADDRESS), eq(0x1f173217));
+        verify(communicationService).exchangeMessages(eq(VersionResponse.class), eq(setupState), messageCaptor.capture(), eq(Constants.DEFAULT_ADDRESS), eq(0x1f173217));
         verifyNoMoreInteractions(communicationService);
         verifyZeroInteractions(response);
 

@@ -20,8 +20,6 @@ public class ConfigureAlertsAction implements OmnipodAction<StatusResponse> {
     @Override
     public StatusResponse execute(OmnipodCommunicationService communicationService) {
         ConfigureAlertsCommand configureAlertsCommand = new ConfigureAlertsCommand(podState.getCurrentNonce(), alertConfigurations);
-        StatusResponse statusResponse= communicationService.sendCommand(podState, configureAlertsCommand);
-        podState.updateFromStatusResponse(statusResponse);
-        return statusResponse;
+        return communicationService.sendCommand(StatusResponse.class, podState, configureAlertsCommand);
     }
 }

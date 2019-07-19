@@ -8,6 +8,8 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryStatus;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressStatus;
 
 import info.nightscout.androidaps.Constants;
+
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -16,13 +18,22 @@ public class StatusResponseUnitTests {
     // TODO add /extend tests
 
     @Test
-    public void testDecodingEnums() {
-        byte[] bytes = ByteUtil.fromHexString("00430000000038800000");
-        StatusResponse statusResponse = new StatusResponse(bytes);
-        assertEquals(DeliveryStatus.PRIMING, statusResponse.getDeliveryStatus());
-        assertEquals(PodProgressStatus.PAIRING_SUCCESS, statusResponse.getPodProgressStatus());
-        assertEquals(4, statusResponse.getAlerts().getAlertSlots().size());
-        // TODO add assertions on alert slots contents
+    public void testRawData() {
+        byte[] encodedData = ByteUtil.fromHexString("1d080000000038800000");
+
+        StatusResponse statusResponse = new StatusResponse(encodedData);
+
+        assertArrayEquals(encodedData, statusResponse.getRawData());
+    }
+
+    @Test
+    public void testRawDataWithLongerMessage() {
+        byte[] encodedData = ByteUtil.fromHexString("1d08000000003880000001");
+        byte[] expected = ByteUtil.fromHexString("1d080000000038800000");
+
+        StatusResponse statusResponse = new StatusResponse(encodedData);
+
+        assertArrayEquals(expected, statusResponse.getRawData());
     }
 
     @Test
@@ -38,6 +49,8 @@ public class StatusResponseUnitTests {
         assertEquals(15, statusResponse.getPodMessageCounter());
         assertEquals(0, statusResponse.getInsulinNotDelivered(), 0.000001);
         assertEquals(0, statusResponse.getAlerts().getAlertSlots().size());
+
+        assertArrayEquals(ByteUtil.fromHexString("1d180258f80000146fff"), statusResponse.getRawData());
     }
 
     @Test

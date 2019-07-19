@@ -12,6 +12,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.SetBasalSched
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PairService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PrimeService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.SetupProgress;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalSchedule;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalScheduleEntry;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionState;
@@ -37,15 +38,21 @@ public class OmnipodManager {
     }
 
     public void pairAndPrime() {
-        podState = communicationService.executeAction(new PairAction(new PairService()));
-        StatusResponse statusResponse = communicationService.executeAction(new PrimeAction(new PrimeService(), podState));
-        podState.updateFromStatusResponse(statusResponse);
+        if(podState == null) {
+            podState = communicationService.executeAction(new PairAction(new PairService()));
+        }
+        if(podState.getSetupProgress() == SetupProgress.POD_CONFIGURED) {
+            StatusResponse statusResponse = communicationService.executeAction(new PrimeAction(new PrimeService(), podState));
+            podState.updateFromStatusResponse(statusResponse);
+        } else {
+            throw new IllegalStateException("Illegal setup state: "+ podState.getSetupProgress().name());
+        }
     }
 
     public StatusResponse setBasalSchedule(BasalSchedule basalSchedule, boolean confidenceReminder,
                                            Duration scheduleOffset, Duration programReminderInterval) {
         if (!isInitialized()) {
-            throw new IllegalArgumentException("Pod should be initialized first");
+            throw new IllegalStateException("Pod should be initialized first");
         }
         StatusResponse statusResponse = communicationService.executeAction(new SetBasalScheduleAction(podState, basalSchedule,
                 confidenceReminder, scheduleOffset, programReminderInterval));
@@ -53,11 +60,15 @@ public class OmnipodManager {
     }
 
     public boolean isInitialized() {
-        return podState != null;
+        return podState != null && podState.getSetupProgress() == SetupProgress.COMPLETED;
     }
 
     public String getPodStateAsString() {
-        return podState.toString();
+        return podState == null ? "null" : podState.toString();
+    }
+
+    public void resetPodState() {
+        podState = null;
     }
 
     private BasalSchedule createStubBasalSchedule() {

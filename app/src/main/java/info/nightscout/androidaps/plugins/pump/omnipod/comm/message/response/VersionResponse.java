@@ -17,6 +17,7 @@ public class VersionResponse extends MessageBlock {
 
     public VersionResponse(byte[] encodedData) {
         int length = ByteUtil.convertUnsignedByteToInt(encodedData[1]) + 2;
+        this.encodedData = ByteUtil.substring(encodedData, 2, length - 2);
 
         boolean extraByte;
         byte[] truncatedData;
@@ -46,8 +47,6 @@ public class VersionResponse extends MessageBlock {
 
         this.address = ByteUtil.toInt((int) truncatedData[16 + indexIncrementor], (int) truncatedData[17 + indexIncrementor],
                 (int) truncatedData[18 + indexIncrementor], (int) truncatedData[19 + indexIncrementor], ByteUtil.BitConversion.BIG_ENDIAN);
-
-        this.encodedData = encodedData;
     }
 
     @Override

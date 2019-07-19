@@ -10,8 +10,9 @@ public class PodInfoResponse extends MessageBlock {
     private final PodInfo podInfo;
 
     public PodInfoResponse(byte[] encodedData) {
+        this.encodedData = ByteUtil.substring(encodedData, 2, encodedData[1]);
         subType = PodInfoType.fromByte(encodedData[2]);
-        podInfo = subType.decode(ByteUtil.substring(encodedData, 2));
+        podInfo = subType.decode(ByteUtil.substring(encodedData, 2, ByteUtil.convertUnsignedByteToInt(encodedData[1])));
     }
 
     public PodInfoType getSubType() {

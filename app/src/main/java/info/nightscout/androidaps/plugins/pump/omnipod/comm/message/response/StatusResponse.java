@@ -2,6 +2,9 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response;
 
 import org.joda.time.Duration;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
@@ -11,7 +14,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryStatus;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressStatus;
 
 public class StatusResponse extends MessageBlock {
-    private static final int MINIMUM_MESSAGE_LENGTH = 10;
+    private static final int MESSAGE_LENGTH = 10;
 
     private final DeliveryStatus deliveryStatus;
     private final PodProgressStatus podProgressStatus;
@@ -23,9 +26,10 @@ public class StatusResponse extends MessageBlock {
     private final AlertSet alerts;
 
     public StatusResponse(byte[] encodedData) {
-        if(encodedData.length < MINIMUM_MESSAGE_LENGTH) {
+        if(encodedData.length < MESSAGE_LENGTH) {
             throw new IllegalArgumentException("Not enough data");
         }
+        this.encodedData = ByteUtil.substring(encodedData, 1, MESSAGE_LENGTH - 1);
 
         this.deliveryStatus = DeliveryStatus.fromByte((byte) (ByteUtil.convertUnsignedByteToInt(encodedData[1]) >>> 4));
         this.podProgressStatus = PodProgressStatus.fromByte((byte) (encodedData[1] & 0x0F));
@@ -85,5 +89,17 @@ public class StatusResponse extends MessageBlock {
 
     public AlertSet getAlerts() {
         return alerts;
+    }
+
+    public byte[] getRawData() {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        try {
+            stream.write(this.getType().getValue());
+            stream.write(encodedData);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return stream.toByteArray();
     }
 }

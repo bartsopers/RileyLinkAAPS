@@ -28,9 +28,10 @@ public class OmnipodPacket implements RLMessage {
         }
         this.packetAddress = ByteUtil.toInt(new Integer(encoded[0]), new Integer(encoded[1]),
                 new Integer(encoded[2]), new Integer(encoded[3]), ByteUtil.BitConversion.BIG_ENDIAN);
-        this.packetType = PacketType.fromByte((byte)(((int)encoded[4] & 0xFF)>> 5));
-        if (this.packetType == null) {
-            throw new OmnipodException("Invalid packet type");
+        try {
+            this.packetType = PacketType.fromByte((byte) (((int) encoded[4] & 0xFF) >> 5));
+        } catch(IllegalArgumentException ex) {
+            throw new OmnipodException("Invalid packet type", ex);
         }
         this.sequenceNumber = (encoded[4] & 0b11111);
 //        if (packetType == PacketType.ACK) {

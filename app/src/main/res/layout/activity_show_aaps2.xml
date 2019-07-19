@@ -12,6 +12,48 @@
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvPodStatus"
+                android:layout_width="180dp"
+                android:layout_height="match_parent"
+
+                android:text="Pod Status" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <ScrollView
+                    android:id="@+id/scrollViewPodStatusTextAAPS2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="80dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp">
+
+                    <TextView
+                        android:id="@+id/tvPodStatusText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="" />
+                </ScrollView>
+
+                <Button
+                    android:id="@+id/btnResetPodStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:text="Reset pod status" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:orientation="horizontal">
 

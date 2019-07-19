@@ -24,8 +24,7 @@ public class PrimeService {
     public StatusResponse executeDisableTab5Sub16FaultConfigCommand(OmnipodCommunicationService communicationService, PodSessionState podState) {
         FaultConfigCommand faultConfigCommand = new FaultConfigCommand(podState.getCurrentNonce(), (byte) 0x00, (byte) 0x00);
         OmnipodMessage faultConfigMessage = new OmnipodMessage(podState.getAddress(), Collections.singletonList(faultConfigCommand), podState.getMessageNumber());
-        StatusResponse statusResponse = communicationService.exchangeMessages(podState, faultConfigMessage);
-        return statusResponse;
+        return communicationService.exchangeMessages(StatusResponse.class, podState, faultConfigMessage);
     }
 
     public StatusResponse executeFinishSetupReminderAlertCommand(OmnipodCommunicationService communicationService, PodSessionState podState) {
@@ -44,7 +43,7 @@ public class PrimeService {
         SetInsulinScheduleCommand primeCommand = new SetInsulinScheduleCommand(podState.getCurrentNonce(), primeBolus);
         BolusExtraCommand extraBolusCommand = new BolusExtraCommand(primeUnits);
         OmnipodMessage primeMessage = new OmnipodMessage(podState.getAddress(), Arrays.asList(primeCommand, extraBolusCommand), podState.getMessageNumber());
-        StatusResponse statusResponse = communicationService.exchangeMessages(podState, primeMessage);
+        StatusResponse statusResponse = communicationService.exchangeMessages(StatusResponse.class, podState, primeMessage);
         return statusResponse;
     }
 }

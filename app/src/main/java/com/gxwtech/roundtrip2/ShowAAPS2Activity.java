@@ -25,6 +25,8 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.Riley
 import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.TempBasalPair;
 import info.nightscout.androidaps.plugins.pump.omnipod.OmnipodManager;
 import info.nightscout.androidaps.plugins.pump.omnipod.service.RileyLinkOmnipodService;
+import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniPodConst;
+import info.nightscout.androidaps.utils.SP;
 
 public class ShowAAPS2Activity extends AppCompatActivity {
 
@@ -32,11 +34,11 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
     Spinner spinner;
 
-    Button btnStart;
+    Button btnStart, btnResetPodStatus;
 
     Map<String, CommandAction> allCommands = new HashMap<>();
     private BroadcastReceiver mBroadcastReceiver;
-    private TextView tvDuration, tvAmount, tvCommandStatusText, textViewComm;
+    private TextView tvDuration, tvAmount, tvCommandStatusText, textViewComm, tvPodStatus, tvPodStatusText;
     private EditText tfDuration, tfAmount;
     CommandAction selectedCommandAction = null;
 
@@ -100,6 +102,9 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         this.tvDuration = findViewById(R.id.tvDuration);
         this.tvAmount = findViewById(R.id.tvAmount);
 
+        this.tvPodStatus = findViewById(R.id.tvPodStatus);
+        this.tvPodStatusText = findViewById(R.id.tvPodStatusText);
+
         this.tfAmount = findViewById(R.id.tfAmount);
         this.tfDuration = findViewById(R.id.tfDuration);
 
@@ -110,6 +115,17 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             public void onClick(View v) {
                 // bolus, duration
                 startAction();
+            }
+        });
+
+        this.btnResetPodStatus = findViewById(R.id.btnResetPodStatus);
+        this.btnResetPodStatus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // bolus, duration
+                SP.remove(OmniPodConst.Prefs.POD_STATE);
+                getOmnipodManager().resetPodState();
+                updatePodState();
             }
         });
 
@@ -129,6 +145,8 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                 commandSelected(null);
             }
         });
+
+        updatePodState();
 
         mBroadcastReceiver = new BroadcastReceiver() {
 
@@ -427,6 +445,14 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             selectedCommandAction.implementationStatus == ImplementationStatus.WorkInProgress));
     }
 
+    private void updatePodState() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tvPodStatusText.setText(getOmnipodManager().getPodStateAsString());
+            }
+        });
+    }
 
     private void startAction() {
 
@@ -589,6 +615,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                     RileyLinkUtil.sendBroadcastMessage(selectedCommandAction.intentString);
                 }
 
+                updatePodState();
             }
         }).start();
 
