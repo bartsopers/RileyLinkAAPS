@@ -448,7 +448,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                 switch (selectedCommandAction.intentString) {
                     case "RefreshData.InitializePod":
                         try {
-                            getOmnipodManager().initializePod();
+                            getOmnipodManager().pairAndPrime();
                             data = getOmnipodManager().getPodStateAsString();
                         } catch(RuntimeException ex) {
                             errorMessage = ex.getMessage();
@@ -458,7 +458,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                         break;
                     case "RefreshData.FinishPrime":
                         try {
-                            data = getOmnipodManager().finishPrime();
+                            data = "FIXME"; // FIXME
                         } catch(RuntimeException ex) {
                             errorMessage = ex.getMessage();
                             LOG.error("Caught exception: "+ errorMessage);

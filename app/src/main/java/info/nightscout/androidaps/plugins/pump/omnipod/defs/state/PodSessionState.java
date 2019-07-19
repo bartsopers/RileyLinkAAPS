@@ -4,15 +4,16 @@ import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
 
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.FirmwareVersion;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.NonceState;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.SetupProgress;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniCRC;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniPodConst;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.Utils;
 import info.nightscout.androidaps.utils.SP;
 
 public class PodSessionState extends PodState {
-
     private final DateTime activatedAt;
     private final FirmwareVersion piVersion;
     private final FirmwareVersion PmVersion;
@@ -20,19 +21,23 @@ public class PodSessionState extends PodState {
     private final int tid;
 
     private NonceState nonceState;
+    private SetupProgress setupProgress;
 
     public PodSessionState(int address, DateTime activatedAt, FirmwareVersion piVersion,
                            FirmwareVersion pmVersion, int lot, int tid, int packetNumber, int messageNumber) {
         super(address, messageNumber, packetNumber);
-
+        if (setupProgress == null) {
+            throw new IllegalArgumentException("Setup progress cannot be null");
+        }
+        this.setupProgress = SetupProgress.ADDRESS_ASSIGNED;
         this.activatedAt = activatedAt;
         this.piVersion = piVersion;
         this.PmVersion = pmVersion;
         this.lot = lot;
         this.tid = tid;
         this.nonceState = new NonceState(lot, tid);
+        store();
     }
-
 
     public DateTime getActivatedAt() {
         return activatedAt;
@@ -61,7 +66,7 @@ public class PodSessionState extends PodState {
                 + (this.tid & 0xFFFF);
         int seed = ((sum & 0xFFFF) ^ syncWord);
 
-        this.nonceState = new NonceState(lot, tid, (byte)(seed & 0xFF));
+        this.nonceState = new NonceState(lot, tid, (byte) (seed & 0xFF));
     }
 
     public int getCurrentNonce() {
@@ -70,6 +75,18 @@ public class PodSessionState extends PodState {
 
     public void advanceToNextNonce() {
         nonceState.advanceToNextNonce();
+    }
+
+    public SetupProgress getSetupProgress() {
+        return setupProgress;
+    }
+
+    public void setSetupProgress(SetupProgress setupProgress) {
+        if (setupProgress == null) {
+            throw new IllegalArgumentException("Setup state cannot be null");
+        }
+        this.setupProgress = setupProgress;
+        store();
     }
 
     public boolean hasNonceState() {
@@ -85,6 +102,7 @@ public class PodSessionState extends PodState {
                 ", PmVersion=" + PmVersion +
                 ", lot=" + lot +
                 ", tid=" + tid +
+                ", setupProgress="+ setupProgress.name() +
                 ", messageNumber=" + getMessageNumber() +
                 ", packetNumber=" + getPacketNumber() +
                 ", nonce=" + nonceState.getCurrentNonce() +
@@ -101,6 +119,10 @@ public class PodSessionState extends PodState {
     public void setMessageNumber(int messageNumber) {
         super.setMessageNumber(messageNumber);
         store();
+    }
+
+    public void updateFromStatusResponse(StatusResponse statusResponse) {
+        // TODO
     }
 
     private void store() {

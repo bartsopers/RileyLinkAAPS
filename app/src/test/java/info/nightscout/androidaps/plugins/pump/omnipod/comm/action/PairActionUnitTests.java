@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.InitializePodService;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PairService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.VersionResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.FirmwareVersion;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionState;
@@ -25,9 +25,9 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class InitializePodActionUnitTests {
+public class PairActionUnitTests {
     @Mock
-    private InitializePodService initializePodService;
+    private PairService pairService;
 
     @Mock
     private OmnipodCommunicationService communicationService;
@@ -54,24 +54,20 @@ public class InitializePodActionUnitTests {
         when(confirmPairingResponse.getPmVersion()).thenReturn(pmVersion);
         when(confirmPairingResponse.getPiVersion()).thenReturn(piVersion);
 
-        when(initializePodService.executeAssignAddressCommand(eq(communicationService), argThat(setupState -> setupState.getAddress() == address))) //
+        when(pairService.executeAssignAddressCommand(eq(communicationService), argThat(setupState -> setupState.getAddress() == address))) //
                 .thenReturn(assignAddressResponse);
 
-        when(initializePodService.executeConfirmPairingCommand(eq(communicationService), argThat(setupState -> setupState.getAddress() == address), eq(13), eq(8), any(DateTime.class))) //
+        when(pairService.executeConfigurePodCommand(eq(communicationService), argThat(setupState -> setupState.getAddress() == address), eq(13), eq(8), any(DateTime.class))) //
                 .thenReturn(confirmPairingResponse);
 
         // SUT
-        PodSessionState podState = new InitializePodAction(initializePodService, address).execute(communicationService);
+        PodSessionState podState = new PairAction(pairService, address).execute(communicationService);
 
         // Verify
-        verify(initializePodService).executeAssignAddressCommand(any(), any());
-        verify(initializePodService).executeConfirmPairingCommand(any(), any(), anyInt(), anyInt(), any(DateTime.class));
+        verify(pairService).executeAssignAddressCommand(any(), any());
+        verify(pairService).executeConfigurePodCommand(any(), any(), anyInt(), anyInt(), any(DateTime.class));
 
-        verify(initializePodService).executeConfigureLowReservoirAlertCommand(communicationService, podState);
-        verify(initializePodService).executeConfigureInsertionAlertCommand(communicationService, podState);
-        verify(initializePodService).executePrimeBolusCommand(communicationService, podState);
-
-        verifyNoMoreInteractions(initializePodService);
+        verifyNoMoreInteractions(pairService);
 
         // The InitializePodAction should not directly invoke the OmnipodCommunicationService
         // This should be done by the InitializePodService

@@ -6,7 +6,8 @@ import org.slf4j.LoggerFactory;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.data.RLMessage;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PacketType;
-import info.nightscout.androidaps.plugins.pump.omnipod.exception.OmnipodEncodingException;
+import info.nightscout.androidaps.plugins.pump.omnipod.exception.CrcMismatchException;
+import info.nightscout.androidaps.plugins.pump.omnipod.exception.OmnipodException;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniCRC;
 
 /**
@@ -29,7 +30,7 @@ public class OmnipodPacket implements RLMessage {
                 new Integer(encoded[2]), new Integer(encoded[3]), ByteUtil.BitConversion.BIG_ENDIAN);
         this.packetType = PacketType.fromByte((byte)(((int)encoded[4] & 0xFF)>> 5));
         if (this.packetType == null) {
-            throw new OmnipodEncodingException("Invalid packet type");
+            throw new OmnipodException("Invalid packet type");
         }
         this.sequenceNumber = (encoded[4] & 0b11111);
 //        if (packetType == PacketType.ACK) {
@@ -38,7 +39,7 @@ public class OmnipodPacket implements RLMessage {
 //        }
         int crc = OmniCRC.crc8(ByteUtil.substring(encoded,0, encoded.length - 1));
         if (crc != encoded[encoded.length - 1]) {
-            throw new OmnipodEncodingException("CRC mismatch");
+            throw new CrcMismatchException("CRC mismatch");
         }
         this.encodedMessage = ByteUtil.substring(encoded, 5, encoded.length - 1 - 5);
         valid = true;

@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class InitializePodServiceUnitTests {
+public class PairServiceUnitTests {
     @Mock
     private OmnipodCommunicationService communicationService;
 
@@ -44,7 +44,7 @@ public class InitializePodServiceUnitTests {
         when(communicationService.exchangeMessages(any(), any(), any(), any())).thenReturn(response);
 
         // SUT
-        VersionResponse versionResponse = new InitializePodService().executeAssignAddressCommand(communicationService, setupState);
+        VersionResponse versionResponse = new PairService().executeAssignAddressCommand(communicationService, setupState);
 
         // verify
         verify(communicationService).exchangeMessages(eq(setupState), messageCaptor.capture(), eq(Constants.DEFAULT_ADDRESS), eq(0x1f173217));
@@ -59,22 +59,7 @@ public class InitializePodServiceUnitTests {
     }
 
     @Test
-    public void testExecuteConfirmPairingCommand() {
-        // TODO
-    }
-
-    @Test
-    public void testExecuteConfigureLowReservoirAlertCommand() {
-        // TODO
-    }
-
-    @Test
-    public void testExecuteConfigureInsertionAlertCommand() {
-        // TODO
-    }
-
-    @Test
-    public void testExecutePrimeBolusCommand() {
+    public void testExecuteConfigurePodCommand() {
         // TODO
     }
 

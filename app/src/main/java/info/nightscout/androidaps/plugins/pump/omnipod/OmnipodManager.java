@@ -6,10 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.FinishPrimeAction;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.InitializePodAction;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.PairAction;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.PrimeAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.SetBasalScheduleAction;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.InitializePodService;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PairService;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PrimeService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalSchedule;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalScheduleEntry;
@@ -35,19 +36,10 @@ public class OmnipodManager {
         return communicationService;
     }
 
-    public void initializePod() {
-        podState = communicationService.executeAction(new InitializePodAction(new InitializePodService()));
-    }
-
-    public StatusResponse finishPrime() {
-        if (!isInitialized()) {
-            throw new IllegalArgumentException("Pod should be initialized first");
-        }
-        communicationService.executeAction(new FinishPrimeAction(podState));
-
-        // FIXME obtain real basal schedule
-        StatusResponse statusResponse = setBasalSchedule(createStubBasalSchedule(), false, Duration.ZERO, Duration.ZERO);
-        return statusResponse;
+    public void pairAndPrime() {
+        podState = communicationService.executeAction(new PairAction(new PairService()));
+        StatusResponse statusResponse = communicationService.executeAction(new PrimeAction(new PrimeService(), podState));
+        podState.updateFromStatusResponse(statusResponse);
     }
 
     public StatusResponse setBasalSchedule(BasalSchedule basalSchedule, boolean confidenceReminder,

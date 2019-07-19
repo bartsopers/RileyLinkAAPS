@@ -5,21 +5,25 @@ import org.joda.time.DateTime;
 import java.util.Random;
 
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.InitializePodService;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PairService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.VersionResponse;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.SetupProgress;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionState;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSetupState;
 
-public class InitializePodAction implements OmnipodAction<PodSessionState> {
+public class PairAction implements OmnipodAction<PodSessionState> {
+    private final PairService service;
     private final int address;
-    private final InitializePodService service;
 
-    public InitializePodAction(InitializePodService service, int address) {
+    public PairAction(PairService service, int address) {
+        if(service == null) {
+            throw new IllegalArgumentException("service cannot be null");
+        }
         this.service = service;
         this.address = address;
     }
 
-    public InitializePodAction(InitializePodService service) {
+    public PairAction(PairService service) {
         this(service, generateRandomAddress());
     }
 
@@ -31,17 +35,13 @@ public class InitializePodAction implements OmnipodAction<PodSessionState> {
 
         DateTime activationDate = DateTime.now();
 
-        VersionResponse confirmPairingResponse = service.executeConfirmPairingCommand(communicationService, setupState,
+        VersionResponse confirmPairingResponse = service.executeConfigurePodCommand(communicationService, setupState,
                 assignAddressResponse.getLot(), assignAddressResponse.getTid(), activationDate);
 
         PodSessionState podState = new PodSessionState(address, activationDate, confirmPairingResponse.getPiVersion(),
                 confirmPairingResponse.getPmVersion(), confirmPairingResponse.getLot(), confirmPairingResponse.getTid(),
                 setupState.getPacketNumber(), setupState.getMessageNumber());
-
-        service.executeConfigureLowReservoirAlertCommand(communicationService, podState);
-        service.executeConfigureInsertionAlertCommand(communicationService, podState);
-        service.executePrimeBolusCommand(communicationService, podState);
-
+        podState.setSetupProgress(SetupProgress.POD_CONFIGURED);
         return podState;
     }
 

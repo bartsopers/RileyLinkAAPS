@@ -15,8 +15,6 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.ble.defs.Rile
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.OmnipodAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
-import info.nightscout.androidaps.plugins.pump.omnipod.exception.NonceOutOfSyncException;
-import info.nightscout.androidaps.plugins.pump.omnipod.exception.NotEnoughDataException;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.OmnipodMessage;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.OmnipodPacket;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.ErrorResponse;
@@ -24,7 +22,8 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.ErrorResponseType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PacketType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodState;
-import info.nightscout.androidaps.plugins.pump.omnipod.exception.OmnipodCommunicationException;
+import info.nightscout.androidaps.plugins.pump.omnipod.exception.NonceOutOfSyncException;
+import info.nightscout.androidaps.plugins.pump.omnipod.exception.OmnipodException;
 import info.nightscout.androidaps.plugins.pump.omnipod.exception.PodReturnedErrorResponseException;
 
 /**
@@ -93,14 +92,14 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
             try {
                 response = exchangePackets(podState, packet);
             } catch (Exception ex) {
-                throw new OmnipodCommunicationException("Failed to exchange packets", ex);
+                throw new OmnipodException("Failed to exchange packets", ex);
             }
             //We actually ignore (ack) responses if it is not last packet to send
         }
 
         if (response.getPacketType() == PacketType.ACK) {
             podState.increasePacketNumber(1);
-            throw new OmnipodCommunicationException("Received ack instead of real response");
+            throw new OmnipodException("Received ack instead of real response");
         }
 
         OmnipodMessage receivedMessage = null;
@@ -108,20 +107,20 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
         while (receivedMessage == null) {
             try {
                 receivedMessage = OmnipodMessage.decodeMessage(receivedMessageData);
-            } catch(NotEnoughDataException ex) {
+            } catch(OmnipodException ex) {
                 // Message is (probably) not complete yet
-                // TODO should we log this for debugging purposes?
+                LOG.debug("Ignoring exception in exchangeMessages: "+ ex.getClass().getName() +": "+ ex.getMessage());
             }
             if (receivedMessage == null) {
                 OmnipodPacket ackForCon = createAckPacket(podState, packetAddress, ackAddressOverride);
                 try {
                     OmnipodPacket conPacket = exchangePackets(podState, ackForCon, 3, 40);
                     if (conPacket.getPacketType() != PacketType.CON) {
-                        throw new OmnipodCommunicationException("Received a non-con packet type: " + conPacket.getPacketType());
+                        throw new OmnipodException("Received a non-con packet type: " + conPacket.getPacketType());
                     }
                     receivedMessageData = ByteUtil.concat(receivedMessageData, conPacket.getEncodedMessage());
                 } catch (RileyLinkCommunicationException ex) {
-                    throw new OmnipodCommunicationException("RileyLink communication failed", ex);
+                    throw new OmnipodException("RileyLink communication failed", ex);
                 }
             }
         }
@@ -132,7 +131,7 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
 
         List<MessageBlock> messageBlocks = receivedMessage.getMessageBlocks();
         if (messageBlocks.size() == 0) {
-            throw new OmnipodCommunicationException("Not enough data");
+            throw new OmnipodException("Not enough data");
         }
 
         MessageBlock block = messageBlocks.get(0);
@@ -206,6 +205,6 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
             podState.increasePacketNumber(2);
             return response;
         }
-        throw new OmnipodCommunicationException("Timeout when trying to exchange packets");
+        throw new OmnipodException("Timeout when trying to exchange packets");
     }
 }

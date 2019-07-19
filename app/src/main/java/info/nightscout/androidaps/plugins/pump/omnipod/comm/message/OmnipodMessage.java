@@ -9,9 +9,9 @@ import java.util.List;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
+import info.nightscout.androidaps.plugins.pump.omnipod.exception.CrcMismatchException;
 import info.nightscout.androidaps.plugins.pump.omnipod.exception.NotEnoughDataException;
-import info.nightscout.androidaps.plugins.pump.omnipod.exception.OmnipodCommunicationException;
-import info.nightscout.androidaps.plugins.pump.omnipod.exception.OmnipodEncodingException;
+import info.nightscout.androidaps.plugins.pump.omnipod.exception.OmnipodException;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniCRC;
 
 public class OmnipodMessage {
@@ -68,11 +68,11 @@ public class OmnipodMessage {
         int crc = ByteUtil.toInt(data[data.length - 2], data[data.length - 1]);
         int calculatedCrc = OmniCRC.crc16(ByteUtil.substring(data, 0, data.length - 2));
         if (crc != calculatedCrc) {
-            throw new OmnipodCommunicationException("CRC mismatch");
+            throw new CrcMismatchException("CRC mismatch");
         }
         List<MessageBlock> blocks = decodeBlocks(ByteUtil.substring(data, 6, data.length - 6 - 2));
         if (blocks == null || blocks.size() == 0) {
-            throw new OmnipodEncodingException("No blocks decoded");
+            throw new OmnipodException("No blocks decoded");
         }
 
         OmnipodMessage result = new OmnipodMessage(address, blocks, sequenceNumber);
@@ -83,16 +83,15 @@ public class OmnipodMessage {
         List<MessageBlock> blocks = new ArrayList<>();
         int index = 0;
         while (index < data.length) {
-            MessageBlockType blockType = MessageBlockType.fromByte(data[index]);
-
-            // FIXME this makes no sense (passing the whole byte array)
-            // Do we actually even receive messages with multiple blocks?
-            MessageBlock block = blockType.decode(data);
-            if (block == null) {
-                throw new OmnipodEncodingException("Unknown block type: "+ data[index]);
+            try {
+                MessageBlockType blockType = MessageBlockType.fromByte(data[index]);
+                // FIXME this makes no sense (passing the whole byte array)
+                MessageBlock block = blockType.decode(data);
+                blocks.add(block);
+                index += block.getRawData().length;
+            } catch(Exception ex) {
+                throw new OmnipodException("Failed to decode blocks", ex);
             }
-            blocks.add(block);
-            index += block.getRawData().length;
         }
 
         return blocks;
