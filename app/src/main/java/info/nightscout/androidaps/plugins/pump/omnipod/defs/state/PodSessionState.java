@@ -26,9 +26,6 @@ public class PodSessionState extends PodState {
     public PodSessionState(int address, DateTime activatedAt, FirmwareVersion piVersion,
                            FirmwareVersion pmVersion, int lot, int tid, int packetNumber, int messageNumber) {
         super(address, messageNumber, packetNumber);
-        if (setupProgress == null) {
-            throw new IllegalArgumentException("Setup progress cannot be null");
-        }
         this.setupProgress = SetupProgress.ADDRESS_ASSIGNED;
         this.activatedAt = activatedAt;
         this.piVersion = piVersion;

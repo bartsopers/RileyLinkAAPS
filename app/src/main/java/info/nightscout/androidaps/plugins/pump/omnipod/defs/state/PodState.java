@@ -17,6 +17,8 @@ public abstract class PodState {
 
     public abstract int getCurrentNonce();
 
+    public abstract void advanceToNextNonce();
+
     public abstract void resyncNonce(int syncWord, int sentNonce, int sequenceNumber);
 
     public int getAddress() {

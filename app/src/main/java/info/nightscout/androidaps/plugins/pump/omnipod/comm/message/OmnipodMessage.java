@@ -29,7 +29,7 @@ public class OmnipodMessage {
 
     public byte[] getEncoded() {
         byte[] encodedData = new byte[0];
-        for(MessageBlock messageBlock : messageBlocks) {
+        for (MessageBlock messageBlock : messageBlocks) {
             encodedData = ByteUtil.concat(encodedData, messageBlock.getRawData());
         }
 
@@ -37,17 +37,18 @@ public class OmnipodMessage {
         //right before the message blocks we have 6 bits of seqNum and 10 bits of length
         header = ByteUtil.concat(header, ByteUtil.getBytesFromInt(address));
         header = ByteUtil.concat(header, (byte) (((sequenceNumber & 0x1F) << 2) + ((encodedData.length >> 8) & 0x03)));
-        header = ByteUtil.concat(header, (byte)(encodedData.length & 0xFF));
+        header = ByteUtil.concat(header, (byte) (encodedData.length & 0xFF));
         encodedData = ByteUtil.concat(header, encodedData);
         String myString = ByteUtil.shortHexString(encodedData);
         int crc = OmniCRC.crc16(encodedData);
-        encodedData = ByteUtil.concat(encodedData, ByteUtil.substring(ByteUtil.getBytesFromInt(crc), 2,2));
+        encodedData = ByteUtil.concat(encodedData, ByteUtil.substring(ByteUtil.getBytesFromInt(crc), 2, 2));
         return encodedData;
     }
 
     public List<MessageBlock> getMessageBlocks() {
         return messageBlocks;
     }
+
     public int getSequenceNumber() {
         return sequenceNumber;
     }
@@ -57,14 +58,14 @@ public class OmnipodMessage {
             throw new NotEnoughDataException("Not enough data");
         }
 
-        int address = ByteUtil.toInt((int)data[0], (int)data[1], (int)data[2],
-                (int)data[3], ByteUtil.BitConversion.BIG_ENDIAN);
+        int address = ByteUtil.toInt((int) data[0], (int) data[1], (int) data[2],
+                (int) data[3], ByteUtil.BitConversion.BIG_ENDIAN);
         byte b9 = data[4];
         byte bodyLength = data[5];
         if (data.length - 8 < bodyLength) {
-            throw new NotEnoughDataException("not enough data: "+ ByteUtil.shortHexString(data));
+            throw new NotEnoughDataException("not enough data: " + ByteUtil.shortHexString(data));
         }
-        int sequenceNumber = (((int)b9 >> 2) & 0b11111);
+        int sequenceNumber = (((int) b9 >> 2) & 0b11111);
         int crc = ByteUtil.toInt(data[data.length - 2], data[data.length - 1]);
         int calculatedCrc = OmniCRC.crc16(ByteUtil.substring(data, 0, data.length - 2));
         if (crc != calculatedCrc) {
@@ -89,7 +90,7 @@ public class OmnipodMessage {
                 MessageBlock block = blockType.decode(data);
                 blocks.add(block);
                 index += block.getRawData().length;
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 throw new OmnipodException("Failed to decode blocks", ex);
             }
         }
@@ -101,8 +102,27 @@ public class OmnipodMessage {
     public String toString() {
         return "OmnipodMessage{" +
                 "address=" + address +
-                ", encoded=" + ByteUtil.shortHexString(getEncoded())+
+                ", encoded=" + ByteUtil.shortHexString(getEncoded()) +
                 ", sequenceNumber=" + sequenceNumber +
                 '}';
+    }
+
+    public boolean isNonceResyncable() {
+        return messageBlocks.size() > 0 && (messageBlocks.get(0) instanceof NonceResyncableMessageBlock);
+    }
+
+    public int getSentNonce() {
+        if(!isNonceResyncable()) {
+            throw new UnsupportedOperationException("Message is not nonce resyncable");
+        }
+        return ((NonceResyncableMessageBlock)messageBlocks.get(0)).getNonce();
+    }
+
+    public void resyncNonce(int nonce) {
+        for (MessageBlock messageBlock : messageBlocks) {
+            if (messageBlock instanceof NonceResyncableMessageBlock) {
+                ((NonceResyncableMessageBlock) messageBlock).setNonce(nonce);
+            }
+        }
     }
 }

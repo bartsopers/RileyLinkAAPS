@@ -25,7 +25,6 @@ public class PrimeService {
         FaultConfigCommand faultConfigCommand = new FaultConfigCommand(podState.getCurrentNonce(), (byte) 0x00, (byte) 0x00);
         OmnipodMessage faultConfigMessage = new OmnipodMessage(podState.getAddress(), Collections.singletonList(faultConfigCommand), podState.getMessageNumber());
         StatusResponse statusResponse = communicationService.exchangeMessages(podState, faultConfigMessage);
-        podState.advanceToNextNonce();
         return statusResponse;
     }
 
@@ -46,7 +45,6 @@ public class PrimeService {
         BolusExtraCommand extraBolusCommand = new BolusExtraCommand(primeUnits);
         OmnipodMessage primeMessage = new OmnipodMessage(podState.getAddress(), Arrays.asList(primeCommand, extraBolusCommand), podState.getMessageNumber());
         StatusResponse statusResponse = communicationService.exchangeMessages(podState, primeMessage);
-        podState.advanceToNextNonce();
         return statusResponse;
     }
 }

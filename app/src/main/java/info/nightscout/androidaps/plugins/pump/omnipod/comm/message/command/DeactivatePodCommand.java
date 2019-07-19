@@ -2,10 +2,11 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command;
 
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.NonceResyncableMessageBlock;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 
-public class DeactivatePodCommand extends MessageBlock {
-    private final int nonce;
+public class DeactivatePodCommand extends NonceResyncableMessageBlock {
+    private int nonce;
 
     @Override
     public MessageBlockType getType() {
@@ -21,4 +22,14 @@ public class DeactivatePodCommand extends MessageBlock {
         encodedData = ByteUtil.getBytesFromInt(nonce);
     }
 
+    @Override
+    public int getNonce() {
+        return nonce;
+    }
+
+    @Override
+    public void setNonce(int nonce) {
+        this.nonce = nonce;
+        encode();
+    }
 }

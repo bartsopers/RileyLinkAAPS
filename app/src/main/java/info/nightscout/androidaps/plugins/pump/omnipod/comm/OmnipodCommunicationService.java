@@ -18,6 +18,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.OmnipodMessage;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.OmnipodPacket;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.ErrorResponse;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.ErrorResponseType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PacketType;
@@ -73,6 +74,36 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
     }
 
     public <T extends MessageBlock> T exchangeMessages(PodState podState, OmnipodMessage message, Integer addressOverride, Integer ackAddressOverride) {
+        for(int i = 0; 2 > i; i++) {
+
+            if (podState.hasNonceState() && message.isNonceResyncable()) {
+                podState.advanceToNextNonce();
+            }
+
+            MessageBlock responseMessageBlock = transportMessages(podState, message, addressOverride, ackAddressOverride);
+
+            try {
+                return (T) responseMessageBlock;
+            } catch (ClassCastException ex) {
+                if (responseMessageBlock.getType() == MessageBlockType.ERROR_RESPONSE) {
+                    ErrorResponse error = (ErrorResponse)responseMessageBlock;
+                    if (error.getErrorResponseType() == ErrorResponseType.BAD_NONCE) {
+                        podState.resyncNonce(error.getNonceSearchKey(), message.getSentNonce(), message.getSequenceNumber());
+                        message.resyncNonce(podState.getCurrentNonce());
+                    } else {
+                        throw new PodReturnedErrorResponseException((ErrorResponse) responseMessageBlock);
+                    }
+                } else {
+                    throw new OmnipodException("Unexpected response type: " + responseMessageBlock.getType().name());
+                }
+
+            }
+        }
+
+        throw new OmnipodException("Nonce resync failed");
+    }
+
+    private MessageBlock transportMessages(PodState podState, OmnipodMessage message, Integer addressOverride, Integer ackAddressOverride) {
         int packetAddress = podState.getAddress();
         if (addressOverride != null) {
             packetAddress = addressOverride;
@@ -130,25 +161,12 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
         ackUntilQuiet(podState, packetAddress, ackAddressOverride);
 
         List<MessageBlock> messageBlocks = receivedMessage.getMessageBlocks();
+
         if (messageBlocks.size() == 0) {
             throw new OmnipodException("Not enough data");
         }
 
-        MessageBlock block = messageBlocks.get(0);
-        if (block.getType() == MessageBlockType.ERROR_RESPONSE) {
-            ErrorResponse error = (ErrorResponse) block;
-            if (error.getErrorResponseType() == ErrorResponseType.BAD_NONCE) {
-                LOG.warn("Nonce out-of-sync");
-
-                if (podState.hasNonceState()) {
-                    podState.resyncNonce(error.getNonceSearchKey(), podState.getCurrentNonce(), message.getSequenceNumber());
-                }
-                throw new NonceOutOfSyncException(error);
-            }
-            throw new PodReturnedErrorResponseException(error);
-        }
-
-        return (T) block;
+        return messageBlocks.get(0);
     }
 
     private OmnipodPacket createAckPacket(PodState podState, Integer packetAddress, Integer messageAddress) {

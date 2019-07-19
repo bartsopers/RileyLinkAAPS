@@ -5,6 +5,7 @@ import org.joda.time.Duration;
 import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.NonceResyncableMessageBlock;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalDeliveryTable;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalSchedule;
@@ -13,9 +14,9 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BolusDelive
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.DeliverySchedule;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.TempBasalDeliverySchedule;
 
-public class SetInsulinScheduleCommand extends MessageBlock {
+public class SetInsulinScheduleCommand extends NonceResyncableMessageBlock {
 
-    private final int nonce;
+    private int nonce;
     private final DeliverySchedule schedule;
 
     // Bolus
@@ -66,5 +67,16 @@ public class SetInsulinScheduleCommand extends MessageBlock {
     @Override
     public MessageBlockType getType() {
         return MessageBlockType.SET_INSULIN_SCHEDULE;
+    }
+
+    @Override
+    public int getNonce() {
+        return nonce;
+    }
+
+    @Override
+    public void setNonce(int nonce) {
+        this.nonce = nonce;
+        encode();
     }
 }

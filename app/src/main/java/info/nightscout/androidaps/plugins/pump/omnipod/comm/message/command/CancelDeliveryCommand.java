@@ -3,14 +3,14 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command;
 import java.util.EnumSet;
 
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.NonceResyncableMessageBlock;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepType;
 
-public class CancelDeliveryCommand extends MessageBlock {
+public class CancelDeliveryCommand extends NonceResyncableMessageBlock {
 
-    private final int nonce;
+    private int nonce;
     private final BeepType beepType;
     private final EnumSet<DeliveryType> deliveryTypes;
 
@@ -45,5 +45,16 @@ public class CancelDeliveryCommand extends MessageBlock {
         if(deliveryTypes.contains(DeliveryType.BOLUS)) {
             encodedData[4] |= 4;
         }
+    }
+
+    @Override
+    public int getNonce() {
+        return nonce;
+    }
+
+    @Override
+    public void setNonce(int nonce) {
+        this.nonce = nonce;
+        encode();
     }
 }
