@@ -1,6 +1,7 @@
 package info.nightscout.androidaps;
 
 
+import org.joda.time.Duration;
 
 /**
  * Created by mike on 07.06.2016.
@@ -10,6 +11,10 @@ public class Constants {
     public static final double MAX_RESERVOIR_READING = 50.0;
     public static final int DEFAULT_ADDRESS = 0xffffffff;
 
+    public static final Duration SERVICE_DURATION = Duration.standardHours(80);
+    public static final Duration EXPIRATION_ALERT_WINDOW = Duration.standardHours(2);
+    public static final Duration EXPIRATION_ADVISORY_WINDOW = Duration.standardHours(2);
+    public static final Duration END_OF_SERVICE_IMMINENT_WINDOW = Duration.standardHours(1);
 
 //    public static final String MGDL = "mg/dl"; // This is Nightscout's representation
 //    public static final String MMOL = "mmol";

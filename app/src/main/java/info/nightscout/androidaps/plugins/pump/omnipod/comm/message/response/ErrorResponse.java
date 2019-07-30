@@ -38,4 +38,12 @@ public class ErrorResponse extends MessageBlock {
     public int getNonceSearchKey() {
         return nonceSearchKey;
     }
+
+    @Override
+    public String toString() {
+        return "ErrorResponse{" +
+                "errorResponseType=" + errorResponseType +
+                ", nonceSearchKey=" + nonceSearchKey +
+                '}';
+    }
 }

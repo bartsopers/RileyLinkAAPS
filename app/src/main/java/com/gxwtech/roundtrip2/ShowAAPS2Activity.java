@@ -45,7 +45,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
     public ShowAAPS2Activity() {
         addCommandAction("Initialize new POD", ImplementationStatus.Done, "RefreshData.InitializePod");
-        addCommandAction("Finish prime", ImplementationStatus.Done, "RefreshData.FinishPrime");
+        addCommandAction("Insert cannula", ImplementationStatus.Done, "RefreshData.InsertCannula");
 //
 //        addCommandAction("Get Model", ImplementationStatus.Done, "RefreshData.PumpModel");
 //
@@ -283,7 +283,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
         switch (action) {
             case "RefreshData.InitializePod":
-            case "RefreshData.FinishPrime":
+            case "RefreshData.InsertCannula":
                 putOnDisplay(data.toString());
                 break;
             case "RefreshData.Error":
@@ -482,9 +482,10 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                             ex.printStackTrace();
                         }
                         break;
-                    case "RefreshData.FinishPrime":
+                    case "RefreshData.InsertCannula":
                         try {
-                            data = "FIXME"; // FIXME
+                            getOmnipodManager().insertCannula();
+                            data = getOmnipodManager().getPodStateAsString();
                         } catch(RuntimeException ex) {
                             errorMessage = ex.getMessage();
                             LOG.error("Caught exception: "+ errorMessage);

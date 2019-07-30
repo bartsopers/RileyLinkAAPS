@@ -39,6 +39,8 @@ public class PrimeAction implements OmnipodAction<StatusResponse> {
 
         StatusResponse statusResponse = service.executePrimeBolusCommand(communicationService, podState);
         podState.updateFromStatusResponse(statusResponse);
+
+        podState.setSetupProgress(SetupProgress.PRIMING);
         return statusResponse;
     }
 }

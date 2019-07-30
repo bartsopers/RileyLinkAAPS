@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.InsertCannulaAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.PairAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.PrimeAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.SetBasalScheduleAction;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.InsertCannulaService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PairService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PrimeService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
@@ -38,25 +40,38 @@ public class OmnipodManager {
     }
 
     public void pairAndPrime() {
-        if(podState == null) {
+        if (podState == null) {
             podState = communicationService.executeAction(new PairAction(new PairService()));
         }
-        if(podState.getSetupProgress() == SetupProgress.POD_CONFIGURED) {
+        if (podState.getSetupProgress() == SetupProgress.POD_CONFIGURED) {
             StatusResponse statusResponse = communicationService.executeAction(new PrimeAction(new PrimeService(), podState));
             podState.updateFromStatusResponse(statusResponse);
+
+            // TODO update setup progress after X seconds
         } else {
-            throw new IllegalStateException("Illegal setup state: "+ podState.getSetupProgress().name());
+            throw new IllegalStateException("Illegal setup state: " + podState.getSetupProgress().name());
         }
     }
 
-    public StatusResponse setBasalSchedule(BasalSchedule basalSchedule, boolean confidenceReminder,
-                                           Duration scheduleOffset, Duration programReminderInterval) {
+    public void insertCannula() {
+        if (podState == null || podState.getSetupProgress().isBefore(SetupProgress.PRIMING)) { // FIXME is PRIMING the right SetupProgress here?
+            throw new IllegalArgumentException("Pod should be paired and primed first");
+        } else if (podState.getSetupProgress().isAfter(SetupProgress.STARTING_INSERT_CANNULA)) { // FIXME is STARTING_INSERT_CANNULA the right SetupProgress here?
+            throw new IllegalStateException("Illegal setup state: " + podState.getSetupProgress().name());
+        }
+
+        StatusResponse statusResponse = communicationService.executeAction(new InsertCannulaAction(new InsertCannulaService(), podState, createStubBasalSchedule()));
+        podState.updateFromStatusResponse(statusResponse);
+
+    }
+
+    public void setBasalSchedule(BasalSchedule basalSchedule, boolean confidenceReminder,
+                                 Duration scheduleOffset, Duration programReminderInterval) {
         if (!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
-        StatusResponse statusResponse = communicationService.executeAction(new SetBasalScheduleAction(podState, basalSchedule,
+        communicationService.executeAction(new SetBasalScheduleAction(podState, basalSchedule,
                 confidenceReminder, scheduleOffset, programReminderInterval));
-        return statusResponse;
     }
 
     public boolean isInitialized() {

@@ -44,7 +44,7 @@
 
     <!-- Show AAPS -->
 	<string name="cmd_aaps_initialize_pod">Initialize new POD</string>
-    <string name="cmd_aaps_finish_prime">Finish prime</string>
+    <string name="cmd_aaps_insert_cannula">Insert cannula</string>
     <string name="cmd_aaps_get_status">Get Status</string>
     <string name="cmd_aaps_set_tbr">Set TBR</string>
     <string name="cmd_aaps_cancel_tbr">Cancel TBR</string>

@@ -39,9 +39,10 @@ public class PrimeService {
     // TODO maybe we should replace this with a BolusAction?
     public StatusResponse executePrimeBolusCommand(OmnipodCommunicationService communicationService, PodSessionState podState) {
         double primeUnits = 2.6;
-        BolusDeliverySchedule primeBolus = new BolusDeliverySchedule(primeUnits, Duration.standardSeconds(1));
+        Duration timeBetweenPulses = Duration.standardSeconds(1);
+        BolusDeliverySchedule primeBolus = new BolusDeliverySchedule(primeUnits, timeBetweenPulses);
         SetInsulinScheduleCommand primeCommand = new SetInsulinScheduleCommand(podState.getCurrentNonce(), primeBolus);
-        BolusExtraCommand extraBolusCommand = new BolusExtraCommand(primeUnits);
+        BolusExtraCommand extraBolusCommand = new BolusExtraCommand(primeUnits, timeBetweenPulses);
         OmnipodMessage primeMessage = new OmnipodMessage(podState.getAddress(), Arrays.asList(primeCommand, extraBolusCommand), podState.getMessageNumber());
         StatusResponse statusResponse = communicationService.exchangeMessages(StatusResponse.class, podState, primeMessage);
         return statusResponse;

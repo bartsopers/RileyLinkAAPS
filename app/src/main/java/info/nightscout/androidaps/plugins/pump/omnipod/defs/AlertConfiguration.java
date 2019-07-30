@@ -7,18 +7,18 @@ import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 
 public class AlertConfiguration {
     private final AlertType alertType;
-    private final boolean audible;
+    private final boolean active;
     private final boolean autoOffModifier;
     private final Duration duration;
     private final AlertTrigger<?> alertTrigger;
     private final BeepRepeat beepRepeat;
     private final BeepType beepType;
 
-    public AlertConfiguration(AlertType alertType, boolean audible, boolean autoOffModifier,
+    public AlertConfiguration(AlertType alertType, boolean active, boolean autoOffModifier,
                               Duration duration, AlertTrigger alertTrigger,
                               BeepType beepType, BeepRepeat beepRepeat) {
         this.alertType = alertType;
-        this.audible = audible;
+        this.active = active;
         this.autoOffModifier = autoOffModifier;
         this.duration = duration;
         this.alertTrigger = alertTrigger;
@@ -28,7 +28,7 @@ public class AlertConfiguration {
 
     public byte[] getRawData() {
         int firstByte = (alertType.getValue() << 4);
-        firstByte += audible ? (1 << 3) : 0;
+        firstByte += active ? (1 << 3) : 0;
 
         if(alertTrigger instanceof UnitsRemainingAlertTrigger) {
             firstByte += 1 << 2;

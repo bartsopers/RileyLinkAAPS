@@ -18,4 +18,10 @@ public class PodReturnedErrorResponseException extends OmnipodException {
     public ErrorResponse getErrorResponse() {
         return errorResponse;
     }
+
+    @Override
+    public void printStackTrace() {
+        System.out.println(errorResponse.toString());
+        super.printStackTrace();
+    }
 }
