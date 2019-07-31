@@ -1,5 +1,7 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo;
 
+import java.util.Arrays;
+
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodInfoType;
 
@@ -31,5 +33,13 @@ public class PodInfoRecentFlashLog extends PodInfo {
 
     public byte[] getHexWordLog() {
         return hexWordLog;
+    }
+
+    @Override
+    public String toString() {
+        return "PodInfoRecentFlashLog{" +
+                "lastEntryIndex=" + lastEntryIndex +
+                ", hexWordLog=" + Arrays.toString(hexWordLog) +
+                '}';
     }
 }

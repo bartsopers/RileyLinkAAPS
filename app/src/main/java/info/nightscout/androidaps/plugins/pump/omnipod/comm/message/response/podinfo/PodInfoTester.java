@@ -42,4 +42,14 @@ public class PodInfoTester extends PodInfo {
     public byte getByte4() {
         return byte4;
     }
+
+    @Override
+    public String toString() {
+        return "PodInfoTester{" +
+                "byte1=" + byte1 +
+                ", byte2=" + byte2 +
+                ", byte3=" + byte3 +
+                ", byte4=" + byte4 +
+                '}';
+    }
 }

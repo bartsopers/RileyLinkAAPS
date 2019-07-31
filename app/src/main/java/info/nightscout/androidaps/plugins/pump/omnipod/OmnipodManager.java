@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.DeactivatePodAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.InsertCannulaAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.PairAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.PrimeAction;
@@ -72,6 +73,16 @@ public class OmnipodManager {
         }
         communicationService.executeAction(new SetBasalScheduleAction(podState, basalSchedule,
                 confidenceReminder, scheduleOffset, programReminderInterval));
+    }
+
+    public void deactivatePod() {
+        //if(!isInitialized()) {
+        // TODO
+        if(podState == null) {
+            throw new IllegalStateException("Pod should be initialized first");
+        }
+        communicationService.executeAction(new DeactivatePodAction(podState));
+        resetPodState();
     }
 
     public boolean isInitialized() {

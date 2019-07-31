@@ -102,4 +102,18 @@ public class StatusResponse extends MessageBlock {
         }
         return stream.toByteArray();
     }
+
+    @Override
+    public String toString() {
+        return "StatusResponse{" +
+                "deliveryStatus=" + deliveryStatus +
+                ", podProgressStatus=" + podProgressStatus +
+                ", timeActive=" + timeActive +
+                ", reservoirLevel=" + reservoirLevel +
+                ", insulin=" + insulin +
+                ", insulinNotDelivered=" + insulinNotDelivered +
+                ", podMessageCounter=" + podMessageCounter +
+                ", alerts=" + alerts +
+                '}';
+    }
 }

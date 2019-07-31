@@ -1,6 +1,7 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import info.nightscout.androidaps.Constants;
@@ -69,5 +70,22 @@ public class PodInfoConfiguredAlerts extends PodInfo {
         public double getUnitsLeft() {
             return unitsLeft;
         }
+
+        @Override
+        public String toString() {
+            return "AlertActivation{" +
+                    "beepType=" + beepType +
+                    ", timeFromPodStart=" + timeFromPodStart +
+                    ", unitsLeft=" + unitsLeft +
+                    '}';
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "PodInfoConfiguredAlerts{" +
+                "word278=" + Arrays.toString(word278) +
+                ", alertActivations=" + alertActivations +
+                '}';
     }
 }

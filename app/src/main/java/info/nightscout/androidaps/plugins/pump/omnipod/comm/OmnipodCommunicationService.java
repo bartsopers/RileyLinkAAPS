@@ -93,7 +93,7 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
                         throw new PodReturnedErrorResponseException((ErrorResponse) responseMessageBlock);
                     }
                 } else {
-                    throw new OmnipodException("Unexpected response type: " + responseMessageBlock.getType().name());
+                    throw new OmnipodException("Unexpected response type: " + responseMessageBlock.toString());
                 }
             }
         }

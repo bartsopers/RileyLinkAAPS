@@ -77,4 +77,16 @@ public class VersionResponse extends MessageBlock {
     public int getAddress() {
         return address;
     }
+
+    @Override
+    public String toString() {
+        return "VersionResponse{" +
+                "podProgressStatus=" + podProgressStatus +
+                ", pmVersion=" + pmVersion +
+                ", piVersion=" + piVersion +
+                ", lot=" + lot +
+                ", tid=" + tid +
+                ", address=" + address +
+                '}';
+    }
 }

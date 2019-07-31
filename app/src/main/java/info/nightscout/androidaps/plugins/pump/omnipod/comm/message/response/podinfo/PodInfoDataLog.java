@@ -53,4 +53,15 @@ public class PodInfoDataLog extends PodInfo {
     public byte getDataChunkWords() {
         return dataChunkWords;
     }
+
+    @Override
+    public String toString() {
+        return "PodInfoDataLog{" +
+                "faultEventCode=" + faultEventCode +
+                ", timeFaultEvent=" + timeFaultEvent +
+                ", timeActivation=" + timeActivation +
+                ", dataChunkSize=" + dataChunkSize +
+                ", dataChunkWords=" + dataChunkWords +
+                '}';
+    }
 }

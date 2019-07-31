@@ -27,4 +27,12 @@ public class PodInfoResponse extends MessageBlock {
     public MessageBlockType getType() {
         return MessageBlockType.POD_INFO_RESPONSE;
     }
+
+    @Override
+    public String toString() {
+        return "PodInfoResponse{" +
+                "subType=" + subType.name() +
+                ", podInfo=" + podInfo.toString() +
+                '}';
+    }
 }

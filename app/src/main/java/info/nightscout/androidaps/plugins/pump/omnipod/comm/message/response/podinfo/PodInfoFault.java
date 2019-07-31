@@ -40,4 +40,13 @@ public class PodInfoFault extends PodInfo {
     public DateTime getDateTime() {
         return dateTime;
     }
+
+    @Override
+    public String toString() {
+        return "PodInfoFault{" +
+                "faultEventCode=" + faultEventCode +
+                ", activationTime=" + activationTime +
+                ", dateTime=" + dateTime +
+                '}';
+    }
 }

@@ -2,6 +2,8 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.po
 
 import org.joda.time.Duration;
 
+import java.util.Arrays;
+
 import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertSet;
@@ -144,5 +146,28 @@ public class PodInfoFaultEvent extends PodInfo {
 
     public byte[] getUnknownValue() {
         return unknownValue;
+    }
+
+    @Override
+    public String toString() {
+        return "PodInfoFaultEvent{" +
+                "podProgressStatus=" + podProgressStatus +
+                ", deliveryStatus=" + deliveryStatus +
+                ", insulinNotDelivered=" + insulinNotDelivered +
+                ", podMessageCounter=" + podMessageCounter +
+                ", totalInsulinDelivered=" + totalInsulinDelivered +
+                ", currentStatus=" + currentStatus +
+                ", faultEventTimeSinceActivation=" + faultEventTimeSinceActivation +
+                ", reservoirLevel=" + reservoirLevel +
+                ", timeActive=" + timeActive +
+                ", unacknowledgedAlerts=" + unacknowledgedAlerts +
+                ", faultAccessingTables=" + faultAccessingTables +
+                ", logEventErrorType=" + logEventErrorType +
+                ", logEventErrorPodProgressStatus=" + logEventErrorPodProgressStatus +
+                ", receiverLowGain=" + receiverLowGain +
+                ", radioRSSI=" + radioRSSI +
+                ", previousPodProgressStatus=" + previousPodProgressStatus +
+                ", unknownValue=" + Arrays.toString(unknownValue) +
+                '}';
     }
 }

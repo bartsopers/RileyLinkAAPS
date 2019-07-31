@@ -46,6 +46,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
     public ShowAAPS2Activity() {
         addCommandAction("Initialize new POD", ImplementationStatus.Done, "RefreshData.InitializePod");
         addCommandAction("Insert cannula", ImplementationStatus.Done, "RefreshData.InsertCannula");
+        addCommandAction("Deactivate pod", ImplementationStatus.Done, "RefreshData.DeactivatePod");
 //
 //        addCommandAction("Get Model", ImplementationStatus.Done, "RefreshData.PumpModel");
 //
@@ -284,6 +285,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         switch (action) {
             case "RefreshData.InitializePod":
             case "RefreshData.InsertCannula":
+            case "RefreshData.DeactivatePod":
                 putOnDisplay(data.toString());
                 break;
             case "RefreshData.Error":
@@ -491,6 +493,17 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                             LOG.error("Caught exception: "+ errorMessage);
                             ex.printStackTrace();
                         }
+                        break;
+                    case "RefreshData.DeactivatePod":
+                        try {
+                            getOmnipodManager().deactivatePod();
+                            data = getOmnipodManager().getPodStateAsString();
+                        } catch(RuntimeException ex) {
+                            errorMessage = ex.getMessage();
+                            LOG.error("Caught exception: "+ errorMessage);
+                            ex.printStackTrace();
+                        }
+                        break;
 //                    case "RefreshData.PumpModel": {
 //                        returnData = getCommunicationManager().getPumpModel();
 //                    }

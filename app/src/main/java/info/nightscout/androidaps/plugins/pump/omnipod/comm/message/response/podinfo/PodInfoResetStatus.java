@@ -1,5 +1,7 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo;
 
+import java.util.Arrays;
+
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodInfoType;
 
@@ -43,5 +45,15 @@ public class PodInfoResetStatus extends PodInfo {
 
     public int getPodAddress() {
         return podAddress;
+    }
+
+    @Override
+    public String toString() {
+        return "PodInfoResetStatus{" +
+                "zero=" + zero +
+                ", numberOfBytes=" + numberOfBytes +
+                ", dataFromFlashMemory=" + Arrays.toString(dataFromFlashMemory) +
+                ", podAddress=" + podAddress +
+                '}';
     }
 }
