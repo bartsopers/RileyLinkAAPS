@@ -1,40 +1,36 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command;
 
 import java.util.Collections;
-import java.util.List;
 
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.NonceResyncableMessageBlock;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertType;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertSet;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertSlot;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 
 public class AcknowledgeAlertsCommand extends NonceResyncableMessageBlock {
 
     private int nonce;
-    private final List<AlertType> alertTypes;
+    private final AlertSet alerts;
 
     @Override
     public MessageBlockType getType() {
         return MessageBlockType.ACKNOWLEDGE_ALERT;
     }
 
-    public AcknowledgeAlertsCommand(int nonce, List<AlertType> alertTypes) {
+    public AcknowledgeAlertsCommand(int nonce, AlertSet alerts) {
         this.nonce = nonce;
-        this.alertTypes = alertTypes;
+        this.alerts = alerts;
         encode();
     }
 
-    public AcknowledgeAlertsCommand(int nonce, AlertType alertType) {
-        this(nonce, Collections.singletonList(alertType));
+    public AcknowledgeAlertsCommand(int nonce, AlertSlot alertSlot) {
+        this(nonce, new AlertSet(Collections.singletonList(alertSlot)));
     }
 
     private void encode() {
         encodedData = ByteUtil.getBytesFromInt(nonce);
-        byte alertTypeBits = 0;
-        for (AlertType alertType:alertTypes) {
-            alertTypeBits |= (0x01 << alertType.getValue());
-        }
-        encodedData = ByteUtil.concat(encodedData, alertTypeBits);
+        encodedData = ByteUtil.concat(encodedData, alerts.getRawValue());
     }
 
     @Override

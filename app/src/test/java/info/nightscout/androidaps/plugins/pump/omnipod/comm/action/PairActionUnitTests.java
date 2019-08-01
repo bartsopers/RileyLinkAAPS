@@ -38,6 +38,8 @@ public class PairActionUnitTests {
     @Mock
     private VersionResponse confirmPairingResponse;
 
+    // FIXME test fails because PodState requires android context to be able to store itself
+    // Proposal: storing PodState should happen elsewhere, not in the class itself
     @Test
     public void testServiceInvocationFromCapture() {
         // Setup

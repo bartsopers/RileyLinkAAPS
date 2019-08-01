@@ -10,6 +10,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertSlot;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodInfoType;
 
+// TODO make this closer match the wiki description
 public class PodInfoConfiguredAlerts extends PodInfo {
     private static final int MINIMUM_MESSAGE_LENGTH = 11;
 

@@ -4,6 +4,7 @@ import org.joda.time.Duration;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.ConfigureAlertsAction;
@@ -13,10 +14,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.Faul
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.SetInsulinScheduleCommand;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertConfiguration;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertType;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepRepeat;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepType;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.TimerAlertTrigger;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertConfigurationFactory;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BolusDeliverySchedule;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionState;
 
@@ -28,12 +26,9 @@ public class PrimeService {
     }
 
     public StatusResponse executeFinishSetupReminderAlertCommand(OmnipodCommunicationService communicationService, PodSessionState podState) {
-        TimerAlertTrigger finishSetupReminderTrigger = new TimerAlertTrigger(Duration.standardDays(5));
-
-        AlertConfiguration finishSetupReminderAlertConfiguration = new AlertConfiguration(AlertType.TIMER_LIMIT, true, false,
-                Duration.standardMinutes(55), finishSetupReminderTrigger, BeepType.BIP_BEEP_BIP_BEEP_BIP_BEEP_BIP_BEEP, BeepRepeat.EVERY_5_MINUTES);
-
-        return communicationService.executeAction(new ConfigureAlertsAction(podState, Collections.singletonList(finishSetupReminderAlertConfiguration)));
+        List<AlertConfiguration> alertConfigurations = Collections.singletonList(
+                AlertConfigurationFactory.createFinishSetupReminderAlertConfiguration());
+        return communicationService.executeAction(new ConfigureAlertsAction(podState, alertConfigurations));
     }
 
     // TODO maybe we should replace this with a BolusAction?

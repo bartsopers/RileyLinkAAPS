@@ -28,4 +28,8 @@ public enum AlertSlot {
         }
         throw new IllegalArgumentException("Unknown AlertSlot: "+ value);
     }
+
+    public byte getValue() {
+        return value;
+    }
 }
