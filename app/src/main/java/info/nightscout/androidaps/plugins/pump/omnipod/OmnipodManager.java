@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.BolusAction;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.CancelDeliveryAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.DeactivatePodAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.GetStatusAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.InsertCannulaAction;
@@ -23,6 +24,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.Inser
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PairService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PrimeService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.SetupProgress;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalSchedule;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalScheduleEntry;
@@ -49,6 +51,23 @@ public class OmnipodManager {
 
     public OmnipodCommunicationService getCommunicationService() {
         return communicationService;
+    }
+
+    public StatusResponse getStatus() {
+        if(podState == null) {
+            throw new IllegalStateException("Pod should be paired first");
+        }
+        StatusResponse statusResponse = communicationService.executeAction(new GetStatusAction(podState));
+        podState.updateFromStatusResponse(statusResponse);
+        return statusResponse;
+    }
+
+    public void cancelBolus() {
+        if(!isInitialized()) {
+            throw new IllegalStateException("Pod should be initialized first");
+        }
+        StatusResponse statusResponse = communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.BOLUS));
+        podState.updateFromStatusResponse(statusResponse);
     }
 
     public void pairAndPrime() {

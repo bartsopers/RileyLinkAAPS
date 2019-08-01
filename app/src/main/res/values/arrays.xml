@@ -5,7 +5,9 @@
 
         <item>@string/cmd_aaps_initialize_pod</item>
         <item>@string/cmd_aaps_insert_cannula</item>
+        <item>@string/cmd_aaps_get_status</item>
         <item>@string/cmd_aaps_set_bolus</item>
+        <item>@string/cmd_aaps_cancel_bolus</item>
         <item>@string/cmd_aaps_deactivate_pod</item>
         <!--<item>@string/cmd_aaps_get_model</item>-->
         <!--<item>@string/cmd_aaps_set_tbr</item>-->

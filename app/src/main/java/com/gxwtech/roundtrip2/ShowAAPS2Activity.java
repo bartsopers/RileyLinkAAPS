@@ -46,7 +46,9 @@ public class ShowAAPS2Activity extends AppCompatActivity {
     public ShowAAPS2Activity() {
         addCommandAction("Initialize new POD", ImplementationStatus.Done, "RefreshData.InitializePod");
         addCommandAction("Insert cannula", ImplementationStatus.Done, "RefreshData.InsertCannula");
+        addCommandAction("Get Status", ImplementationStatus.Done, "RefreshData.GetStatus");
         addCommandAction("Bolus", ImplementationStatus.Done, "RefreshData.Bolus");
+        addCommandAction("Cancel Bolus", ImplementationStatus.Done, "RefreshData.CancelBolus");
         addCommandAction("Deactivate pod", ImplementationStatus.Done, "RefreshData.DeactivatePod");
 //
 //        addCommandAction("Get Model", ImplementationStatus.Done, "RefreshData.PumpModel");
@@ -285,7 +287,9 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         switch (action) {
             case "RefreshData.InitializePod":
             case "RefreshData.InsertCannula":
+            case "RefreshData.GetStatus":
             case "RefreshData.Bolus":
+            case "RefreshData.CancelBolus":
             case "RefreshData.DeactivatePod":
                 putOnDisplay(data == null ? "null" : data.toString());
                 break;
@@ -486,10 +490,29 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                             ex.printStackTrace();
                         }
                         break;
+                    case "RefreshData.GetStatus":
+                        try {
+                            data = getOmnipodManager().getStatus();
+                        } catch (RuntimeException ex) {
+                            errorMessage = ex.getMessage();
+                            LOG.error("Caught exception: " + errorMessage);
+                            ex.printStackTrace();
+                        }
+                        break;
                     case "RefreshData.Bolus":
                         try {
                             Double units = getAmount();
                             getOmnipodManager().bolus(units);
+                            data = getOmnipodManager().getPodStateAsString();
+                        } catch (RuntimeException ex) {
+                            errorMessage = ex.getMessage();
+                            LOG.error("Caught exception: " + errorMessage);
+                            ex.printStackTrace();
+                        }
+                        break;
+                    case "RefreshData.CancelBolus":
+                        try {
+                            getOmnipodManager().cancelBolus();
                             data = getOmnipodManager().getPodStateAsString();
                         } catch (RuntimeException ex) {
                             errorMessage = ex.getMessage();
