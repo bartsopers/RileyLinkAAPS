@@ -58,7 +58,7 @@ public class PrimeAction implements OmnipodAction<StatusResponse> {
     public static void updatePrimingStatus(PodSessionState podState, StatusResponse statusResponse) {
         if(podState.getSetupProgress().equals(SetupProgress.PRIMING) && statusResponse.getPodProgressStatus().equals(PodProgressStatus.READY_FOR_BASAL_SCHEDULE)) {
             if(LOG.isDebugEnabled()) {
-                LOG.debug("Updating SetupProgress from PRIMING to READY_FOR_BASAL_SCHEDULE");
+                LOG.debug("Updating SetupProgress from PRIMING to PRIMING_FINISHED");
             }
             podState.setSetupProgress(SetupProgress.PRIMING_FINISHED);
         }

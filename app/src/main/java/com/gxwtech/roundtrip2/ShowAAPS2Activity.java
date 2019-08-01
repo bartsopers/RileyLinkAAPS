@@ -287,7 +287,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             case "RefreshData.InsertCannula":
             case "RefreshData.Bolus":
             case "RefreshData.DeactivatePod":
-                putOnDisplay(data.toString());
+                putOnDisplay(data == null ? "null" : data.toString());
                 break;
             case "RefreshData.Error":
                 putOnDisplay("Error: " + errorMessage);
@@ -434,8 +434,8 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                 putOnDisplay("Unsupported action: " + action);
         }
 
-        this.data = null;
-        this.btnStart.setEnabled((selectedCommandAction.implementationStatus == ImplementationStatus.Done || //
+        data = null;
+        btnStart.setEnabled((selectedCommandAction.implementationStatus == ImplementationStatus.Done || //
                 selectedCommandAction.implementationStatus == ImplementationStatus.WorkInProgress));
     }
 
