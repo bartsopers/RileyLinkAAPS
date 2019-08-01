@@ -16,6 +16,9 @@ public class Constants {
     public static final Duration EXPIRATION_ADVISORY_WINDOW = Duration.standardHours(2);
     public static final Duration END_OF_SERVICE_IMMINENT_WINDOW = Duration.standardHours(1);
 
+    public static final Duration POD_PRIME_DURATION = Duration.standardSeconds(55);
+    public static final Duration POD_CANNULA_INSERTION_DURATION = Duration.standardSeconds(10);
+
 //    public static final String MGDL = "mg/dl"; // This is Nightscout's representation
 //    public static final String MMOL = "mmol";
 //

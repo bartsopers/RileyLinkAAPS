@@ -1,7 +1,5 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs.state;
 
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.SetupProgress;
-
 public abstract class PodState {
     private final int address;
     private int packetNumber;

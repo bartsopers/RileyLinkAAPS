@@ -6,13 +6,16 @@ public enum PodProgressStatus {
     TANK_POWER_ACTIVATED((byte)0x01),
     TANK_FILL_COMPLETED((byte)0x02),
     PAIRING_SUCCESS((byte)0x03),
-    PURGING((byte)0x04),
-    READY_FOR_INJECTION((byte)0x05),
-    INJECTION_DONE((byte)0x06),
-    PRIMING_CANNULA((byte)0x07),
+    PRIMING((byte)0x04),
+    READY_FOR_BASAL_SCHEDULE((byte)0x05),
+    READY_FOR_CANNULA_INSERTION((byte)0x06),
+    CANNULA_INSERTING((byte)0x07),
     RUNNING_ABOVE_FIFTY_UNITS((byte)0x08),
     RUNNING_BELOW_FIFTY_UNITS((byte)0x09),
-    ERROR_EVENT_OCCURRED_SHUTTING_DOWN((byte)0x0d),
+    ONE_NOT_USED_BUT_IN_33((byte)0x0a),
+    TWO_NOT_USED_BUT_IN_33((byte)0x0b),
+    THREE_NOT_USED_BUT_IN_33((byte)0x0c),
+    ERROR_EVENT_LOGGED_SHUTTING_DOWN((byte)0x0d),
     DELAYED_PRIME((byte)0x0e),
     INACTIVE((byte)0x0f);
 
@@ -33,5 +36,9 @@ public enum PodProgressStatus {
             }
         }
         throw new IllegalArgumentException("Unknown PodProgressStatus: "+ value);
+    }
+
+    public boolean isReadyForDelivery() {
+        return this == RUNNING_ABOVE_FIFTY_UNITS || this == RUNNING_BELOW_FIFTY_UNITS;
     }
 }

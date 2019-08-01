@@ -4,9 +4,15 @@ import org.joda.time.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.BolusAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.DeactivatePodAction;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.GetStatusAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.InsertCannulaAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.PairAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.PrimeAction;
@@ -44,26 +50,33 @@ public class OmnipodManager {
         if (podState == null) {
             podState = communicationService.executeAction(new PairAction(new PairService()));
         }
-        if (podState.getSetupProgress() == SetupProgress.POD_CONFIGURED) {
+        if (podState.getSetupProgress().isBefore(SetupProgress.PRIMING_FINISHED)) {
             StatusResponse statusResponse = communicationService.executeAction(new PrimeAction(new PrimeService(), podState));
             podState.updateFromStatusResponse(statusResponse);
 
-            // TODO update setup progress after X seconds
+            executeDelayed(() -> {
+                StatusResponse delayedStatusResponse = communicationService.executeAction(new GetStatusAction(podState));
+                PrimeAction.updatePrimingStatus(podState, delayedStatusResponse);
+            }, Constants.POD_PRIME_DURATION);
         } else {
             throw new IllegalStateException("Illegal setup state: " + podState.getSetupProgress().name());
         }
     }
 
     public void insertCannula() {
-        if (podState == null || podState.getSetupProgress().isBefore(SetupProgress.PRIMING)) { // FIXME is PRIMING the right SetupProgress here?
+        if (podState == null || podState.getSetupProgress().isBefore(SetupProgress.PRIMING_FINISHED)) {
             throw new IllegalArgumentException("Pod should be paired and primed first");
-        } else if (podState.getSetupProgress().isAfter(SetupProgress.STARTING_INSERT_CANNULA)) { // FIXME is STARTING_INSERT_CANNULA the right SetupProgress here?
+        } else if (podState.getSetupProgress().isAfter(SetupProgress.CANNULA_INSERTING)) {
             throw new IllegalStateException("Illegal setup state: " + podState.getSetupProgress().name());
         }
 
         StatusResponse statusResponse = communicationService.executeAction(new InsertCannulaAction(new InsertCannulaService(), podState, createStubBasalSchedule()));
         podState.updateFromStatusResponse(statusResponse);
 
+        executeDelayed(() -> {
+                StatusResponse delayedStatusResponse = communicationService.executeAction(new GetStatusAction(podState));
+                InsertCannulaAction.updateCannulaInsertionStatus(podState, delayedStatusResponse);
+        }, Constants.POD_CANNULA_INSERTION_DURATION);
     }
 
     public void setBasalSchedule(BasalSchedule basalSchedule, boolean confidenceReminder,
@@ -75,11 +88,16 @@ public class OmnipodManager {
                 confidenceReminder, scheduleOffset, programReminderInterval));
     }
 
-    public void deactivatePod() {
-        //if(!isInitialized()) {
-        // TODO
-        if(podState == null) {
+    public void bolus(double units) {
+        if (!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
+        }
+        communicationService.executeAction(new BolusAction(podState, units));
+    }
+
+    public void deactivatePod() {
+        if (podState == null) {
+            throw new IllegalStateException("Pod should be paired first");
         }
         communicationService.executeAction(new DeactivatePodAction(podState));
         resetPodState();
@@ -124,5 +142,10 @@ public class OmnipodManager {
         basals.add(new BasalScheduleEntry(11, Duration.standardMinutes(660)));//11:00-22:00
         basals.add(new BasalScheduleEntry(1.15, Duration.standardMinutes(1320)));//22:00-24:00
         return new BasalSchedule(basals);
+    }
+
+    private void executeDelayed(Runnable r, Duration timeout) {
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+        scheduledExecutorService.schedule(r, timeout.getMillis(), TimeUnit.MILLISECONDS);
     }
 }

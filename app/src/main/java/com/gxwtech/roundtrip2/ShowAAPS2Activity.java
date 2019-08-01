@@ -46,6 +46,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
     public ShowAAPS2Activity() {
         addCommandAction("Initialize new POD", ImplementationStatus.Done, "RefreshData.InitializePod");
         addCommandAction("Insert cannula", ImplementationStatus.Done, "RefreshData.InsertCannula");
+        addCommandAction("Bolus", ImplementationStatus.Done, "RefreshData.Bolus");
         addCommandAction("Deactivate pod", ImplementationStatus.Done, "RefreshData.DeactivatePod");
 //
 //        addCommandAction("Get Model", ImplementationStatus.Done, "RefreshData.PumpModel");
@@ -55,7 +56,6 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //        addCommandAction("Status - TBR", ImplementationStatus.Done, "RefreshData.GetTBR");
 //
 //        addCommandAction("Get Basal Profile", ImplementationStatus.Done, "RefreshData.BasalProfile");
-//        addCommandAction("Set Bolus", ImplementationStatus.Done, "RefreshData.SetBolus");
 //
 //        addCommandAction("Status - Remaining Insulin", ImplementationStatus.Done, "RefreshData.RemainingInsulin");
 //        addCommandAction("Status - Get Time", ImplementationStatus.Done, "RefreshData.GetTime");
@@ -72,7 +72,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //        // LOW PRIORITY
 //        addCommandAction("Read History", ImplementationStatus.WorkInProgress, "RefreshData.GetHistory");
 //        addCommandAction("Read History 2", ImplementationStatus.WorkInProgress, "RefreshData.GetHistory2");
-//        // addCommandAction("Set Extended Bolus", ImplementationStatus.WorkInProgress, "RefreshData.SetExtendedBolus");
+//        // addCommandAction("Extended Bolus", ImplementationStatus.WorkInProgress, "RefreshData.ExtendedBolus");
 //        // addCommandAction("Status - Ext. Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetBolus");
 //        // addCommandAction("Load TDD", ImplementationStatus.NotStarted, null); Not needed, we have good history
 //
@@ -130,8 +130,8 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             }
         });
 
-        tvCommandStatusText = (TextView)findViewById(R.id.tvCommandStatusText);
-        spinner = (Spinner)findViewById(R.id.spinnerPumpCommands);
+        tvCommandStatusText = (TextView) findViewById(R.id.tvCommandStatusText);
+        spinner = (Spinner) findViewById(R.id.spinnerPumpCommands);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -171,7 +171,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         for (CommandAction commandAction : allCommands.values()) {
 
             if (commandAction.implementationStatus == ImplementationStatus.Done || //
-                commandAction.implementationStatus == ImplementationStatus.WorkInProgress) {
+                    commandAction.implementationStatus == ImplementationStatus.WorkInProgress) {
                 if (commandAction.intentString != null) {
                     intentFilter.addAction(commandAction.intentString);
                 }
@@ -181,7 +181,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         intentFilter.addAction("RefreshData.Error");
 
         LocalBroadcastManager.getInstance(MainApp.instance().getApplicationContext()).registerReceiver(
-            mBroadcastReceiver, intentFilter);
+                mBroadcastReceiver, intentFilter);
     }
 
 
@@ -193,11 +193,11 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             this.btnStart.setEnabled(false);
         } else {
 
-            this.selectedCommandAction = allCommands.get((String)id);
+            this.selectedCommandAction = allCommands.get((String) id);
             tvCommandStatusText.setText(selectedCommandAction.implementationStatus.text);
             enableFields(isAmountEnabled(), isDurationEnabled());
             this.btnStart.setEnabled((selectedCommandAction.implementationStatus == ImplementationStatus.Done || //
-                selectedCommandAction.implementationStatus == ImplementationStatus.WorkInProgress));
+                    selectedCommandAction.implementationStatus == ImplementationStatus.WorkInProgress));
         }
 
     }
@@ -207,9 +207,9 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         String action = this.selectedCommandAction.action;
 
         return (action.equals("Set TBR") || //
-            action.equals("Set Bolus") || //
-            action.equals("Set Basal Profile") || //
-        action.equals("Set Extended Bolus") //
+                action.equals("Bolus") || //
+                action.equals("Set Basal Profile") || //
+                action.equals("Extended Bolus") //
         );
     }
 
@@ -217,7 +217,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
     private boolean isDurationEnabled() {
         String action = this.selectedCommandAction.action;
 
-        return (action.equals("Set TBR") || action.equals("Set Extended Bolus"));
+        return (action.equals("Set TBR") || action.equals("Extended Bolus"));
     }
 
 
@@ -263,8 +263,8 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
 
         public CommandAction(String action, //
-                ImplementationStatus implementationStatus, //
-                String intentString) {
+                             ImplementationStatus implementationStatus, //
+                             String intentString) {
             this.action = action;
             this.implementationStatus = implementationStatus;
             this.intentString = intentString;
@@ -274,7 +274,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
     private OmnipodManager getOmnipodManager() {
         RileyLinkService rileyLinkService = RileyLinkUtil.getRileyLinkService();
-        return ((RileyLinkOmnipodService)rileyLinkService).getOmnipodManager();
+        return ((RileyLinkOmnipodService) rileyLinkService).getOmnipodManager();
     }
 
     Object data;
@@ -285,6 +285,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         switch (action) {
             case "RefreshData.InitializePod":
             case "RefreshData.InsertCannula":
+            case "RefreshData.Bolus":
             case "RefreshData.DeactivatePod":
                 putOnDisplay(data.toString());
                 break;
@@ -346,16 +347,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //            }
 //                break;
 //
-//            case "RefreshData.SetBolus": {
-//                Boolean response = (Boolean)data;
-//
-//                Float amount = getAmount();
-//
-//                putOnDisplay(String.format("Bolus: %.2f - %s", amount, (response ? "Was set." : "Was NOT set.")));
-//            }
-//                break;
-//
-//            case "RefreshData.SetExtendedBolus": {
+//            case "RefreshData.ExtendedBolus": {
 //                Boolean response = (Boolean)data;
 //
 //                TempBasalPair tbr = new TempBasalPair(0.5d, false, 30); // getTBRSettings();
@@ -444,7 +436,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
         this.data = null;
         this.btnStart.setEnabled((selectedCommandAction.implementationStatus == ImplementationStatus.Done || //
-            selectedCommandAction.implementationStatus == ImplementationStatus.WorkInProgress));
+                selectedCommandAction.implementationStatus == ImplementationStatus.WorkInProgress));
     }
 
     private void updatePodState() {
@@ -478,9 +470,9 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                         try {
                             getOmnipodManager().pairAndPrime();
                             data = getOmnipodManager().getPodStateAsString();
-                        } catch(RuntimeException ex) {
+                        } catch (RuntimeException ex) {
                             errorMessage = ex.getMessage();
-                            LOG.error("Caught exception: "+ errorMessage);
+                            LOG.error("Caught exception: " + errorMessage);
                             ex.printStackTrace();
                         }
                         break;
@@ -488,9 +480,20 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                         try {
                             getOmnipodManager().insertCannula();
                             data = getOmnipodManager().getPodStateAsString();
-                        } catch(RuntimeException ex) {
+                        } catch (RuntimeException ex) {
                             errorMessage = ex.getMessage();
-                            LOG.error("Caught exception: "+ errorMessage);
+                            LOG.error("Caught exception: " + errorMessage);
+                            ex.printStackTrace();
+                        }
+                        break;
+                    case "RefreshData.Bolus":
+                        try {
+                            Double units = getAmount();
+                            getOmnipodManager().bolus(units);
+                            data = getOmnipodManager().getPodStateAsString();
+                        } catch (RuntimeException ex) {
+                            errorMessage = ex.getMessage();
+                            LOG.error("Caught exception: " + errorMessage);
                             ex.printStackTrace();
                         }
                         break;
@@ -498,9 +501,9 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                         try {
                             getOmnipodManager().deactivatePod();
                             data = getOmnipodManager().getPodStateAsString();
-                        } catch(RuntimeException ex) {
+                        } catch (RuntimeException ex) {
                             errorMessage = ex.getMessage();
-                            LOG.error("Caught exception: "+ errorMessage);
+                            LOG.error("Caught exception: " + errorMessage);
                             ex.printStackTrace();
                         }
                         break;
@@ -537,14 +540,14 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //                    }
 //                        break;
 //
-//                    // case "RefreshData.SetExtendedBolus": {
+//                    // case "RefreshData.ExtendedBolus": {
 //                    // // TempBasalPair tbr = getTBRSettings();
 //                    // // if (tbr != null) {
-//                    // // returnData = getCommunicationManager().setExtendedBolus(tbr.getInsulinRate(),
+//                    // // returnData = getCommunicationManager().ExtendedBolus(tbr.getInsulinRate(),
 //                    // // tbr.getDurationMinutes());
 //                    // // }
 //                    //
-//                    // //returnData = getCommunicationManager().setExtendedBolus(0.5d, 30);
+//                    // //returnData = getCommunicationManager().ExtendedBolus(0.5d, 30);
 //                    //
 //                    // }
 //                    // break;
@@ -579,14 +582,6 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //
 //                    case "RefreshData.GetSettings": {
 //                        returnData = getCommunicationManager().getPumpSettings();
-//                    }
-//                        break;
-//
-//                    case "RefreshData.SetBolus": {
-//                        Float amount = getAmount();
-//
-//                        if (amount != null)
-//                            returnData = getCommunicationManager().setBolus(amount);
 //                    }
 //                        break;
 //
@@ -638,7 +633,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
     private TempBasalPair getTBRSettings() {
 
-        Float valAmount = getAmount();
+        Double valAmount = getAmount();
 
         TempBasalPair tbp = new TempBasalPair();
 
@@ -658,17 +653,11 @@ public class ShowAAPS2Activity extends AppCompatActivity {
     }
 
 
-    private Float getAmount() {
+    private double getAmount() {
         CharSequence am = tfAmount.getText();
         String amount = am.toString().replaceAll(",", ".");
 
-        try {
-            return Float.parseFloat(amount);
-        } catch (Exception ex) {
-            putOnDisplay("Error parsing amount: " + ex.getMessage());
-            return null;
-        }
-
+        return Double.parseDouble(amount);
     }
 
 

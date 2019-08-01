@@ -51,7 +51,7 @@ public class PodInfoFaultEventUnitTests {
         assertEquals(0, podInfoFaultEvent.getUnacknowledgedAlerts().getRawValue());
         assertFalse(podInfoFaultEvent.isFaultAccessingTables());
         assertEquals(LogEventErrorCode.NONE, podInfoFaultEvent.getLogEventErrorType());
-        assertEquals(PodProgressStatus.READY_FOR_INJECTION, podInfoFaultEvent.getPreviousPodProgressStatus());
+        assertEquals(PodProgressStatus.READY_FOR_BASAL_SCHEDULE, podInfoFaultEvent.getPreviousPodProgressStatus());
         assertEquals(2, podInfoFaultEvent.getReceiverLowGain());
         assertEquals(46, podInfoFaultEvent.getRadioRSSI());
     }
@@ -60,7 +60,7 @@ public class PodInfoFaultEventUnitTests {
     public void testPodInfoFaultEventErrorShuttingDown() {
         PodInfoFaultEvent podInfoFaultEvent = new PodInfoFaultEvent(ByteUtil.fromHexString("020d0000000407f28609ff03ff0a0200000823080000"));
 
-        assertEquals(PodProgressStatus.ERROR_EVENT_OCCURRED_SHUTTING_DOWN, podInfoFaultEvent.getPodProgressStatus());
+        assertEquals(PodProgressStatus.ERROR_EVENT_LOGGED_SHUTTING_DOWN, podInfoFaultEvent.getPodProgressStatus());
         assertEquals(DeliveryStatus.SUSPENDED, podInfoFaultEvent.getDeliveryStatus());
         assertEquals(101.7, podInfoFaultEvent.getTotalInsulinDelivered(), 0.000001);
         assertEquals(0, podInfoFaultEvent.getInsulinNotDelivered(), 0.000001);

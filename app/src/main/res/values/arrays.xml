@@ -11,7 +11,7 @@
         <!--<item>@string/cmd_aaps_cancel_tbr</item>-->
         <!--<item>@string/cmd_aaps_status_tbr</item>-->
         <!--<item>@string/cmd_aaps_get_basal_profile</item>-->
-        <!--<item>@string/cmd_aaps_set_bolus</item>-->
+        <item>@string/cmd_aaps_set_bolus</item>
         <!--<item>@string/cmd_aaps_status_time</item>-->
         <!--<item>@string/cmd_aaps_status_insulin</item>-->
         <!--<item>@string/cmd_aaps_status_power</item>-->

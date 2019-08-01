@@ -42,6 +42,7 @@ public class PairAction implements OmnipodAction<PodSessionState> {
                 confirmPairingResponse.getPmVersion(), confirmPairingResponse.getLot(), confirmPairingResponse.getTid(),
                 setupState.getPacketNumber(), setupState.getMessageNumber());
         podState.setSetupProgress(SetupProgress.POD_CONFIGURED);
+
         return podState;
     }
 

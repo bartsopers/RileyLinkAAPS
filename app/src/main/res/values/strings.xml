@@ -49,13 +49,13 @@
     <string name="cmd_aaps_get_status">Get Status</string>
     <string name="cmd_aaps_set_tbr">Set TBR</string>
     <string name="cmd_aaps_cancel_tbr">Cancel TBR</string>
-    <string name="cmd_aaps_set_bolus">Set Bolus</string>
+    <string name="cmd_aaps_set_bolus">Bolus</string>
     <string name="cmd_aaps_cancel_bolus">Cancel Bolus</string>
     <string name="cmd_aaps_get_basal_profile">Get Basal Profile</string>
     <string name="cmd_aaps_set_basal_profile">Set Basal Profile</string>
     <string name="cmd_aaps_read_history">Read History</string>
     <string name="cmd_aaps_read_history2">Read History 2</string>
-    <string name="cmd_aaps_set_ext_bolus">Set Extended Bolus</string>
+    <string name="cmd_aaps_set_ext_bolus">Extended Bolus</string>
     <string name="cmd_aaps_cancel_ext_bolus">Cancel Ext Bolus</string>
     <string name="cmd_aaps_load_tdd">Load TDD</string>
     <string name="cmd_aaps_show_apps_cmd">Show AAPS Cmd</string>

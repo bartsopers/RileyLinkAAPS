@@ -16,7 +16,7 @@ import info.nightscout.androidaps.utils.SP;
 public class PodSessionState extends PodState {
     private final DateTime activatedAt;
     private final FirmwareVersion piVersion;
-    private final FirmwareVersion PmVersion;
+    private final FirmwareVersion pmVersion;
     private final int lot;
     private final int tid;
 
@@ -29,7 +29,7 @@ public class PodSessionState extends PodState {
         this.setupProgress = SetupProgress.ADDRESS_ASSIGNED;
         this.activatedAt = activatedAt;
         this.piVersion = piVersion;
-        this.PmVersion = pmVersion;
+        this.pmVersion = pmVersion;
         this.lot = lot;
         this.tid = tid;
         this.nonceState = new NonceState(lot, tid);
@@ -45,7 +45,7 @@ public class PodSessionState extends PodState {
     }
 
     public FirmwareVersion getPmVersion() {
-        return PmVersion;
+        return pmVersion;
     }
 
     public int getLot() {
@@ -56,7 +56,7 @@ public class PodSessionState extends PodState {
         return tid;
     }
 
-    public void resyncNonce(int syncWord, int sentNonce, int sequenceNumber) {
+    public synchronized void resyncNonce(int syncWord, int sentNonce, int sequenceNumber) {
         int sum = (sentNonce & 0xFFFF)
                 + OmniCRC.crc16lookup[sequenceNumber]
                 + (this.lot & 0xFFFF)
@@ -70,7 +70,7 @@ public class PodSessionState extends PodState {
         return nonceState.getCurrentNonce();
     }
 
-    public void advanceToNextNonce() {
+    public synchronized void advanceToNextNonce() {
         nonceState.advanceToNextNonce();
     }
 
@@ -78,7 +78,7 @@ public class PodSessionState extends PodState {
         return setupProgress;
     }
 
-    public void setSetupProgress(SetupProgress setupProgress) {
+    public synchronized void setSetupProgress(SetupProgress setupProgress) {
         if (setupProgress == null) {
             throw new IllegalArgumentException("Setup state cannot be null");
         }
@@ -96,7 +96,7 @@ public class PodSessionState extends PodState {
                 "address=" + getAddress() +
                 ", activatedAt=" + activatedAt +
                 ", piVersion=" + piVersion +
-                ", PmVersion=" + PmVersion +
+                ", PmVersion=" + pmVersion +
                 ", lot=" + lot +
                 ", tid=" + tid +
                 ", setupProgress="+ setupProgress.name() +

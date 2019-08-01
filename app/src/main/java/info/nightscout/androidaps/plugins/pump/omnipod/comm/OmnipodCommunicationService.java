@@ -72,7 +72,7 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
         return exchangeMessages(responseClass, podState, message, null, null);
     }
 
-    public <T extends MessageBlock> T exchangeMessages(Class<T> responseClass, PodState podState, OmnipodMessage message, Integer addressOverride, Integer ackAddressOverride) {
+    public synchronized <T extends MessageBlock> T exchangeMessages(Class<T> responseClass, PodState podState, OmnipodMessage message, Integer addressOverride, Integer ackAddressOverride) {
         for(int i = 0; 2 > i; i++) {
 
             if (podState.hasNonceState() && message.isNonceResyncable()) {

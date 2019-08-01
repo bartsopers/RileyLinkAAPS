@@ -1,5 +1,8 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.comm.action;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.InsertCannulaService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
@@ -8,6 +11,8 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalSchedu
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionState;
 
 public class InsertCannulaAction implements OmnipodAction<StatusResponse> {
+    private static final Logger LOG = LoggerFactory.getLogger(InsertCannulaAction.class);
+
     private final PodSessionState podState;
     private final InsertCannulaService service;
     private final BasalSchedule initialBasalSchedule;
@@ -29,13 +34,40 @@ public class InsertCannulaAction implements OmnipodAction<StatusResponse> {
 
     @Override
     public StatusResponse execute(OmnipodCommunicationService communicationService) {
-        podState.setSetupProgress(SetupProgress.SETTING_INITIAL_BASAL_SCHEDULE);
-        service.programInitialBasalSchedule(communicationService, podState, initialBasalSchedule);
-        podState.setSetupProgress(SetupProgress.INITIAL_BASAL_SCHEDULE_SET);
-        service.executeExpirationRemindersAlertCommand(communicationService, podState);
-        podState.setSetupProgress(SetupProgress.STARTING_INSERT_CANNULA);
-        StatusResponse statusResponse = service.executeInsertionBolusCommand(communicationService, podState);
-        podState.setSetupProgress(SetupProgress.CANNULA_INSERTING);
-        return statusResponse;
+        if(podState.getSetupProgress().isBefore(SetupProgress.PRIMING_FINISHED)) {
+            throw new IllegalStateException("Pod should be primed first");
+        }
+
+        if(podState.getSetupProgress().isBefore(SetupProgress.INITIAL_BASAL_SCHEDULE_SET)) {
+            service.programInitialBasalSchedule(communicationService, podState, initialBasalSchedule);
+            podState.setSetupProgress(SetupProgress.INITIAL_BASAL_SCHEDULE_SET);
+        }
+        if(podState.getSetupProgress().isBefore(SetupProgress.STARTING_INSERT_CANNULA)) {
+            service.executeExpirationRemindersAlertCommand(communicationService, podState);
+            podState.setSetupProgress(SetupProgress.STARTING_INSERT_CANNULA);
+        }
+
+        if(podState.getSetupProgress().isBefore(SetupProgress.CANNULA_INSERTING)) {
+            StatusResponse statusResponse = service.executeInsertionBolusCommand(communicationService, podState);
+            podState.setSetupProgress(SetupProgress.CANNULA_INSERTING);
+            return statusResponse;
+        } else if(podState.getSetupProgress().equals(SetupProgress.CANNULA_INSERTING)) {
+            // Check status
+            StatusResponse statusResponse = communicationService.executeAction(new GetStatusAction(podState));
+            updateCannulaInsertionStatus(podState, statusResponse);
+            return statusResponse;
+        } else {
+            throw new IllegalStateException("Illegal setup progress: "+ podState.getSetupProgress().name());
+        }
+    }
+
+    public static void updateCannulaInsertionStatus(PodSessionState podState, StatusResponse statusResponse) {
+        if(podState.getSetupProgress().equals(SetupProgress.CANNULA_INSERTING) &&
+                statusResponse.getPodProgressStatus().isReadyForDelivery()) {
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Updating SetupProgress from CANNULA_INSERTING to COMPLETED");
+            }
+            podState.setSetupProgress(SetupProgress.COMPLETED);
+        }
     }
 }
