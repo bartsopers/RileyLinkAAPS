@@ -50,6 +50,14 @@ public class SetInsulinScheduleCommand extends NonceResyncableMessageBlock {
 
     // Temp basal
     public SetInsulinScheduleCommand(int nonce, double tempBasalRate, Duration duration) {
+        if(tempBasalRate < 0D) {
+            throw new IllegalArgumentException("Rate should be >= 0");
+        } else if(tempBasalRate > Constants.MAX_BASAL_RATE) {
+            throw new IllegalArgumentException("Rate exceeds max basal rate");
+        }
+        if(duration.isLongerThan(Constants.MAX_TEMP_BASAL_DURATION)) {
+            throw new IllegalArgumentException("Duration exceeds max temp basal duration");
+        }
         int pulsesPerHour = (int)Math.round(tempBasalRate / Constants.POD_PULSE_SIZE);
         int pulsesPerSegment = pulsesPerHour / 2;
         this.nonce = nonce;

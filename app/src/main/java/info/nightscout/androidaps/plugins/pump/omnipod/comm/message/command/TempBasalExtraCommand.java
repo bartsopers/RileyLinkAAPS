@@ -5,6 +5,7 @@ import org.joda.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.RateEntry;
@@ -21,6 +22,14 @@ public class TempBasalExtraCommand extends MessageBlock {
 
     public TempBasalExtraCommand(double rate, Duration duration, boolean acknowledgementBeep, boolean completionBeep,
                                  Duration programReminderInterval) {
+        if(rate < 0D) {
+            throw new IllegalArgumentException("Rate should be >= 0");
+        } else if(rate > Constants.MAX_BASAL_RATE) {
+            throw new IllegalArgumentException("Rate exceeds max basal rate");
+        }
+        if(duration.isLongerThan(Constants.MAX_TEMP_BASAL_DURATION)) {
+            throw new IllegalArgumentException("Duration exceeds max temp basal duration");
+        }
 
         this.acknowledgementBeep = acknowledgementBeep;
         this.completionBeep = completionBeep;

@@ -2,6 +2,7 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command;
 
 import org.joda.time.Duration;
 
+import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
@@ -26,6 +27,11 @@ public class BolusExtraCommand extends MessageBlock {
     public BolusExtraCommand(double units, double squareWaveUnits, Duration squareWaveDuration,
                              boolean acknowledgementBeep, boolean completionBeep,
                              Duration programReminderInterval, Duration timeBetweenPulses) {
+        if(units <= 0D) {
+            throw new IllegalArgumentException("Units should be > 0");
+        } else if(units > Constants.MAX_BOLUS) {
+            throw new IllegalArgumentException("Units exceeds max bolus");
+        }
         this.units = units;
         this.squareWaveUnits = squareWaveUnits;
         this.squareWaveDuration = squareWaveDuration;

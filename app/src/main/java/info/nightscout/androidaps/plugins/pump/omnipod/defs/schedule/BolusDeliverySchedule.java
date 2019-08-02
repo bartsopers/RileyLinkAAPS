@@ -12,6 +12,11 @@ public class BolusDeliverySchedule extends DeliverySchedule implements IRawRepre
     private final Duration timeBetweenPulses;
 
     public BolusDeliverySchedule(double units, Duration timeBetweenPulses) {
+        if(units <= 0D) {
+            throw new IllegalArgumentException("Units should be > 0");
+        } else if(units > Constants.MAX_BOLUS) {
+            throw new IllegalArgumentException("Units exceeds max bolus");
+        }
         this.units = units;
         this.timeBetweenPulses = timeBetweenPulses;
     }
