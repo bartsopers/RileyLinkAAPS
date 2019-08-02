@@ -77,7 +77,7 @@ public class PodInfoFaultEvent extends PodInfo {
 
     @Override
     public PodInfoType getType() {
-        return PodInfoType.FAULT_EVENTS;
+        return PodInfoType.FAULT_EVENT;
     }
 
     public PodProgressStatus getPodProgressStatus() {

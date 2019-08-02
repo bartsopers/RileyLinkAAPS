@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import org.joda.time.DateTime;
 
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoFaultEvent;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.FirmwareVersion;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.NonceState;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.SetupProgress;
@@ -91,22 +92,6 @@ public class PodSessionState extends PodState {
     }
 
     @Override
-    public String toString() {
-        return "PodSessionState{" +
-                "address=" + getAddress() +
-                ", activatedAt=" + activatedAt +
-                ", piVersion=" + piVersion +
-                ", PmVersion=" + pmVersion +
-                ", lot=" + lot +
-                ", tid=" + tid +
-                ", setupProgress="+ setupProgress.name() +
-                ", messageNumber=" + getMessageNumber() +
-                ", packetNumber=" + getPacketNumber() +
-                ", nonce=" + nonceState.getCurrentNonce() +
-                '}';
-    }
-
-    @Override
     public void setPacketNumber(int packetNumber) {
         super.setPacketNumber(packetNumber);
         store();
@@ -125,5 +110,22 @@ public class PodSessionState extends PodState {
     private void store() {
         Gson gson = Utils.gsonDateTime();
         SP.putString(OmniPodConst.Prefs.POD_STATE, gson.toJson(this));
+    }
+
+    @Override
+    public String toString() {
+        return "PodSessionState{" +
+                "activatedAt=" + activatedAt +
+                ", piVersion=" + piVersion +
+                ", pmVersion=" + pmVersion +
+                ", lot=" + lot +
+                ", tid=" + tid +
+                ", nonceState=" + nonceState +
+                ", setupProgress=" + setupProgress +
+                ", address=" + address +
+                ", packetNumber=" + packetNumber +
+                ", messageNumber=" + messageNumber +
+                ", faultEvent=" + faultEvent +
+                '}';
     }
 }

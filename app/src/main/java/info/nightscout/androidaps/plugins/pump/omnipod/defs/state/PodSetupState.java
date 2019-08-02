@@ -24,4 +24,14 @@ public class PodSetupState extends PodState {
     public void resyncNonce(int syncWord, int sentNonce, int sequenceNumber) {
         throw new UnsupportedOperationException("PodSetupState does not have a nonce state");
     }
+
+    @Override
+    public String toString() {
+        return "PodSetupState{" +
+                "address=" + address +
+                ", packetNumber=" + packetNumber +
+                ", messageNumber=" + messageNumber +
+                ", faultEvent=" + faultEvent +
+                '}';
+    }
 }

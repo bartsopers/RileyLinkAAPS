@@ -18,12 +18,16 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.OmnipodMessage;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.OmnipodPacket;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.ErrorResponse;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoFaultEvent;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.ErrorResponseType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PacketType;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodInfoType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodState;
 import info.nightscout.androidaps.plugins.pump.omnipod.exception.NotEnoughDataException;
 import info.nightscout.androidaps.plugins.pump.omnipod.exception.OmnipodException;
+import info.nightscout.androidaps.plugins.pump.omnipod.exception.PodFaultException;
 import info.nightscout.androidaps.plugins.pump.omnipod.exception.PodReturnedErrorResponseException;
 
 /**
@@ -85,13 +89,18 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
                 return (T)responseMessageBlock;
             } else {
                 if (responseMessageBlock.getType() == MessageBlockType.ERROR_RESPONSE) {
-                    ErrorResponse error = (ErrorResponse)responseMessageBlock;
+                    ErrorResponse error = (ErrorResponse) responseMessageBlock;
                     if (error.getErrorResponseType() == ErrorResponseType.BAD_NONCE) {
                         podState.resyncNonce(error.getNonceSearchKey(), message.getSentNonce(), message.getSequenceNumber());
                         message.resyncNonce(podState.getCurrentNonce());
                     } else {
                         throw new PodReturnedErrorResponseException((ErrorResponse) responseMessageBlock);
                     }
+                } else if(responseMessageBlock.getType() == MessageBlockType.POD_INFO_RESPONSE && ((PodInfoResponse)responseMessageBlock).getSubType() == PodInfoType.FAULT_EVENT) {
+                    PodInfoFaultEvent faultEvent = ((PodInfoResponse) responseMessageBlock).getPodInfo();
+                    LOG.error("Pod fault: "+ faultEvent.getCurrentStatus().name());
+                    podState.setFaultEvent(faultEvent);
+                    throw new PodFaultException(faultEvent);
                 } else {
                     throw new OmnipodException("Unexpected response type: " + responseMessageBlock.toString());
                 }
@@ -162,6 +171,8 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
 
         if (messageBlocks.size() == 0) {
             throw new OmnipodException("Not enough data");
+        } else if(messageBlocks.size() > 1) {
+            LOG.error("received more than one message block: "+ messageBlocks.toString());
         }
 
         return messageBlocks.get(0);

@@ -1,9 +1,13 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs.state;
 
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoFaultEvent;
+
 public abstract class PodState {
-    private final int address;
-    private int packetNumber;
-    private int messageNumber;
+    protected final int address;
+    protected int packetNumber;
+    protected int messageNumber;
+
+    protected PodInfoFaultEvent faultEvent;
 
     public PodState(int address, int packetNumber, int messageNumber) {
         this.address = address;
@@ -45,5 +49,17 @@ public abstract class PodState {
 
     public void increasePacketNumber(int increment) {
         setPacketNumber((packetNumber + increment) & 0b11111);
+    }
+
+    public boolean hasFaultEvent() {
+        return faultEvent != null;
+    }
+
+    public PodInfoFaultEvent getFaultEvent() {
+        return faultEvent;
+    }
+
+    public void setFaultEvent(PodInfoFaultEvent faultEvent) {
+        this.faultEvent = faultEvent;
     }
 }

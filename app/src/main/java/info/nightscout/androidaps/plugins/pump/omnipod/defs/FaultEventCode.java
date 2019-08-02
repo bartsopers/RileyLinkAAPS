@@ -122,6 +122,10 @@ public enum FaultEventCode {
 
     private byte value;
 
+    public byte getValue() {
+        return value;
+    }
+
     FaultEventCode(byte value) {
         this.value = value;
     }

@@ -39,7 +39,7 @@ public class PodInfoResponseUnitTests {
     public void testMessageDecoding() {
         PodInfoResponse podInfoResponse = new PodInfoResponse(ByteUtil.fromHexString("0216020d0000000000ab6a038403ff03860000285708030d"));
 
-        assertEquals(PodInfoType.FAULT_EVENTS, podInfoResponse.getSubType());
+        assertEquals(PodInfoType.FAULT_EVENT, podInfoResponse.getSubType());
 
         PodInfoFaultEvent podInfo = podInfoResponse.getPodInfo();
         assertFalse(podInfo.isFaultAccessingTables());
@@ -50,7 +50,7 @@ public class PodInfoResponseUnitTests {
     public void testInvalidPodInfoTypeMessageDecoding() {
         PodInfoResponse podInfoResponse = new PodInfoResponse(ByteUtil.fromHexString("0216020d0000000000ab6a038403ff03860000285708030d"));
 
-        assertEquals(PodInfoType.FAULT_EVENTS, podInfoResponse.getSubType());
+        assertEquals(PodInfoType.FAULT_EVENT, podInfoResponse.getSubType());
 
         thrown.expect(ClassCastException.class);
         PodInfoConfiguredAlerts podInfo = podInfoResponse.getPodInfo();

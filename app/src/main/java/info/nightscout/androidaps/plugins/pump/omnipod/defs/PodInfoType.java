@@ -12,7 +12,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.pod
 public enum PodInfoType {
     NORMAL((byte)0x00),
     CONFIGURED_ALERTS((byte)0x01),
-    FAULT_EVENTS((byte)0x02),
+    FAULT_EVENT((byte)0x02),
     DATA_LOG((byte)0x03),
     FAULT((byte)0x05),
     HARDCODED_TEST_VALUES((byte)0x06),
@@ -47,7 +47,7 @@ public enum PodInfoType {
                 throw new UnsupportedOperationException("Cannot decode PodInfoType.NORMAL");
             case CONFIGURED_ALERTS:
                 return new PodInfoConfiguredAlerts(encodedData);
-            case FAULT_EVENTS:
+            case FAULT_EVENT:
                 return new PodInfoFaultEvent(encodedData);
             case DATA_LOG:
                 return new PodInfoDataLog(encodedData);
