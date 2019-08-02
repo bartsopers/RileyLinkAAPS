@@ -16,3 +16,6 @@ We are starting from this app, because communication with RileyLink here already
 
 This is the old gitter, but I plan to create new room, as soon I am past Milestone 1.
 [![Gitter](https://badges.gitter.im/TC2013/Roundtrip2.svg)](https://gitter.im/TC2013/Roundtrip2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+# Omnipod
+In the dev_omnipod branch we are creating an Omnipod driver for AAPS by porting [Loop's driver for Omnipod](https://github.com/ps2/rileylink_ios/tree/omnipod-testing).
