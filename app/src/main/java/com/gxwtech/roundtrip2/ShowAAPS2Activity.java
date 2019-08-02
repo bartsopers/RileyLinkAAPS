@@ -1,7 +1,9 @@
 package com.gxwtech.roundtrip2;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -86,28 +88,24 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         this.tfDuration = findViewById(R.id.tfDuration);
 
         this.btnStart = findViewById(R.id.btnStart);
-        this.btnStart.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // bolus, duration
-                startAction();
-            }
+        this.btnStart.setOnClickListener(v -> {
+            startAction();
         });
 
         this.btnResetPodStatus = findViewById(R.id.btnResetPodStatus);
-        this.btnResetPodStatus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // bolus, duration
-                SP.remove(OmniPodConst.Prefs.POD_STATE);
-                getOmnipodManager().resetPodState();
-                updatePodState();
-            }
-        });
+        this.btnResetPodStatus.setOnClickListener(v -> new AlertDialog.Builder(ShowAAPS2Activity.this)
+                .setTitle("Reset Pod Status")
+                .setMessage("Are you sure you want to reset the pod status? The pod status can not be restored. If the pod is still active, you won't be able to control it anymore.")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> {
+                    SP.remove(OmniPodConst.Prefs.POD_STATE);
+                    getOmnipodManager().resetPodState();
+                    updatePodState();
+                })
+                .setNegativeButton(android.R.string.no, null).show());
 
-        tvCommandStatusText = (TextView) findViewById(R.id.tvCommandStatusText);
-        spinner = (Spinner) findViewById(R.id.spinnerPumpCommands);
+        tvCommandStatusText = findViewById(R.id.tvCommandStatusText);
+        spinner = findViewById(R.id.spinnerPumpCommands);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
