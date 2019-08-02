@@ -30,4 +30,11 @@ public class AlertSet {
         }
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "AlertSet{" +
+                "alertSlots=" + alertSlots +
+                '}';
+    }
 }

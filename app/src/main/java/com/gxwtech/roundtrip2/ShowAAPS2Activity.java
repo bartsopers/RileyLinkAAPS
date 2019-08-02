@@ -18,12 +18,17 @@ import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.RileyLinkService;
 import info.nightscout.androidaps.plugins.pump.omnipod.OmnipodManager;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.SetBasalScheduleAction;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalSchedule;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalScheduleEntry;
 import info.nightscout.androidaps.plugins.pump.omnipod.service.RileyLinkOmnipodService;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniPodConst;
 import info.nightscout.androidaps.utils.SP;
@@ -47,11 +52,13 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         addCommandAction("Initialize New Pod", ImplementationStatus.Done, "RefreshData.InitializePod");
         addCommandAction("Insert Cannula", ImplementationStatus.Done, "RefreshData.InsertCannula");
         addCommandAction("Get Status", ImplementationStatus.Done, "RefreshData.GetStatus");
+        addCommandAction("Set Basal Profile", ImplementationStatus.Done, "RefreshData.SetBasalProfile");
         addCommandAction("Set TBR", ImplementationStatus.Done, "RefreshData.SetTBR");
         addCommandAction("Cancel TBR", ImplementationStatus.Done, "RefreshData.CancelTBR");
         addCommandAction("Bolus", ImplementationStatus.Done, "RefreshData.Bolus");
         addCommandAction("Cancel Bolus", ImplementationStatus.Done, "RefreshData.CancelBolus");
         addCommandAction("Deactivate Pod", ImplementationStatus.Done, "RefreshData.DeactivatePod");
+
 //
 //        addCommandAction("Get Model", ImplementationStatus.Done, "RefreshData.PumpModel");
 //
@@ -81,7 +88,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //        // DONE
 //
 //        // TODO
-//        addCommandAction("Set Basal Profile", ImplementationStatus.WorkInProgress, "RefreshData.SetBasalProfile");
+//
 //
 //        // NOT SUPPORTED
 //        // addCommandAction("Cancel Ext Bolus", ImplementationStatus.NotSupportedByDevice, null);
@@ -288,6 +295,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             case "RefreshData.InitializePod":
             case "RefreshData.InsertCannula":
             case "RefreshData.GetStatus":
+            case "RefreshData.SetBasalProfile":
             case "RefreshData.SetTBR":
             case "RefreshData.CancelTBR":
             case "RefreshData.Bolus":
@@ -353,13 +361,6 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //
 //                putOnDisplay(String.format("Extended Bolus: Amount: %.3f, Duration: %s - %s", tbr.getInsulinRate(), ""
 //                    + tbr.getDurationMinutes(), (response ? "Was set." : "Was NOT set.")));
-//            }
-//                break;
-//
-//            case "RefreshData.SetBasalProfile": {
-//                Boolean response = (Boolean)data;
-//
-//                putOnDisplay(String.format("Basal profile %s set.", (response ? "was" : "was NOT")));
 //            }
 //                break;
 //
@@ -481,6 +482,25 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                     case "RefreshData.GetStatus":
                         try {
                             data = getOmnipodManager().getStatus();
+                        } catch (RuntimeException ex) {
+                            errorMessage = ex.getMessage();
+                            LOG.error("Caught exception: " + errorMessage);
+                            ex.printStackTrace();
+                        }
+                        break;
+                    case "RefreshData.SetBasalProfile":
+                        try {
+                            Double amount = getAmount();
+                            if(amount != null) {
+                                List<BasalScheduleEntry> basalScheduleEntries = new ArrayList<>();
+                                for(int i = 0; i < 24; i++) {
+                                    basalScheduleEntries.add(new BasalScheduleEntry(i % 2 == 0 ? amount : (amount * 2), Duration.standardHours(i)));
+                                }
+                                BasalSchedule basalSchedule = new BasalSchedule(basalScheduleEntries);
+                                getOmnipodManager().setBasalSchedule(basalSchedule, false,
+                                        SetBasalScheduleAction.calculateScheduleOffset());
+                            }
+                            data = getOmnipodManager().getPodStateAsString();
                         } catch (RuntimeException ex) {
                             errorMessage = ex.getMessage();
                             LOG.error("Caught exception: " + errorMessage);
@@ -611,28 +631,6 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //                    }
 //                        break;
 //
-//                    case "RefreshData.SetBasalProfile": {
-//
-//                        Float amount = getAmount();
-//
-//                        if (amount != null) {
-//
-//                            BasalProfile profile = new BasalProfile();
-//
-//                            int basalStrokes1 = MedtronicUtil.getBasalStrokesInt(amount);
-//                            int basalStrokes2 = MedtronicUtil.getBasalStrokesInt(amount * 2);
-//
-//                            for (int i = 0; i < 24; i++) {
-//                                profile.addEntry(new BasalProfileEntry(i % 2 == 0 ? amount : amount * 2.0d, i, 0));
-//                            }
-//
-//                            profile.generateRawDataFromEntries();
-//
-//                            returnData = getCommunicationManager().setBasalProfile(profile);
-//                        }
-//
-//                    }
-//                        break;
 
                     default:
                         LOG.warn("Action is not supported {}.", selectedCommandAction);

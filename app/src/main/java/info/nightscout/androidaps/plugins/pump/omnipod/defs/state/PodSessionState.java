@@ -137,8 +137,10 @@ public class PodSessionState extends PodState {
                 ", pmVersion=" + pmVersion +
                 ", lot=" + lot +
                 ", tid=" + tid +
+                ", suspended=" + suspended +
                 ", nonceState=" + nonceState +
                 ", setupProgress=" + setupProgress +
+                ", activeAlerts=" + activeAlerts +
                 ", address=" + address +
                 ", packetNumber=" + packetNumber +
                 ", messageNumber=" + messageNumber +

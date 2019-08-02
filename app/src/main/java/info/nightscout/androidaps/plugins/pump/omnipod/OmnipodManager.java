@@ -94,12 +94,12 @@ public class OmnipodManager {
     }
 
     public void setBasalSchedule(BasalSchedule basalSchedule, boolean confidenceReminder,
-                                 Duration scheduleOffset, Duration programReminderInterval) {
+                                 Duration scheduleOffset) {
         if (!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
         communicationService.executeAction(new SetBasalScheduleAction(podState, basalSchedule,
-                confidenceReminder, scheduleOffset, programReminderInterval));
+                confidenceReminder, scheduleOffset));
     }
 
     public void setTempBasal(double rate, Duration duration) {

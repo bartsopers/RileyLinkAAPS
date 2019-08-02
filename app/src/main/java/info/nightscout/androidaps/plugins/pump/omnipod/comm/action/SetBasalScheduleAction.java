@@ -1,5 +1,6 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.comm.action;
 
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
 import java.util.Arrays;
@@ -17,25 +18,29 @@ public class SetBasalScheduleAction implements OmnipodAction<StatusResponse> {
     private final BasalSchedule schedule;
     private final boolean confidenceReminder;
     private final Duration scheduleOffset;
-    private final Duration programReminderInterval;
 
     public SetBasalScheduleAction(PodSessionState podState, BasalSchedule schedule,
-                                  boolean confidenceReminder, Duration scheduleOffset, Duration programReminderInterval) {
+                                  boolean confidenceReminder, Duration scheduleOffset) {
         this.podState = podState;
         this.schedule = schedule;
         this.confidenceReminder = confidenceReminder;
         this.scheduleOffset = scheduleOffset;
-        this.programReminderInterval = programReminderInterval;
     }
 
     @Override
     public StatusResponse execute(OmnipodCommunicationService communicationService) {
         SetInsulinScheduleCommand setBasal = new SetInsulinScheduleCommand(podState.getCurrentNonce(), schedule, scheduleOffset);
         BasalScheduleExtraCommand extraCommand = new BasalScheduleExtraCommand(schedule, scheduleOffset,
-                true, confidenceReminder, programReminderInterval);
+                true, confidenceReminder, Duration.ZERO);
         OmnipodMessage basalMessage = new OmnipodMessage(podState.getAddress(), Arrays.asList(setBasal, extraCommand),
                 podState.getMessageNumber());
 
         return communicationService.exchangeMessages(StatusResponse.class, podState, basalMessage);
+    }
+
+    public static Duration calculateScheduleOffset() {
+        DateTime now = DateTime.now();
+        return new Duration(new DateTime(now.getYear(), now.getMonthOfYear(),
+                now.getDayOfMonth(), 0, 0, 0), now);
     }
 }
