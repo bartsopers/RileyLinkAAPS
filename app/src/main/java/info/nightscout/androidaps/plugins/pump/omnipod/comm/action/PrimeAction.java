@@ -40,10 +40,7 @@ public class PrimeAction implements OmnipodAction<StatusResponse> {
 
         if(podState.getSetupProgress().isBefore(SetupProgress.PRIMING)) {
             StatusResponse statusResponse = service.executePrimeBolusCommand(communicationService, podState);
-            podState.updateFromStatusResponse(statusResponse);
-
             podState.setSetupProgress(SetupProgress.PRIMING);
-
             return statusResponse;
         } else if(podState.getSetupProgress().equals(SetupProgress.PRIMING)) {
             // Check status

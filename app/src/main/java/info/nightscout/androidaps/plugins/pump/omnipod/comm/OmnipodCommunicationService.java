@@ -18,6 +18,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.OmnipodMessage;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.OmnipodPacket;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.ErrorResponse;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoFaultEvent;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.ErrorResponseType;
@@ -84,6 +85,10 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
             }
 
             MessageBlock responseMessageBlock = transportMessages(podState, message, addressOverride, ackAddressOverride);
+
+            if(responseMessageBlock instanceof StatusResponse) {
+                podState.updateFromStatusResponse((StatusResponse)responseMessageBlock);
+            }
 
             if(responseClass.isInstance(responseMessageBlock)) {
                 return (T)responseMessageBlock;

@@ -1,5 +1,8 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs.state;
 
+import android.os.AsyncTask;
+
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoFaultEvent;
 
 public abstract class PodState {
@@ -22,6 +25,8 @@ public abstract class PodState {
     public abstract void advanceToNextNonce();
 
     public abstract void resyncNonce(int syncWord, int sentNonce, int sequenceNumber);
+
+    public abstract void updateFromStatusResponse(StatusResponse statusResponse);
 
     public int getAddress() {
         return address;

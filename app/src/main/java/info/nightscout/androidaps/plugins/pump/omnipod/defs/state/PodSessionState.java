@@ -118,6 +118,7 @@ public class PodSessionState extends PodState {
         store();
     }
 
+    @Override
     public void updateFromStatusResponse(StatusResponse statusResponse) {
         suspended = (statusResponse.getDeliveryStatus() == DeliveryStatus.SUSPENDED);
         activeAlerts = statusResponse.getAlerts();

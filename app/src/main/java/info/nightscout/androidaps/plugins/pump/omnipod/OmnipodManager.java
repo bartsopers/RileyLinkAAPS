@@ -59,9 +59,7 @@ public class OmnipodManager {
         if(podState == null) {
             throw new IllegalStateException("Pod should be paired first");
         }
-        StatusResponse statusResponse = communicationService.executeAction(new GetStatusAction(podState));
-        podState.updateFromStatusResponse(statusResponse);
-        return statusResponse;
+        return communicationService.executeAction(new GetStatusAction(podState));
     }
 
     public void pairAndPrime() {
@@ -69,8 +67,7 @@ public class OmnipodManager {
             podState = communicationService.executeAction(new PairAction(new PairService()));
         }
         if (podState.getSetupProgress().isBefore(SetupProgress.PRIMING_FINISHED)) {
-            StatusResponse statusResponse = communicationService.executeAction(new PrimeAction(new PrimeService(), podState));
-            podState.updateFromStatusResponse(statusResponse);
+            communicationService.executeAction(new PrimeAction(new PrimeService(), podState));
 
             executeDelayed(() -> {
                 StatusResponse delayedStatusResponse = communicationService.executeAction(new GetStatusAction(podState));
@@ -88,8 +85,7 @@ public class OmnipodManager {
             throw new IllegalStateException("Illegal setup state: " + podState.getSetupProgress().name());
         }
 
-        StatusResponse statusResponse = communicationService.executeAction(new InsertCannulaAction(new InsertCannulaService(), podState, createStubBasalSchedule()));
-        podState.updateFromStatusResponse(statusResponse);
+        communicationService.executeAction(new InsertCannulaAction(new InsertCannulaService(), podState, createStubBasalSchedule()));
 
         executeDelayed(() -> {
                 StatusResponse delayedStatusResponse = communicationService.executeAction(new GetStatusAction(podState));
@@ -118,8 +114,7 @@ public class OmnipodManager {
         if(!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
-        StatusResponse statusResponse = communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.TEMP_BASAL));
-        podState.updateFromStatusResponse(statusResponse);
+        communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.TEMP_BASAL));
     }
 
     public void bolus(double units) {
@@ -133,8 +128,7 @@ public class OmnipodManager {
         if(!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
-        StatusResponse statusResponse = communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.BOLUS));
-        podState.updateFromStatusResponse(statusResponse);
+        communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.BOLUS));
     }
 
     public void deactivatePod() {
