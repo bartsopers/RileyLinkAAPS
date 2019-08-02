@@ -13,6 +13,12 @@ public class ConfigureAlertsAction implements OmnipodAction<StatusResponse> {
     private final List<AlertConfiguration> alertConfigurations;
 
     public ConfigureAlertsAction(PodSessionState podState, List<AlertConfiguration> alertConfigurations) {
+        if(podState == null) {
+            throw new IllegalArgumentException("Pod state cannot be null");
+        }
+        if(alertConfigurations == null) {
+            throw new IllegalArgumentException("Alert configurations cannot be null");
+        }
         this.podState = podState;
         this.alertConfigurations = alertConfigurations;
     }

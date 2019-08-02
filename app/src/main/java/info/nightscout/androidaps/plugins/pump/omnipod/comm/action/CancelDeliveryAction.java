@@ -14,6 +14,12 @@ public class CancelDeliveryAction implements OmnipodAction<StatusResponse> {
     private final EnumSet<DeliveryType> deliveryTypes;
 
     public CancelDeliveryAction(PodSessionState podState, EnumSet<DeliveryType> deliveryTypes) {
+        if(podState == null) {
+            throw new IllegalArgumentException("Pod state cannot be null");
+        }
+        if(deliveryTypes == null) {
+            throw new IllegalArgumentException("Delivery types cannot be null");
+        }
         this.podState = podState;
         this.deliveryTypes = deliveryTypes;
     }

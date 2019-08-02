@@ -11,6 +11,9 @@
         <item>@string/cmd_aaps_cancel_tbr</item>
         <item>@string/cmd_aaps_set_bolus</item>
         <item>@string/cmd_aaps_cancel_bolus</item>
+        <item>@string/cmd_aaps_suspend_delivery</item>
+        <item>@string/cmd_aaps_resume_delivery</item>
+        <item>@string/cmd_aaps_set_time</item>
         <item>@string/cmd_aaps_deactivate_pod</item>
         <!--<item>@string/cmd_aaps_get_model</item>-->
         <!--<item>@string/cmd_aaps_status_tbr</item>-->

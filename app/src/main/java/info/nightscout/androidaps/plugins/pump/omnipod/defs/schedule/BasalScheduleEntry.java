@@ -18,4 +18,12 @@ public class BasalScheduleEntry {
     public Duration getStartTime() {
         return startTime;
     }
+
+    @Override
+    public String toString() {
+        return "BasalScheduleEntry{" +
+                "rate=" + rate +
+                ", startTime=" + startTime +
+                '}';
+    }
 }

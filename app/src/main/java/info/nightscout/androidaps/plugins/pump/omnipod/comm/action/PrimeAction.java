@@ -16,14 +16,14 @@ public class PrimeAction implements OmnipodAction<StatusResponse> {
     private final PrimeService service;
     private final PodSessionState podState;
 
-    public PrimeAction(PrimeService service, PodSessionState podState) {
-        if (service == null) {
-            throw new IllegalArgumentException("Service cannot be null");
+    public PrimeAction(PrimeService primeService, PodSessionState podState) {
+        if (primeService == null) {
+            throw new IllegalArgumentException("Prime service cannot be null");
         }
         if (podState == null) {
             throw new IllegalArgumentException("Pod state cannot be null");
         }
-        this.service = service;
+        this.service = primeService;
         this.podState = podState;
     }
 

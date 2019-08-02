@@ -9,6 +9,9 @@ public class DeactivatePodAction implements OmnipodAction<StatusResponse> {
     private final PodSessionState podState;
 
     public DeactivatePodAction(PodSessionState podState) {
+        if(podState == null) {
+            throw new IllegalArgumentException("Pod state cannot be null");
+        }
         this.podState = podState;
     }
 

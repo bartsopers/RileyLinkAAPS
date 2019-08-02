@@ -18,6 +18,12 @@ public class BolusAction implements OmnipodAction<StatusResponse> {
     private final Duration timeBetweenPulses;
 
     public BolusAction(PodSessionState podState, double units, Duration timeBetweenPulses) {
+        if(podState == null) {
+            throw new IllegalArgumentException("Pod state cannot be null");
+        }
+        if(timeBetweenPulses == null) {
+            throw new IllegalArgumentException("Time between pulses cannot be null");
+        }
         this.podState = podState;
         this.units = units;
         this.timeBetweenPulses = timeBetweenPulses;

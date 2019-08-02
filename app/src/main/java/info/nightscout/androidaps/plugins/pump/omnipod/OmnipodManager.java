@@ -2,6 +2,7 @@ package info.nightscout.androidaps.plugins.pump.omnipod;
 
 import com.google.gson.Gson;
 
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.PairAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.PrimeAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.SetBasalScheduleAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.SetTempBasalAction;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.SuspendDeliveryAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.InsertCannulaService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PairService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PrimeService;
@@ -129,6 +131,29 @@ public class OmnipodManager {
             throw new IllegalStateException("Pod should be initialized first");
         }
         communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.BOLUS));
+    }
+
+    public void suspendDelivery() {
+        if(!isInitialized()) {
+            throw new IllegalStateException("Pod should be initialized first");
+        }
+        communicationService.executeAction(new SuspendDeliveryAction(podState));
+    }
+
+    public void resumeDelivery() {
+        if(!isInitialized()) {
+            throw new IllegalStateException("Pod should be initialized first");
+        }
+        communicationService.executeAction(new SetBasalScheduleAction(podState, podState.getBasalSchedule(),
+                true, SetBasalScheduleAction.calculateScheduleOffset(DateTime.now())));
+    }
+
+    public void setTime() {
+        if(!isInitialized()) {
+            throw new IllegalStateException("Pod should be initialized first");
+        }
+        suspendDelivery();
+        resumeDelivery();
     }
 
     public void deactivatePod() {

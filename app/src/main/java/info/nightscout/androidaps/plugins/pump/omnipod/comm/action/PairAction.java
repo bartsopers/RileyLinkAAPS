@@ -15,11 +15,11 @@ public class PairAction implements OmnipodAction<PodSessionState> {
     private final PairService service;
     private final int address;
 
-    public PairAction(PairService service, int address) {
-        if(service == null) {
-            throw new IllegalArgumentException("service cannot be null");
+    public PairAction(PairService pairService, int address) {
+        if(pairService == null) {
+            throw new IllegalArgumentException("Pair service cannot be null");
         }
-        this.service = service;
+        this.service = pairService;
         this.address = address;
     }
 

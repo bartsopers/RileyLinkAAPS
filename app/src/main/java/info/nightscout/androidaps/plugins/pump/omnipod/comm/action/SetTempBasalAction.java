@@ -13,8 +13,17 @@ public class SetTempBasalAction implements OmnipodAction<StatusResponse> {
     private final double rate;
     private final Duration duration;
 
-    public SetTempBasalAction(SetTempBasalService service, PodSessionState podState, double rate, Duration duration) {
-        this.service = service;
+    public SetTempBasalAction(SetTempBasalService setTempBasalService, PodSessionState podState, double rate, Duration duration) {
+        if(setTempBasalService == null) {
+            throw new IllegalArgumentException("Set temp basal service cannot be null");
+        }
+        if(podState == null) {
+            throw new IllegalArgumentException("Pod state cannot be null");
+        }
+        if(duration == null) {
+            throw new IllegalArgumentException("Duration cannot be null");
+        }
+        this.service = setTempBasalService;
         this.podState = podState;
         this.rate = rate;
         this.duration = duration;

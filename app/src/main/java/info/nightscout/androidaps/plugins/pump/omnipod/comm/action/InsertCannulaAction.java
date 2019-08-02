@@ -17,9 +17,9 @@ public class InsertCannulaAction implements OmnipodAction<StatusResponse> {
     private final InsertCannulaService service;
     private final BasalSchedule initialBasalSchedule;
 
-    public InsertCannulaAction(InsertCannulaService service, PodSessionState podState, BasalSchedule initialBasalSchedule) {
-        if(service == null) {
-            throw new IllegalArgumentException("service cannot be null");
+    public InsertCannulaAction(InsertCannulaService insertCannulaService, PodSessionState podState, BasalSchedule initialBasalSchedule) {
+        if(insertCannulaService == null) {
+            throw new IllegalArgumentException("Insert cannula service cannot be null");
         }
         if(podState == null) {
             throw new IllegalArgumentException("Pod state cannot be null");
@@ -27,7 +27,7 @@ public class InsertCannulaAction implements OmnipodAction<StatusResponse> {
         if(initialBasalSchedule == null) {
             throw new IllegalArgumentException("Initial basal schedule cannot be null");
         }
-        this.service = service;
+        this.service = insertCannulaService;
         this.podState = podState;
         this.initialBasalSchedule = initialBasalSchedule;
     }

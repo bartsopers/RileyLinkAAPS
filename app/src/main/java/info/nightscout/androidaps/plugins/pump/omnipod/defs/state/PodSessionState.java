@@ -10,6 +10,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryStatus;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.FirmwareVersion;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.NonceState;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.SetupProgress;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalSchedule;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniCRC;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniPodConst;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.Utils;
@@ -26,6 +27,8 @@ public class PodSessionState extends PodState {
     private NonceState nonceState;
     private SetupProgress setupProgress;
     private AlertSet activeAlerts;
+    private BasalSchedule basalSchedule;
+    private DeliveryStatus lastDeliveryStatus;
 
     public PodSessionState(int address, DateTime activatedAt, FirmwareVersion piVersion,
                            FirmwareVersion pmVersion, int lot, int tid, int packetNumber, int messageNumber) {
@@ -69,6 +72,7 @@ public class PodSessionState extends PodState {
         int seed = ((sum & 0xFFFF) ^ syncWord);
 
         this.nonceState = new NonceState(lot, tid, (byte) (seed & 0xFF));
+        store();
     }
 
     public int getCurrentNonce() {
@@ -77,6 +81,7 @@ public class PodSessionState extends PodState {
 
     public synchronized void advanceToNextNonce() {
         nonceState.advanceToNextNonce();
+        store();
     }
 
     public SetupProgress getSetupProgress() {
@@ -118,10 +123,25 @@ public class PodSessionState extends PodState {
         store();
     }
 
+    public BasalSchedule getBasalSchedule() {
+        return basalSchedule;
+    }
+
+    public void setBasalSchedule(BasalSchedule basalSchedule) {
+        this.basalSchedule = basalSchedule;
+        store();
+    }
+
+    public DeliveryStatus getLastDeliveryStatus() {
+        return lastDeliveryStatus;
+    }
+
     @Override
     public void updateFromStatusResponse(StatusResponse statusResponse) {
         suspended = (statusResponse.getDeliveryStatus() == DeliveryStatus.SUSPENDED);
         activeAlerts = statusResponse.getAlerts();
+        lastDeliveryStatus = statusResponse.getDeliveryStatus();
+        store();
     }
 
     private void store() {
@@ -141,6 +161,8 @@ public class PodSessionState extends PodState {
                 ", nonceState=" + nonceState +
                 ", setupProgress=" + setupProgress +
                 ", activeAlerts=" + activeAlerts +
+                ", basalSchedule=" + basalSchedule +
+                ", lastDeliveryStatus="+ lastDeliveryStatus +
                 ", address=" + address +
                 ", packetNumber=" + packetNumber +
                 ", messageNumber=" + messageNumber +

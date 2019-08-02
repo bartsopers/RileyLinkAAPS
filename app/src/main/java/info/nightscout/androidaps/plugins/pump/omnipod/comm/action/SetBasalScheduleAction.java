@@ -15,32 +15,42 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionStat
 
 public class SetBasalScheduleAction implements OmnipodAction<StatusResponse> {
     private final PodSessionState podState;
-    private final BasalSchedule schedule;
+    private final BasalSchedule basalSchedule;
     private final boolean confidenceReminder;
     private final Duration scheduleOffset;
 
-    public SetBasalScheduleAction(PodSessionState podState, BasalSchedule schedule,
+    public SetBasalScheduleAction(PodSessionState podState, BasalSchedule basalSchedule,
                                   boolean confidenceReminder, Duration scheduleOffset) {
+        if(podState == null) {
+            throw new IllegalArgumentException("Pod state cannot be null");
+        }
+        if(basalSchedule == null) {
+            throw new IllegalArgumentException("Basal schedule cannot be null");
+        }
+        if(scheduleOffset == null) {
+            throw new IllegalArgumentException("Schedule offset cannot be null");
+        }
         this.podState = podState;
-        this.schedule = schedule;
+        this.basalSchedule = basalSchedule;
         this.confidenceReminder = confidenceReminder;
         this.scheduleOffset = scheduleOffset;
     }
 
     @Override
     public StatusResponse execute(OmnipodCommunicationService communicationService) {
-        SetInsulinScheduleCommand setBasal = new SetInsulinScheduleCommand(podState.getCurrentNonce(), schedule, scheduleOffset);
-        BasalScheduleExtraCommand extraCommand = new BasalScheduleExtraCommand(schedule, scheduleOffset,
+        SetInsulinScheduleCommand setBasal = new SetInsulinScheduleCommand(podState.getCurrentNonce(), basalSchedule, scheduleOffset);
+        BasalScheduleExtraCommand extraCommand = new BasalScheduleExtraCommand(basalSchedule, scheduleOffset,
                 true, confidenceReminder, Duration.ZERO);
         OmnipodMessage basalMessage = new OmnipodMessage(podState.getAddress(), Arrays.asList(setBasal, extraCommand),
                 podState.getMessageNumber());
 
-        return communicationService.exchangeMessages(StatusResponse.class, podState, basalMessage);
+        StatusResponse statusResponse = communicationService.exchangeMessages(StatusResponse.class, podState, basalMessage);
+        podState.setBasalSchedule(basalSchedule);
+        return statusResponse;
     }
 
-    public static Duration calculateScheduleOffset() {
-        DateTime now = DateTime.now();
-        return new Duration(new DateTime(now.getYear(), now.getMonthOfYear(),
-                now.getDayOfMonth(), 0, 0, 0), now);
+    public static Duration calculateScheduleOffset(DateTime dateTime) {
+        return new Duration(new DateTime(dateTime.getYear(), dateTime.getMonthOfYear(),
+                dateTime.getDayOfMonth(), 0, 0, 0), dateTime);
     }
 }

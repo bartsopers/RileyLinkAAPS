@@ -47,6 +47,9 @@
     <string name="cmd_aaps_insert_cannula">Insert Cannula</string>
     <string name="cmd_aaps_deactivate_pod">Deactivate Pod</string>
     <string name="cmd_aaps_get_status">Get Status</string>
+    <string name="cmd_aaps_suspend_delivery">Suspend Delivery</string>
+    <string name="cmd_aaps_resume_delivery">Resume Delivery</string>
+    <string name="cmd_aaps_set_time">Set Time</string>
     <string name="cmd_aaps_set_tbr">Set TBR</string>
     <string name="cmd_aaps_cancel_tbr">Cancel TBR</string>
     <string name="cmd_aaps_set_bolus">Bolus</string>

@@ -10,6 +10,9 @@ public class BasalSchedule {
     private final List<BasalScheduleEntry> entries;
 
     public BasalSchedule(List<BasalScheduleEntry> entries) {
+        if(entries == null) {
+            throw new IllegalArgumentException("Entries cannot be null");
+        }
         this.entries = entries;
     }
 
@@ -132,5 +135,10 @@ public class BasalSchedule {
         public Duration getDuration() {
             return duration;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "BasalSchedule ("+ entries.size() +" entries)";
     }
 }

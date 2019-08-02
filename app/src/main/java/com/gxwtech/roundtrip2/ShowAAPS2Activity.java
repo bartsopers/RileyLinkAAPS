@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,64 +48,30 @@ public class ShowAAPS2Activity extends AppCompatActivity {
     private EditText tfDuration, tfAmount;
     CommandAction selectedCommandAction = null;
 
-
     public ShowAAPS2Activity() {
-        addCommandAction("Initialize New Pod", ImplementationStatus.Done, "RefreshData.InitializePod");
-        addCommandAction("Insert Cannula", ImplementationStatus.Done, "RefreshData.InsertCannula");
-        addCommandAction("Get Status", ImplementationStatus.Done, "RefreshData.GetStatus");
-        addCommandAction("Set Basal Profile", ImplementationStatus.Done, "RefreshData.SetBasalProfile");
-        addCommandAction("Set TBR", ImplementationStatus.Done, "RefreshData.SetTBR");
-        addCommandAction("Cancel TBR", ImplementationStatus.Done, "RefreshData.CancelTBR");
-        addCommandAction("Bolus", ImplementationStatus.Done, "RefreshData.Bolus");
-        addCommandAction("Cancel Bolus", ImplementationStatus.Done, "RefreshData.CancelBolus");
-        addCommandAction("Deactivate Pod", ImplementationStatus.Done, "RefreshData.DeactivatePod");
-
-//
-//        addCommandAction("Get Model", ImplementationStatus.Done, "RefreshData.PumpModel");
-//
-//        addCommandAction("Status - TBR", ImplementationStatus.Done, "RefreshData.GetTBR");
-//
-//        addCommandAction("Get Basal Profile", ImplementationStatus.Done, "RefreshData.BasalProfile");
-//
-//        addCommandAction("Status - Remaining Insulin", ImplementationStatus.Done, "RefreshData.RemainingInsulin");
-//        addCommandAction("Status - Get Time", ImplementationStatus.Done, "RefreshData.GetTime");
-//        addCommandAction("Status - Settings", ImplementationStatus.Done, "RefreshData.GetSettings");
-//        addCommandAction("Status - Remaining Power", ImplementationStatus.Done, "RefreshData.RemainingPower");
-//
-//        // addCommandAction("Status - Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetStatus"); // weird on
-//        // 512?
-//
-//        // STATUS: has Bolus / is running / is beeing primed
-//
-//        // WORK IN PROGRESS - waiting for something
-//
-//        // LOW PRIORITY
-//        addCommandAction("Read History", ImplementationStatus.WorkInProgress, "RefreshData.GetHistory");
-//        addCommandAction("Read History 2", ImplementationStatus.WorkInProgress, "RefreshData.GetHistory2");
-//        // addCommandAction("Extended Bolus", ImplementationStatus.WorkInProgress, "RefreshData.ExtendedBolus");
-//        // addCommandAction("Status - Ext. Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetBolus");
-//        // addCommandAction("Load TDD", ImplementationStatus.NotStarted, null); Not needed, we have good history
-//
-//        // DONE
-//
-//        // TODO
-//
-//
-//        // NOT SUPPORTED
-//        // addCommandAction("Cancel Ext Bolus", ImplementationStatus.NotSupportedByDevice, null);
-//        // addCommandAction("Cancel Bolus", ImplementationStatus.NotSupportedByDevice, null);
-
     }
-
 
     private void addCommandAction(String action, ImplementationStatus implementationStatus, String intent) {
         allCommands.put(action, new CommandAction(action, implementationStatus, intent));
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        addCommandAction(getResources().getString(R.string.cmd_aaps_initialize_pod), ImplementationStatus.Done, "RefreshData.InitializePod");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_insert_cannula), ImplementationStatus.Done, "RefreshData.InsertCannula");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_get_status), ImplementationStatus.Done, "RefreshData.GetStatus");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_set_basal_profile), ImplementationStatus.Done, "RefreshData.SetBasalProfile");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_set_tbr), ImplementationStatus.Done, "RefreshData.SetTBR");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_cancel_tbr), ImplementationStatus.Done, "RefreshData.CancelTBR");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_set_bolus), ImplementationStatus.Done, "RefreshData.Bolus");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_cancel_bolus), ImplementationStatus.Done, "RefreshData.CancelBolus");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_suspend_delivery), ImplementationStatus.Done, "RefreshData.SuspendDelivery");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_resume_delivery), ImplementationStatus.Done, "RefreshData.ResumeDelivery");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_set_time), ImplementationStatus.Done, "RefreshData.SetTime");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_deactivate_pod), ImplementationStatus.Done, "RefreshData.DeactivatePod");
+
         setContentView(R.layout.activity_show_aaps2);
 
         this.textViewComm = findViewById(R.id.textViewComm);
@@ -215,10 +182,10 @@ public class ShowAAPS2Activity extends AppCompatActivity {
     private boolean isAmountEnabled() {
         String action = this.selectedCommandAction.action;
 
-        return (action.equals("Set TBR") || //
-                action.equals("Bolus") || //
-                action.equals("Set Basal Profile") || //
-                action.equals("Extended Bolus") //
+        return (action.equals(getResources().getString(R.string.cmd_aaps_set_tbr)) || //
+                action.equals(getResources().getString(R.string.cmd_aaps_set_bolus)) || //
+                action.equals(getResources().getString(R.string.cmd_aaps_set_basal_profile)) || //
+                action.equals(getResources().getString(R.string.cmd_aaps_set_ext_bolus)) //
         );
     }
 
@@ -226,7 +193,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
     private boolean isDurationEnabled() {
         String action = this.selectedCommandAction.action;
 
-        return (action.equals("Set TBR") || action.equals("Extended Bolus"));
+        return (action.equals(getResources().getString(R.string.cmd_aaps_set_tbr)) || action.equals(getResources().getString(R.string.cmd_aaps_set_ext_bolus)));
     }
 
 
@@ -300,6 +267,9 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             case "RefreshData.CancelTBR":
             case "RefreshData.Bolus":
             case "RefreshData.CancelBolus":
+            case "RefreshData.SuspendDelivery":
+            case "RefreshData.ResumeDelivery":
+            case "RefreshData.SetTime":
             case "RefreshData.DeactivatePod":
                 putOnDisplay(data == null ? "null" : data.toString());
                 break;
@@ -498,7 +468,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                                 }
                                 BasalSchedule basalSchedule = new BasalSchedule(basalScheduleEntries);
                                 getOmnipodManager().setBasalSchedule(basalSchedule, false,
-                                        SetBasalScheduleAction.calculateScheduleOffset());
+                                        SetBasalScheduleAction.calculateScheduleOffset(DateTime.now()));
                             }
                             data = getOmnipodManager().getPodStateAsString();
                         } catch (RuntimeException ex) {
@@ -544,6 +514,36 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                     case "RefreshData.CancelBolus":
                         try {
                             getOmnipodManager().cancelBolus();
+                            data = getOmnipodManager().getPodStateAsString();
+                        } catch (RuntimeException ex) {
+                            errorMessage = ex.getMessage();
+                            LOG.error("Caught exception: " + errorMessage);
+                            ex.printStackTrace();
+                        }
+                        break;
+                    case "RefreshData.SuspendDelivery":
+                        try {
+                            getOmnipodManager().suspendDelivery();
+                            data = getOmnipodManager().getPodStateAsString();
+                        } catch (RuntimeException ex) {
+                            errorMessage = ex.getMessage();
+                            LOG.error("Caught exception: " + errorMessage);
+                            ex.printStackTrace();
+                        }
+                        break;
+                    case "RefreshData.ResumeDelivery":
+                        try {
+                            getOmnipodManager().resumeDelivery();
+                            data = getOmnipodManager().getPodStateAsString();
+                        } catch (RuntimeException ex) {
+                            errorMessage = ex.getMessage();
+                            LOG.error("Caught exception: " + errorMessage);
+                            ex.printStackTrace();
+                        }
+                        break;
+                    case "RefreshData.SetTime":
+                        try {
+                            getOmnipodManager().setTime();
                             data = getOmnipodManager().getPodStateAsString();
                         } catch (RuntimeException ex) {
                             errorMessage = ex.getMessage();
