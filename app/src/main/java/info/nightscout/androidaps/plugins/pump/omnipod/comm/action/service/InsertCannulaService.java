@@ -8,16 +8,13 @@ import java.util.List;
 
 import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.BolusAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.ConfigureAlertsAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.SetBasalScheduleAction;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.OmnipodMessage;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.BolusExtraCommand;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.SetInsulinScheduleCommand;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertConfiguration;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertConfigurationFactory;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalSchedule;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BolusDeliverySchedule;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionState;
 
 public class InsertCannulaService {
@@ -41,16 +38,7 @@ public class InsertCannulaService {
         return new ConfigureAlertsAction(podState, alertConfigurations).execute(communicationService);
     }
 
-    // TODO maybe we should replace this with a BolusAction?
     public StatusResponse executeInsertionBolusCommand(OmnipodCommunicationService communicationService, PodSessionState podState) {
-        double insertionBolusUnits = 0.5;
-        Duration timeBetweenPulses = Duration.standardSeconds(1);
-
-        BolusDeliverySchedule insertionBolusDeliverySchedule = new BolusDeliverySchedule(insertionBolusUnits, timeBetweenPulses);
-        SetInsulinScheduleCommand insertionBolusCommand = new SetInsulinScheduleCommand(podState.getCurrentNonce(), insertionBolusDeliverySchedule);
-        BolusExtraCommand insertionBolusExtraCommand = new BolusExtraCommand(insertionBolusUnits, timeBetweenPulses);
-        OmnipodMessage insertionBolusMessage = new OmnipodMessage(podState.getAddress(), Arrays.asList(insertionBolusCommand, insertionBolusExtraCommand), podState.getMessageNumber());
-        StatusResponse statusResponse = communicationService.exchangeMessages(StatusResponse.class, podState, insertionBolusMessage);
-        return statusResponse;
+        return communicationService.executeAction(new BolusAction(podState, 0.5, Duration.standardSeconds(1)));
     }
 }
