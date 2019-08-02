@@ -5,7 +5,8 @@ import com.google.gson.Gson;
 import org.joda.time.DateTime;
 
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoFaultEvent;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertSet;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryStatus;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.FirmwareVersion;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.NonceState;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.SetupProgress;
@@ -20,9 +21,11 @@ public class PodSessionState extends PodState {
     private final FirmwareVersion pmVersion;
     private final int lot;
     private final int tid;
+    private boolean suspended;
 
     private NonceState nonceState;
     private SetupProgress setupProgress;
+    private AlertSet activeAlerts;
 
     public PodSessionState(int address, DateTime activatedAt, FirmwareVersion piVersion,
                            FirmwareVersion pmVersion, int lot, int tid, int packetNumber, int messageNumber) {
@@ -34,6 +37,7 @@ public class PodSessionState extends PodState {
         this.lot = lot;
         this.tid = tid;
         this.nonceState = new NonceState(lot, tid);
+        suspended = false;
         store();
     }
 
@@ -86,6 +90,17 @@ public class PodSessionState extends PodState {
         this.setupProgress = setupProgress;
         store();
     }
+    public boolean isSuspended() {
+        return suspended;
+    }
+
+    public boolean hasActiveAlerts() {
+        return activeAlerts != null;
+    }
+
+    public AlertSet getActiveAlerts() {
+        return activeAlerts;
+    }
 
     public boolean hasNonceState() {
         return true;
@@ -104,7 +119,8 @@ public class PodSessionState extends PodState {
     }
 
     public void updateFromStatusResponse(StatusResponse statusResponse) {
-        // TODO
+        suspended = (statusResponse.getDeliveryStatus() == DeliveryStatus.SUSPENDED);
+        activeAlerts = statusResponse.getAlerts();
     }
 
     private void store() {

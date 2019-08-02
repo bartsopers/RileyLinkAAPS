@@ -43,9 +43,9 @@
     <string name="title_activity_show_aaps">ShowAAPSActivity</string>
 
     <!-- Show AAPS -->
-	<string name="cmd_aaps_initialize_pod">Initialize new POD</string>
-    <string name="cmd_aaps_insert_cannula">Insert cannula</string>
-    <string name="cmd_aaps_deactivate_pod">Deactivate pod</string>
+	<string name="cmd_aaps_initialize_pod">Initialize New Pod</string>
+    <string name="cmd_aaps_insert_cannula">Insert Cannula</string>
+    <string name="cmd_aaps_deactivate_pod">Deactivate Pod</string>
     <string name="cmd_aaps_get_status">Get Status</string>
     <string name="cmd_aaps_set_tbr">Set TBR</string>
     <string name="cmd_aaps_cancel_tbr">Cancel TBR</string>

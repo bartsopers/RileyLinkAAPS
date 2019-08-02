@@ -20,9 +20,11 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.InsertCannula
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.PairAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.PrimeAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.SetBasalScheduleAction;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.SetTempBasalAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.InsertCannulaService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PairService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PrimeService;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.SetTempBasalService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.SetupProgress;
@@ -60,14 +62,6 @@ public class OmnipodManager {
         StatusResponse statusResponse = communicationService.executeAction(new GetStatusAction(podState));
         podState.updateFromStatusResponse(statusResponse);
         return statusResponse;
-    }
-
-    public void cancelBolus() {
-        if(!isInitialized()) {
-            throw new IllegalStateException("Pod should be initialized first");
-        }
-        StatusResponse statusResponse = communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.BOLUS));
-        podState.updateFromStatusResponse(statusResponse);
     }
 
     public void pairAndPrime() {
@@ -112,11 +106,35 @@ public class OmnipodManager {
                 confidenceReminder, scheduleOffset, programReminderInterval));
     }
 
+    public void setTempBasal(double rate, Duration duration) {
+        if (!isInitialized()) {
+            throw new IllegalStateException("Pod should be initialized first");
+        }
+        communicationService.executeAction(new SetTempBasalAction(new SetTempBasalService(),
+                podState, rate, duration));
+    }
+
+    public void cancelTempBasal() {
+        if(!isInitialized()) {
+            throw new IllegalStateException("Pod should be initialized first");
+        }
+        StatusResponse statusResponse = communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.TEMP_BASAL));
+        podState.updateFromStatusResponse(statusResponse);
+    }
+
     public void bolus(double units) {
         if (!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
         communicationService.executeAction(new BolusAction(podState, units));
+    }
+
+    public void cancelBolus() {
+        if(!isInitialized()) {
+            throw new IllegalStateException("Pod should be initialized first");
+        }
+        StatusResponse statusResponse = communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.BOLUS));
+        podState.updateFromStatusResponse(statusResponse);
     }
 
     public void deactivatePod() {

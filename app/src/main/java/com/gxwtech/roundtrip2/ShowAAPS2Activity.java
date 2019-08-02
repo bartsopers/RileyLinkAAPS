@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,6 @@ import java.util.Map;
 
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.RileyLinkService;
-import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.TempBasalPair;
 import info.nightscout.androidaps.plugins.pump.omnipod.OmnipodManager;
 import info.nightscout.androidaps.plugins.pump.omnipod.service.RileyLinkOmnipodService;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniPodConst;
@@ -44,17 +44,17 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
 
     public ShowAAPS2Activity() {
-        addCommandAction("Initialize new POD", ImplementationStatus.Done, "RefreshData.InitializePod");
-        addCommandAction("Insert cannula", ImplementationStatus.Done, "RefreshData.InsertCannula");
+        addCommandAction("Initialize New Pod", ImplementationStatus.Done, "RefreshData.InitializePod");
+        addCommandAction("Insert Cannula", ImplementationStatus.Done, "RefreshData.InsertCannula");
         addCommandAction("Get Status", ImplementationStatus.Done, "RefreshData.GetStatus");
+        addCommandAction("Set TBR", ImplementationStatus.Done, "RefreshData.SetTBR");
+        addCommandAction("Cancel TBR", ImplementationStatus.Done, "RefreshData.CancelTBR");
         addCommandAction("Bolus", ImplementationStatus.Done, "RefreshData.Bolus");
         addCommandAction("Cancel Bolus", ImplementationStatus.Done, "RefreshData.CancelBolus");
-        addCommandAction("Deactivate pod", ImplementationStatus.Done, "RefreshData.DeactivatePod");
+        addCommandAction("Deactivate Pod", ImplementationStatus.Done, "RefreshData.DeactivatePod");
 //
 //        addCommandAction("Get Model", ImplementationStatus.Done, "RefreshData.PumpModel");
 //
-//        addCommandAction("Set TBR", ImplementationStatus.Done, "RefreshData.SetTBR");
-//        addCommandAction("Cancel TBR", ImplementationStatus.Done, "RefreshData.CancelTBR");
 //        addCommandAction("Status - TBR", ImplementationStatus.Done, "RefreshData.GetTBR");
 //
 //        addCommandAction("Get Basal Profile", ImplementationStatus.Done, "RefreshData.BasalProfile");
@@ -288,6 +288,8 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             case "RefreshData.InitializePod":
             case "RefreshData.InsertCannula":
             case "RefreshData.GetStatus":
+            case "RefreshData.SetTBR":
+            case "RefreshData.CancelTBR":
             case "RefreshData.Bolus":
             case "RefreshData.CancelBolus":
             case "RefreshData.DeactivatePod":
@@ -334,14 +336,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //            }
 //                break;
 //
-//            case "RefreshData.SetTBR": {
-//                Boolean response = (Boolean)data;
-//                TempBasalPair tbr = getTBRSettings();
-//
-//                putOnDisplay(String.format("TBR: Amount: %.3f, Duration: %s - %s", tbr.getInsulinRate(),
-//                    "" + tbr.getDurationMinutes(), (response ? "Was set." : "Was NOT set.")));
-//            }
-//                break;
+
 //
 //            case "RefreshData.GetTBR": {
 //                TempBasalPair tbr = (TempBasalPair)data;
@@ -354,17 +349,10 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //            case "RefreshData.ExtendedBolus": {
 //                Boolean response = (Boolean)data;
 //
-//                TempBasalPair tbr = new TempBasalPair(0.5d, false, 30); // getTBRSettings();
+//                TempBasalPair tbr = new TempBasalPair(0.5d, false, 30); // getTempBasalPair();
 //
 //                putOnDisplay(String.format("Extended Bolus: Amount: %.3f, Duration: %s - %s", tbr.getInsulinRate(), ""
 //                    + tbr.getDurationMinutes(), (response ? "Was set." : "Was NOT set.")));
-//            }
-//                break;
-//
-//            case "RefreshData.CancelTBR": {
-//                Boolean response = (Boolean)data;
-//
-//                putOnDisplay(String.format("TBR %s cancelled.", (response ? "was" : "was NOT")));
 //            }
 //                break;
 //
@@ -499,6 +487,29 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                             ex.printStackTrace();
                         }
                         break;
+                    case "RefreshData.SetTBR":
+                        try {
+                            TempBasalPair tempBasalPair = getTempBasalPair();
+                            if(tempBasalPair != null) {
+                                getOmnipodManager().setTempBasal(tempBasalPair.getRate(), tempBasalPair.getDuration());
+                                data = getOmnipodManager().getPodStateAsString();
+                            }
+                        } catch (RuntimeException ex) {
+                            errorMessage = ex.getMessage();
+                            LOG.error("Caught exception: " + errorMessage);
+                            ex.printStackTrace();
+                        }
+                        break;
+                    case "RefreshData.CancelTBR":
+                        try {
+                            getOmnipodManager().cancelTempBasal();
+                            data = getOmnipodManager().getPodStateAsString();
+                        } catch (RuntimeException ex) {
+                            errorMessage = ex.getMessage();
+                            LOG.error("Caught exception: " + errorMessage);
+                            ex.printStackTrace();
+                        }
+                        break;
                     case "RefreshData.Bolus":
                         try {
                             Double units = getAmount();
@@ -555,16 +566,8 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //                    }
 //                        break;
 //
-//                    case "RefreshData.SetTBR": {
-//                        TempBasalPair tbr = getTBRSettings();
-//                        if (tbr != null) {
-//                            returnData = getCommunicationManager().setTBR(tbr);
-//                        }
-//                    }
-//                        break;
-//
 //                    // case "RefreshData.ExtendedBolus": {
-//                    // // TempBasalPair tbr = getTBRSettings();
+//                    // // TempBasalPair tbr = getTempBasalPair();
 //                    // // if (tbr != null) {
 //                    // // returnData = getCommunicationManager().ExtendedBolus(tbr.getInsulinRate(),
 //                    // // tbr.getDurationMinutes());
@@ -608,11 +611,6 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //                    }
 //                        break;
 //
-//                    case "RefreshData.CancelTBR": {
-//                        returnData = getCommunicationManager().cancelTBR();
-//                    }
-//                        break;
-//
 //                    case "RefreshData.SetBasalProfile": {
 //
 //                        Float amount = getAmount();
@@ -653,23 +651,12 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
     }
 
+    private TempBasalPair getTempBasalPair() {
+        Double rate = getAmount();
+        Integer durationInMinutes = getDuration();
 
-    private TempBasalPair getTBRSettings() {
-
-        Double valAmount = getAmount();
-
-        TempBasalPair tbp = new TempBasalPair();
-
-        if (valAmount != null) {
-            tbp.setInsulinRate(valAmount);
-        } else
-            return null;
-
-        Integer dur = getDuration();
-
-        if (dur != null) {
-            tbp.setDurationMinutes(dur);
-            return tbp;
+        if(rate != null && durationInMinutes != null) {
+            return new TempBasalPair(rate, Duration.standardMinutes(durationInMinutes));
         }
 
         return null;
@@ -725,4 +712,21 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         return timeMin;
     }
 
+    private static class TempBasalPair {
+        private final double rate;
+        private final Duration duration;
+
+        public TempBasalPair(double rate, Duration duration) {
+            this.rate = rate;
+            this.duration = duration;
+        }
+
+        public double getRate() {
+            return rate;
+        }
+
+        public Duration getDuration() {
+            return duration;
+        }
+    }
 }
