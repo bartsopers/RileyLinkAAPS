@@ -1,7 +1,5 @@
 package info.nightscout.androidaps.plugins.pump.omnipod;
 
-import com.google.gson.Gson;
-
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
@@ -34,7 +32,6 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalSchedu
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalScheduleEntry;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionState;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniPodConst;
-import info.nightscout.androidaps.plugins.pump.omnipod.util.Utils;
 import info.nightscout.androidaps.utils.SP;
 
 public class OmnipodManager {
@@ -174,8 +171,7 @@ public class OmnipodManager {
 
     public void resetPodState() {
         podState = null;
-        Gson gson = Utils.gsonDateTime();
-        SP.putString(OmniPodConst.Prefs.POD_STATE, gson.toJson(null));
+        SP.remove(OmniPodConst.Prefs.POD_STATE);
     }
 
     private BasalSchedule createStubBasalSchedule() {

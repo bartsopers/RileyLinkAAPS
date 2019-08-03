@@ -27,10 +27,11 @@ public class SetInsulinScheduleCommandUnitTests {
         assertArrayEquals(ByteUtil.fromHexString("1a109746c65b0100911138400000f8000000"), //
                 setInsulinScheduleCommand2.getRawData());
 
-        SetInsulinScheduleCommand setInsulinScheduleCommand3 = new SetInsulinScheduleCommand(0x9746c65b, //
-                0.05, Duration.standardHours(16).plus(Duration.standardMinutes(30)));
-        assertArrayEquals(ByteUtil.fromHexString("1a129746c65b0100a92138400000f800f8000000"), //
-                setInsulinScheduleCommand3.getRawData());
+        // Test passed before introducing a maximum temp basal duration of 12 hours
+//        SetInsulinScheduleCommand setInsulinScheduleCommand3 = new SetInsulinScheduleCommand(0x9746c65b, //
+//                0.05, Duration.standardHours(16).plus(Duration.standardMinutes(30)));
+//        assertArrayEquals(ByteUtil.fromHexString("1a129746c65b0100a92138400000f800f8000000"), //
+//                setInsulinScheduleCommand3.getRawData());
     }
 
     @Test
