@@ -8,6 +8,7 @@ import java.util.Arrays;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertConfiguration;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertSlot;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepRepeat;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.TimerAlertTrigger;
@@ -21,6 +22,7 @@ public class ConfigureAlertsCommandUnitTests {
 
         Duration softExpirationTime = Duration.standardHours(72).minus(Duration.standardMinutes(1));
         AlertConfiguration alertConfiguration1 = new AlertConfiguration( //
+                AlertType.EXPIRATION_ADVISORY_ALERT,
                 AlertSlot.SLOT7, //
                 true, //
                 false, //
@@ -35,6 +37,7 @@ public class ConfigureAlertsCommandUnitTests {
 
         Duration hardExpirationTime = Duration.standardHours(79).minus(Duration.standardMinutes(1));
         AlertConfiguration alertConfiguration2 = new AlertConfiguration( //
+                AlertType.SHUTDOWN_IMMINENT_ALARM,
                 AlertSlot.SLOT2, //
                 true, //
                 false, //
@@ -48,6 +51,7 @@ public class ConfigureAlertsCommandUnitTests {
                 alertConfiguration2.getRawData());
 
         AlertConfiguration alertConfiguration3 = new AlertConfiguration( //
+                AlertType.AUTO_OFF_ALARM,
                 AlertSlot.SLOT0, //
                 false, //
                 true, //

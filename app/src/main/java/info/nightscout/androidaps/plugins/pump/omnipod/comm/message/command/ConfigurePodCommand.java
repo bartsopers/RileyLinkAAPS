@@ -16,7 +16,6 @@ public class ConfigurePodCommand extends MessageBlock {
     private final DateTime date;
     private final int address;
 
-    //FIXME: We should take care of timezones
     public ConfigurePodCommand(int address, DateTime date, int lot, int tid) {
         this.address = address;
         this.lot = lot;

@@ -30,18 +30,26 @@ public class InsertCannulaService {
 
         Duration timeUntilExpirationAdvisoryAlarm = new Duration(DateTime.now(),
                 endOfServiceTime.minus(Constants.END_OF_SERVICE_IMMINENT_WINDOW).minus(Constants.EXPIRATION_ADVISORY_WINDOW));
-        Duration timeUntilShutdownImminentAlarm = new Duration(DateTime.now(), endOfServiceTime.minus(Constants.END_OF_SERVICE_IMMINENT_WINDOW));
+        Duration timeUntilShutdownImminentAlarm = new Duration(DateTime.now(),
+                endOfServiceTime.minus(Constants.END_OF_SERVICE_IMMINENT_WINDOW));
+
+        AlertConfiguration expirationAdvisoryAlertConfiguration = AlertConfigurationFactory.createExpirationAdvisoryAlertConfiguration(
+                timeUntilExpirationAdvisoryAlarm, Constants.EXPIRATION_ADVISORY_WINDOW);
+        AlertConfiguration shutdownImminentAlertConfiguration = AlertConfigurationFactory.createShutdownImminentAlertConfiguration(
+                timeUntilShutdownImminentAlarm);
+        AlertConfiguration autoOffAlertConfiguration = AlertConfigurationFactory.createAutoOffAlertConfiguration(
+                false, Duration.ZERO);
 
         List<AlertConfiguration> alertConfigurations = Arrays.asList( //
-                AlertConfigurationFactory.createExpirationAdvisoryAlertConfiguration(timeUntilExpirationAdvisoryAlarm, Constants.EXPIRATION_ADVISORY_WINDOW), //
-                AlertConfigurationFactory.createShutdownImminentAlertConfiguration(timeUntilShutdownImminentAlarm), //
-                AlertConfigurationFactory.createAutoOffAlertConfiguration(false, Duration.ZERO) //
+                expirationAdvisoryAlertConfiguration, //
+                shutdownImminentAlertConfiguration, //
+                autoOffAlertConfiguration //
         );
 
         return new ConfigureAlertsAction(podState, alertConfigurations).execute(communicationService);
     }
 
     public StatusResponse executeInsertionBolusCommand(OmnipodCommunicationService communicationService, PodSessionState podState) {
-        return communicationService.executeAction(new BolusAction(podState, 0.5, Duration.standardSeconds(1)));
+        return communicationService.executeAction(new BolusAction(podState, Constants.POD_CANNULA_INSERTION_BOLUS_UNITS, Duration.standardSeconds(1)));
     }
 }

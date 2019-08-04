@@ -6,8 +6,13 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertSet;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertSlot;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryStatus;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.FirmwareVersion;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.NonceState;
@@ -19,6 +24,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.util.Utils;
 import info.nightscout.androidaps.utils.SP;
 
 public class PodSessionState extends PodState {
+    private final Map<AlertSlot, AlertType> configuredAlerts;
     private final DateTime activatedAt;
     private final FirmwareVersion piVersion;
     private final FirmwareVersion pmVersion;
@@ -39,6 +45,11 @@ public class PodSessionState extends PodState {
         if(timeZone == null) {
             throw new IllegalArgumentException("Time zone can not be null");
         }
+
+        suspended = false;
+        configuredAlerts = new HashMap<>();
+        configuredAlerts.put(AlertSlot.SLOT7, AlertType.FINISH_SETUP_REMINDER);
+
         this.timeZone = timeZone;
         this.setupProgress = SetupProgress.ADDRESS_ASSIGNED;
         this.activatedAt = activatedAt;
@@ -47,7 +58,20 @@ public class PodSessionState extends PodState {
         this.lot = lot;
         this.tid = tid;
         this.nonceState = new NonceState(lot, tid);
-        suspended = false;
+        store();
+    }
+
+    public AlertType getConfiguredAlertType(AlertSlot alertSlot) {
+        return configuredAlerts.get(alertSlot);
+    }
+
+    public void putConfiguredAlert(AlertSlot alertSlot, AlertType alertType) {
+        configuredAlerts.put(alertSlot, alertType);
+        store();
+    }
+
+    public void removeConfiguredAlert(AlertSlot alertSlot) {
+        configuredAlerts.remove(alertSlot);
         store();
     }
 
@@ -191,6 +215,7 @@ public class PodSessionState extends PodState {
                 ", timeZone=" + timeZone +
                 ", nonceState=" + nonceState +
                 ", setupProgress=" + setupProgress +
+                ", configuredAlerts=" + configuredAlerts +
                 ", activeAlerts=" + activeAlerts +
                 ", basalSchedule=" + basalSchedule +
                 ", lastDeliveryStatus="+ lastDeliveryStatus +

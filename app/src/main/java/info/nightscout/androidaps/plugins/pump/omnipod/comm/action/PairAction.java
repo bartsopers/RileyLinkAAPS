@@ -34,12 +34,13 @@ public class PairAction implements OmnipodAction<PodSessionState> {
 
         VersionResponse assignAddressResponse = service.executeAssignAddressCommand(communicationService, setupState);
 
-        DateTime activationDate = DateTime.now();
+        DateTimeZone timeZone = DateTimeZone.getDefault();
+        DateTime activationDate = DateTime.now(timeZone);
 
         VersionResponse confirmPairingResponse = service.executeConfigurePodCommand(communicationService, setupState,
                 assignAddressResponse.getLot(), assignAddressResponse.getTid(), activationDate);
 
-        PodSessionState podState = new PodSessionState(DateTimeZone.getDefault(), address, activationDate, confirmPairingResponse.getPiVersion(),
+        PodSessionState podState = new PodSessionState(timeZone, address, activationDate, confirmPairingResponse.getPiVersion(),
                 confirmPairingResponse.getPmVersion(), confirmPairingResponse.getLot(), confirmPairingResponse.getTid(),
                 setupState.getPacketNumber(), setupState.getMessageNumber());
         podState.setSetupProgress(SetupProgress.POD_CONFIGURED);
