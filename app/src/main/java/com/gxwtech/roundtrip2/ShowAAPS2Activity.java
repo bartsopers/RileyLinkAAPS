@@ -61,6 +61,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         addCommandAction(getResources().getString(R.string.cmd_aaps_initialize_pod), ImplementationStatus.Done, "RefreshData.InitializePod");
         addCommandAction(getResources().getString(R.string.cmd_aaps_insert_cannula), ImplementationStatus.Done, "RefreshData.InsertCannula");
         addCommandAction(getResources().getString(R.string.cmd_aaps_get_status), ImplementationStatus.Done, "RefreshData.GetStatus");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_get_time), ImplementationStatus.Done, "RefreshData.GetTime");
         addCommandAction(getResources().getString(R.string.cmd_aaps_acknowledge_alerts), ImplementationStatus.Done, "RefreshData.AcknowledgeAlerts");
         addCommandAction(getResources().getString(R.string.cmd_aaps_set_basal_profile), ImplementationStatus.Done, "RefreshData.SetBasalProfile");
         addCommandAction(getResources().getString(R.string.cmd_aaps_set_tbr), ImplementationStatus.Done, "RefreshData.SetTBR");
@@ -258,6 +259,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             case "RefreshData.InitializePod":
             case "RefreshData.InsertCannula":
             case "RefreshData.GetStatus":
+            case "RefreshData.GetTime":
             case "RefreshData.AcknowledgeAlerts":
             case "RefreshData.SetBasalProfile":
             case "RefreshData.SetTBR":
@@ -299,15 +301,6 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //                    ", voltage=" + status.voltage + //
 //                    ", percent(Alkaline)=" + status.getCalculatedPercent(BatteryType.Alkaline) + //
 //                    ", percent(Lithium)=" + status.getCalculatedPercent(BatteryType.Lithium));
-//            }
-//                break;
-//
-//            case "RefreshData.GetTime": {
-//                ClockDTO ldt = (ClockDTO)data;
-//                putOnDisplay("Pump Time: " + ldt.pumpTime.toString("dd.MM.yyyy HH:mm:ss"));
-//                putOnDisplay("Local Time: " + ldt.localDeviceTime.toString("dd.MM.yyyy HH:mm:ss"));
-//                //long diff = ldt.pumpTime.minus(ldt.localDeviceTime);
-//                //putOnDisplay("Difference: " + ldt.pumpTime.toString("dd.MM.yyyy HH:mm:ss"));
 //            }
 //                break;
 //
@@ -408,159 +401,158 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
         this.btnStart.setEnabled(false);
 
-        // FIXME
-        new Thread(new Runnable() {
+        new Thread(() -> {
 
-            @Override
-            public void run() {
+            LOG.info("start Action: " + selectedCommandAction.action);
 
-                LOG.info("start Action: " + selectedCommandAction.action);
+            data = null;
+            errorMessage = null;
 
-                data = null;
-                errorMessage = null;
-
-                switch (selectedCommandAction.intentString) {
-                    case "RefreshData.InitializePod":
-                        try {
-                            getOmnipodManager().pairAndPrime();
-                            data = getOmnipodManager().getPodStateAsString();
-                        } catch (RuntimeException ex) {
-                            errorMessage = ex.getMessage();
-                            LOG.error("Caught exception: " + errorMessage);
-                            ex.printStackTrace();
-                        }
-                        break;
-                    case "RefreshData.InsertCannula":
-                        try {
-                            getOmnipodManager().insertCannula();
-                            data = getOmnipodManager().getPodStateAsString();
-                        } catch (RuntimeException ex) {
-                            errorMessage = ex.getMessage();
-                            LOG.error("Caught exception: " + errorMessage);
-                            ex.printStackTrace();
-                        }
-                        break;
-                    case "RefreshData.GetStatus":
-                        try {
-                            data = getOmnipodManager().getStatus();
-                        } catch (RuntimeException ex) {
-                            errorMessage = ex.getMessage();
-                            LOG.error("Caught exception: " + errorMessage);
-                            ex.printStackTrace();
-                        }
-                        break;
-                    case "RefreshData.AcknowledgeAlerts":
-                        try {
-                            getOmnipodManager().acknowledgeAlerts();
-                            data = getOmnipodManager().getPodStateAsString();
-                        } catch (RuntimeException ex) {
-                            errorMessage = ex.getMessage();
-                            LOG.error("Caught exception: " + errorMessage);
-                            ex.printStackTrace();
-                        }
-                        break;
-                    case "RefreshData.SetBasalProfile":
-                        try {
-                            Double amount = getAmount();
-                            if(amount != null) {
-                                List<BasalScheduleEntry> basalScheduleEntries = new ArrayList<>();
-                                for(int i = 0; i < 24; i++) {
-                                    basalScheduleEntries.add(new BasalScheduleEntry(i % 2 == 0 ? amount : (amount * 2), Duration.standardHours(i)));
-                                }
-                                BasalSchedule basalSchedule = new BasalSchedule(basalScheduleEntries);
-                                getOmnipodManager().setBasalSchedule(basalSchedule, false);
+            switch (selectedCommandAction.intentString) {
+                case "RefreshData.InitializePod":
+                    try {
+                        getOmnipodManager().pairAndPrime();
+                        data = getOmnipodManager().getPodStateAsString();
+                    } catch (RuntimeException ex) {
+                        errorMessage = ex.getMessage();
+                        LOG.error("Caught exception: " + errorMessage);
+                        ex.printStackTrace();
+                    }
+                    break;
+                case "RefreshData.InsertCannula":
+                    try {
+                        getOmnipodManager().insertCannula();
+                        data = getOmnipodManager().getPodStateAsString();
+                    } catch (RuntimeException ex) {
+                        errorMessage = ex.getMessage();
+                        LOG.error("Caught exception: " + errorMessage);
+                        ex.printStackTrace();
+                    }
+                    break;
+                case "RefreshData.GetStatus":
+                    try {
+                        data = getOmnipodManager().getStatus();
+                    } catch (RuntimeException ex) {
+                        errorMessage = ex.getMessage();
+                        LOG.error("Caught exception: " + errorMessage);
+                        ex.printStackTrace();
+                    }
+                    break;
+                case "RefreshData.GetTime":
+                    data = getOmnipodManager().getTime();
+                    break;
+                case "RefreshData.AcknowledgeAlerts":
+                    try {
+                        getOmnipodManager().acknowledgeAlerts();
+                        data = getOmnipodManager().getPodStateAsString();
+                    } catch (RuntimeException ex) {
+                        errorMessage = ex.getMessage();
+                        LOG.error("Caught exception: " + errorMessage);
+                        ex.printStackTrace();
+                    }
+                    break;
+                case "RefreshData.SetBasalProfile":
+                    try {
+                        Double amount = getAmount();
+                        if(amount != null) {
+                            List<BasalScheduleEntry> basalScheduleEntries = new ArrayList<>();
+                            for(int i = 0; i < 24; i++) {
+                                basalScheduleEntries.add(new BasalScheduleEntry(i % 2 == 0 ? amount : (amount * 2), Duration.standardHours(i)));
                             }
+                            BasalSchedule basalSchedule = new BasalSchedule(basalScheduleEntries);
+                            getOmnipodManager().setBasalSchedule(basalSchedule, false);
+                        }
+                        data = getOmnipodManager().getPodStateAsString();
+                    } catch (RuntimeException ex) {
+                        errorMessage = ex.getMessage();
+                        LOG.error("Caught exception: " + errorMessage);
+                        ex.printStackTrace();
+                    }
+                    break;
+                case "RefreshData.SetTBR":
+                    try {
+                        TempBasalPair tempBasalPair = getTempBasalPair();
+                        if(tempBasalPair != null) {
+                            getOmnipodManager().setTempBasal(tempBasalPair.getRate(), tempBasalPair.getDuration());
                             data = getOmnipodManager().getPodStateAsString();
-                        } catch (RuntimeException ex) {
-                            errorMessage = ex.getMessage();
-                            LOG.error("Caught exception: " + errorMessage);
-                            ex.printStackTrace();
                         }
-                        break;
-                    case "RefreshData.SetTBR":
-                        try {
-                            TempBasalPair tempBasalPair = getTempBasalPair();
-                            if(tempBasalPair != null) {
-                                getOmnipodManager().setTempBasal(tempBasalPair.getRate(), tempBasalPair.getDuration());
-                                data = getOmnipodManager().getPodStateAsString();
-                            }
-                        } catch (RuntimeException ex) {
-                            errorMessage = ex.getMessage();
-                            LOG.error("Caught exception: " + errorMessage);
-                            ex.printStackTrace();
-                        }
-                        break;
-                    case "RefreshData.CancelTBR":
-                        try {
-                            getOmnipodManager().cancelTempBasal();
-                            data = getOmnipodManager().getPodStateAsString();
-                        } catch (RuntimeException ex) {
-                            errorMessage = ex.getMessage();
-                            LOG.error("Caught exception: " + errorMessage);
-                            ex.printStackTrace();
-                        }
-                        break;
-                    case "RefreshData.Bolus":
-                        try {
-                            Double units = getAmount();
-                            getOmnipodManager().bolus(units);
-                            data = getOmnipodManager().getPodStateAsString();
-                        } catch (RuntimeException ex) {
-                            errorMessage = ex.getMessage();
-                            LOG.error("Caught exception: " + errorMessage);
-                            ex.printStackTrace();
-                        }
-                        break;
-                    case "RefreshData.CancelBolus":
-                        try {
-                            getOmnipodManager().cancelBolus();
-                            data = getOmnipodManager().getPodStateAsString();
-                        } catch (RuntimeException ex) {
-                            errorMessage = ex.getMessage();
-                            LOG.error("Caught exception: " + errorMessage);
-                            ex.printStackTrace();
-                        }
-                        break;
-                    case "RefreshData.SuspendDelivery":
-                        try {
-                            getOmnipodManager().suspendDelivery();
-                            data = getOmnipodManager().getPodStateAsString();
-                        } catch (RuntimeException ex) {
-                            errorMessage = ex.getMessage();
-                            LOG.error("Caught exception: " + errorMessage);
-                            ex.printStackTrace();
-                        }
-                        break;
-                    case "RefreshData.ResumeDelivery":
-                        try {
-                            getOmnipodManager().resumeDelivery();
-                            data = getOmnipodManager().getPodStateAsString();
-                        } catch (RuntimeException ex) {
-                            errorMessage = ex.getMessage();
-                            LOG.error("Caught exception: " + errorMessage);
-                            ex.printStackTrace();
-                        }
-                        break;
-                    case "RefreshData.SetTime":
-                        try {
-                            getOmnipodManager().setTime();
-                            data = getOmnipodManager().getPodStateAsString();
-                        } catch (RuntimeException ex) {
-                            errorMessage = ex.getMessage();
-                            LOG.error("Caught exception: " + errorMessage);
-                            ex.printStackTrace();
-                        }
-                        break;
-                    case "RefreshData.DeactivatePod":
-                        try {
-                            getOmnipodManager().deactivatePod();
-                            data = getOmnipodManager().getPodStateAsString();
-                        } catch (RuntimeException ex) {
-                            errorMessage = ex.getMessage();
-                            LOG.error("Caught exception: " + errorMessage);
-                            ex.printStackTrace();
-                        }
-                        break;
+                    } catch (RuntimeException ex) {
+                        errorMessage = ex.getMessage();
+                        LOG.error("Caught exception: " + errorMessage);
+                        ex.printStackTrace();
+                    }
+                    break;
+                case "RefreshData.CancelTBR":
+                    try {
+                        getOmnipodManager().cancelTempBasal();
+                        data = getOmnipodManager().getPodStateAsString();
+                    } catch (RuntimeException ex) {
+                        errorMessage = ex.getMessage();
+                        LOG.error("Caught exception: " + errorMessage);
+                        ex.printStackTrace();
+                    }
+                    break;
+                case "RefreshData.Bolus":
+                    try {
+                        Double units = getAmount();
+                        getOmnipodManager().bolus(units);
+                        data = getOmnipodManager().getPodStateAsString();
+                    } catch (RuntimeException ex) {
+                        errorMessage = ex.getMessage();
+                        LOG.error("Caught exception: " + errorMessage);
+                        ex.printStackTrace();
+                    }
+                    break;
+                case "RefreshData.CancelBolus":
+                    try {
+                        getOmnipodManager().cancelBolus();
+                        data = getOmnipodManager().getPodStateAsString();
+                    } catch (RuntimeException ex) {
+                        errorMessage = ex.getMessage();
+                        LOG.error("Caught exception: " + errorMessage);
+                        ex.printStackTrace();
+                    }
+                    break;
+                case "RefreshData.SuspendDelivery":
+                    try {
+                        getOmnipodManager().suspendDelivery();
+                        data = getOmnipodManager().getPodStateAsString();
+                    } catch (RuntimeException ex) {
+                        errorMessage = ex.getMessage();
+                        LOG.error("Caught exception: " + errorMessage);
+                        ex.printStackTrace();
+                    }
+                    break;
+                case "RefreshData.ResumeDelivery":
+                    try {
+                        getOmnipodManager().resumeDelivery();
+                        data = getOmnipodManager().getPodStateAsString();
+                    } catch (RuntimeException ex) {
+                        errorMessage = ex.getMessage();
+                        LOG.error("Caught exception: " + errorMessage);
+                        ex.printStackTrace();
+                    }
+                    break;
+                case "RefreshData.SetTime":
+                    try {
+                        getOmnipodManager().setTime();
+                        data = getOmnipodManager().getPodStateAsString();
+                    } catch (RuntimeException ex) {
+                        errorMessage = ex.getMessage();
+                        LOG.error("Caught exception: " + errorMessage);
+                        ex.printStackTrace();
+                    }
+                    break;
+                case "RefreshData.DeactivatePod":
+                    try {
+                        getOmnipodManager().deactivatePod();
+                        data = getOmnipodManager().getPodStateAsString();
+                    } catch (RuntimeException ex) {
+                        errorMessage = ex.getMessage();
+                        LOG.error("Caught exception: " + errorMessage);
+                        ex.printStackTrace();
+                    }
+                    break;
 //                    case "RefreshData.PumpModel": {
 //                        returnData = getCommunicationManager().getPumpModel();
 //                    }
@@ -573,11 +565,6 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //
 //                    case "RefreshData.RemainingInsulin": {
 //                        returnData = getCommunicationManager().getRemainingInsulin();
-//                    }
-//                        break;
-//
-//                    case "RefreshData.GetTime": {
-//                        returnData = getCommunicationManager().getPumpTime();
 //                    }
 //                        break;
 //
@@ -627,19 +614,18 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //                        break;
 //
 
-                    default:
-                        LOG.warn("Action is not supported {}.", selectedCommandAction);
+                default:
+                    LOG.warn("Action is not supported {}.", selectedCommandAction);
 
-                }
-
-                if (data == null) {
-                    RileyLinkUtil.sendBroadcastMessage("RefreshData.Error");
-                } else {
-                    RileyLinkUtil.sendBroadcastMessage(selectedCommandAction.intentString);
-                }
-
-                updatePodState();
             }
+
+            if (data == null) {
+                RileyLinkUtil.sendBroadcastMessage("RefreshData.Error");
+            } else {
+                RileyLinkUtil.sendBroadcastMessage(selectedCommandAction.intentString);
+            }
+
+            updatePodState();
         }).start();
 
     }

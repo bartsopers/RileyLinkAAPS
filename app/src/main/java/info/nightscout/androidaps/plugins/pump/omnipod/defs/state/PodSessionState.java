@@ -143,7 +143,7 @@ public class PodSessionState extends PodState {
     }
 
     public DateTime getTime() {
-        return DateTime.now(timeZone);
+        return DateTime.now().withZone(timeZone);
     }
 
     public void setTimeZone(DateTimeZone timeZone) {
@@ -155,7 +155,7 @@ public class PodSessionState extends PodState {
     }
 
     public Duration getScheduleOffset() {
-        DateTime now = DateTime.now(timeZone);
+        DateTime now = getTime();
         DateTime startOfDay = new DateTime(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(),
                 0, 0, 0, timeZone);
         return new Duration(startOfDay, now);

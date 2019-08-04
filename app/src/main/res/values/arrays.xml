@@ -6,6 +6,7 @@
         <item>@string/cmd_aaps_initialize_pod</item>
         <item>@string/cmd_aaps_insert_cannula</item>
         <item>@string/cmd_aaps_get_status</item>
+        <item>@string/cmd_aaps_get_time</item>
         <item>@string/cmd_aaps_acknowledge_alerts</item>
         <item>@string/cmd_aaps_set_basal_profile</item>
         <item>@string/cmd_aaps_set_tbr</item>

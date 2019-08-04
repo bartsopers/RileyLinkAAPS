@@ -1,10 +1,12 @@
 package info.nightscout.androidaps.plugins.pump.omnipod;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -157,8 +159,16 @@ public class OmnipodManager {
             throw new IllegalStateException("Pod should be initialized first");
         }
         suspendDelivery();
-        podState.setTimeZone(DateTimeZone.getDefault());
+
+        // Joda seems to cache the default time zone, so we use the JVM's
+        DateTimeZone timeZone = DateTimeZone.forTimeZone(TimeZone.getDefault());
+        podState.setTimeZone(timeZone);
+
         resumeDelivery();
+    }
+
+    public DateTime getTime() {
+        return podState.getTime();
     }
 
     public void deactivatePod() {
