@@ -1,6 +1,7 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.comm.action;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.util.Random;
 
@@ -38,7 +39,7 @@ public class PairAction implements OmnipodAction<PodSessionState> {
         VersionResponse confirmPairingResponse = service.executeConfigurePodCommand(communicationService, setupState,
                 assignAddressResponse.getLot(), assignAddressResponse.getTid(), activationDate);
 
-        PodSessionState podState = new PodSessionState(address, activationDate, confirmPairingResponse.getPiVersion(),
+        PodSessionState podState = new PodSessionState(DateTimeZone.getDefault(), address, activationDate, confirmPairingResponse.getPiVersion(),
                 confirmPairingResponse.getPmVersion(), confirmPairingResponse.getLot(), confirmPairingResponse.getTid(),
                 setupState.getPacketNumber(), setupState.getMessageNumber());
         podState.setSetupProgress(SetupProgress.POD_CONFIGURED);

@@ -3,7 +3,6 @@ package com.gxwtech.roundtrip2;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -16,7 +15,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +27,6 @@ import java.util.Map;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.RileyLinkService;
 import info.nightscout.androidaps.plugins.pump.omnipod.OmnipodManager;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.SetBasalScheduleAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalSchedule;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalScheduleEntry;
 import info.nightscout.androidaps.plugins.pump.omnipod.service.RileyLinkOmnipodService;
@@ -465,8 +462,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                                     basalScheduleEntries.add(new BasalScheduleEntry(i % 2 == 0 ? amount : (amount * 2), Duration.standardHours(i)));
                                 }
                                 BasalSchedule basalSchedule = new BasalSchedule(basalScheduleEntries);
-                                getOmnipodManager().setBasalSchedule(basalSchedule, false,
-                                        SetBasalScheduleAction.calculateScheduleOffset(DateTime.now()));
+                                getOmnipodManager().setBasalSchedule(basalSchedule, false);
                             }
                             data = getOmnipodManager().getPodStateAsString();
                         } catch (RuntimeException ex) {

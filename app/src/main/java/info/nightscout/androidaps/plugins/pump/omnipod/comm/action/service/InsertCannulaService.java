@@ -21,7 +21,7 @@ public class InsertCannulaService {
     public StatusResponse programInitialBasalSchedule(OmnipodCommunicationService communicationService,
                                                       PodSessionState podState, BasalSchedule basalSchedule) {
         return communicationService.executeAction(new SetBasalScheduleAction(podState, basalSchedule, true,
-                SetBasalScheduleAction.calculateScheduleOffset(DateTime.now())));
+                podState.getScheduleOffset()));
     }
 
     public StatusResponse executeExpirationRemindersAlertCommand(OmnipodCommunicationService communicationService,

@@ -1,6 +1,5 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.comm.action;
 
-import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
 import java.util.Arrays;
@@ -47,10 +46,5 @@ public class SetBasalScheduleAction implements OmnipodAction<StatusResponse> {
         StatusResponse statusResponse = communicationService.exchangeMessages(StatusResponse.class, podState, basalMessage);
         podState.setBasalSchedule(basalSchedule);
         return statusResponse;
-    }
-
-    public static Duration calculateScheduleOffset(DateTime dateTime) {
-        return new Duration(new DateTime(dateTime.getYear(), dateTime.getMonthOfYear(),
-                dateTime.getDayOfMonth(), 0, 0, 0), dateTime);
     }
 }

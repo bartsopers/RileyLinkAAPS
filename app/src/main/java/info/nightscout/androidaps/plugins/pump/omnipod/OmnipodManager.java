@@ -1,6 +1,6 @@
 package info.nightscout.androidaps.plugins.pump.omnipod;
 
-import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 
 import java.util.ArrayList;
@@ -92,13 +92,12 @@ public class OmnipodManager {
         }, Constants.POD_CANNULA_INSERTION_DURATION);
     }
 
-    public void setBasalSchedule(BasalSchedule basalSchedule, boolean confidenceReminder,
-                                 Duration scheduleOffset) {
+    public void setBasalSchedule(BasalSchedule basalSchedule, boolean confidenceReminder) {
         if (!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
         communicationService.executeAction(new SetBasalScheduleAction(podState, basalSchedule,
-                confidenceReminder, scheduleOffset));
+                confidenceReminder, podState.getScheduleOffset()));
     }
 
     public void setTempBasal(double rate, Duration duration) {
@@ -142,7 +141,7 @@ public class OmnipodManager {
             throw new IllegalStateException("Pod should be initialized first");
         }
         communicationService.executeAction(new SetBasalScheduleAction(podState, podState.getBasalSchedule(),
-                true, SetBasalScheduleAction.calculateScheduleOffset(DateTime.now())));
+                true, podState.getScheduleOffset()));
     }
 
     public void setTime() {
@@ -150,6 +149,7 @@ public class OmnipodManager {
             throw new IllegalStateException("Pod should be initialized first");
         }
         suspendDelivery();
+        podState.setTimeZone(DateTimeZone.getDefault());
         resumeDelivery();
     }
 

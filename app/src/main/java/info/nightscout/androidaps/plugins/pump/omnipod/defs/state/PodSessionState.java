@@ -3,6 +3,8 @@ package info.nightscout.androidaps.plugins.pump.omnipod.defs.state;
 import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
 
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertSet;
@@ -24,15 +26,20 @@ public class PodSessionState extends PodState {
     private final int tid;
     private boolean suspended;
 
+    private DateTimeZone timeZone;
     private NonceState nonceState;
     private SetupProgress setupProgress;
     private AlertSet activeAlerts;
     private BasalSchedule basalSchedule;
     private DeliveryStatus lastDeliveryStatus;
 
-    public PodSessionState(int address, DateTime activatedAt, FirmwareVersion piVersion,
+    public PodSessionState(DateTimeZone timeZone, int address, DateTime activatedAt, FirmwareVersion piVersion,
                            FirmwareVersion pmVersion, int lot, int tid, int packetNumber, int messageNumber) {
         super(address, messageNumber, packetNumber);
+        if(timeZone == null) {
+            throw new IllegalArgumentException("Time zone can not be null");
+        }
+        this.timeZone = timeZone;
         this.setupProgress = SetupProgress.ADDRESS_ASSIGNED;
         this.activatedAt = activatedAt;
         this.piVersion = piVersion;
@@ -107,6 +114,29 @@ public class PodSessionState extends PodState {
         return activeAlerts;
     }
 
+    public DateTimeZone getTimeZone() {
+        return timeZone;
+    }
+
+    public DateTime getTime() {
+        return DateTime.now(timeZone);
+    }
+
+    public void setTimeZone(DateTimeZone timeZone) {
+        if(timeZone == null) {
+            throw new IllegalArgumentException("Time zone can not be null");
+        }
+        this.timeZone = timeZone;
+        store();
+    }
+
+    public Duration getScheduleOffset() {
+        DateTime now = DateTime.now(timeZone);
+        DateTime startOfDay = new DateTime(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(),
+                0, 0, 0, timeZone);
+        return new Duration(startOfDay, now);
+    }
+
     public boolean hasNonceState() {
         return true;
     }
@@ -158,6 +188,7 @@ public class PodSessionState extends PodState {
                 ", lot=" + lot +
                 ", tid=" + tid +
                 ", suspended=" + suspended +
+                ", timeZone=" + timeZone +
                 ", nonceState=" + nonceState +
                 ", setupProgress=" + setupProgress +
                 ", activeAlerts=" + activeAlerts +
