@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.AcknowledgeAlertsAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.BolusAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.CancelDeliveryAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.DeactivatePodAction;
@@ -59,6 +60,13 @@ public class OmnipodManager {
             throw new IllegalStateException("Pod should be paired first");
         }
         return communicationService.executeAction(new GetStatusAction(podState));
+    }
+
+    public void acknowledgeAlerts() {
+        if(!isInitialized()) {
+            throw new IllegalStateException("Pod should be initialized first");
+        }
+        communicationService.executeAction(new AcknowledgeAlertsAction(podState, podState.getActiveAlerts()));
     }
 
     public void pairAndPrime() {

@@ -23,6 +23,10 @@ public class AlertSet {
         return new ArrayList<>(alertSlots);
     }
 
+    public int size() {
+        return alertSlots.size();
+    }
+
     public byte getRawValue() {
         byte value = 0;
         for(AlertSlot alertSlot : alertSlots) {

@@ -61,6 +61,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         addCommandAction(getResources().getString(R.string.cmd_aaps_initialize_pod), ImplementationStatus.Done, "RefreshData.InitializePod");
         addCommandAction(getResources().getString(R.string.cmd_aaps_insert_cannula), ImplementationStatus.Done, "RefreshData.InsertCannula");
         addCommandAction(getResources().getString(R.string.cmd_aaps_get_status), ImplementationStatus.Done, "RefreshData.GetStatus");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_acknowledge_alerts), ImplementationStatus.Done, "RefreshData.AcknowledgeAlerts");
         addCommandAction(getResources().getString(R.string.cmd_aaps_set_basal_profile), ImplementationStatus.Done, "RefreshData.SetBasalProfile");
         addCommandAction(getResources().getString(R.string.cmd_aaps_set_tbr), ImplementationStatus.Done, "RefreshData.SetTBR");
         addCommandAction(getResources().getString(R.string.cmd_aaps_cancel_tbr), ImplementationStatus.Done, "RefreshData.CancelTBR");
@@ -257,6 +258,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             case "RefreshData.InitializePod":
             case "RefreshData.InsertCannula":
             case "RefreshData.GetStatus":
+            case "RefreshData.AcknowledgeAlerts":
             case "RefreshData.SetBasalProfile":
             case "RefreshData.SetTBR":
             case "RefreshData.CancelTBR":
@@ -326,12 +328,6 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //
 //                putOnDisplay(String.format("Extended Bolus: Amount: %.3f, Duration: %s - %s", tbr.getInsulinRate(), ""
 //                    + tbr.getDurationMinutes(), (response ? "Was set." : "Was NOT set.")));
-//            }
-//                break;
-//
-//            case "RefreshData.GetStatus": {
-//                // FIXME
-//                putOnDisplay("Status undefined ?");
 //            }
 //                break;
 //
@@ -447,6 +443,16 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                     case "RefreshData.GetStatus":
                         try {
                             data = getOmnipodManager().getStatus();
+                        } catch (RuntimeException ex) {
+                            errorMessage = ex.getMessage();
+                            LOG.error("Caught exception: " + errorMessage);
+                            ex.printStackTrace();
+                        }
+                        break;
+                    case "RefreshData.AcknowledgeAlerts":
+                        try {
+                            getOmnipodManager().acknowledgeAlerts();
+                            data = getOmnipodManager().getPodStateAsString();
                         } catch (RuntimeException ex) {
                             errorMessage = ex.getMessage();
                             LOG.error("Caught exception: " + errorMessage);
@@ -594,11 +600,6 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 //
 //                    case "RefreshData.GetTBR": {
 //                        returnData = getCommunicationManager().getTemporaryBasal();
-//                    }
-//                        break;
-//
-//                    case "RefreshData.GetStatus": {
-//                        //returnData = getCommunicationManager().getPumpState();
 //                    }
 //                        break;
 //
