@@ -161,8 +161,8 @@ public class OmnipodManager {
         suspendDelivery();
 
         // Joda seems to cache the default time zone, so we use the JVM's
-        DateTimeZone timeZone = DateTimeZone.forTimeZone(TimeZone.getDefault());
-        podState.setTimeZone(timeZone);
+        DateTimeZone.setDefault(DateTimeZone.forTimeZone(TimeZone.getDefault()));
+        podState.setTimeZone(DateTimeZone.getDefault());
 
         resumeDelivery();
     }
