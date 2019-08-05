@@ -20,7 +20,8 @@ public class PairService {
         OmnipodMessage assignAddressMessage = new OmnipodMessage(Constants.DEFAULT_ADDRESS,
                 Collections.singletonList(assignAddress), setupState.getMessageNumber());
 
-        return communicationService.exchangeMessages(VersionResponse.class, setupState, assignAddressMessage, Constants.DEFAULT_ADDRESS, setupState.getAddress());
+        return communicationService.exchangeMessages(VersionResponse.class, setupState, assignAddressMessage,
+                Constants.DEFAULT_ADDRESS, setupState.getAddress());
     }
 
     public VersionResponse executeConfigurePodCommand(OmnipodCommunicationService communicationService,

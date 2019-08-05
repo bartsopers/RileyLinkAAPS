@@ -16,8 +16,11 @@ public class BolusAction implements OmnipodAction<StatusResponse> {
     private final PodSessionState podState;
     private final double units;
     private final Duration timeBetweenPulses;
+    private final boolean acknowledgementBeep;
+    private final boolean completionBeep;
 
-    public BolusAction(PodSessionState podState, double units, Duration timeBetweenPulses) {
+    public BolusAction(PodSessionState podState, double units, Duration timeBetweenPulses,
+                       boolean acknowledgementBeep, boolean completionBeep) {
         if(podState == null) {
             throw new IllegalArgumentException("Pod state cannot be null");
         }
@@ -27,10 +30,12 @@ public class BolusAction implements OmnipodAction<StatusResponse> {
         this.podState = podState;
         this.units = units;
         this.timeBetweenPulses = timeBetweenPulses;
+        this.acknowledgementBeep = acknowledgementBeep;
+        this.completionBeep = completionBeep;
     }
 
-    public BolusAction(PodSessionState podState, double units) {
-        this(podState, units, Duration.standardSeconds(2));
+    public BolusAction(PodSessionState podState, double units, boolean acknowledgementBeep, boolean completionBeep) {
+        this(podState, units, Duration.standardSeconds(2), acknowledgementBeep, completionBeep);
     }
 
     @Override
@@ -38,7 +43,8 @@ public class BolusAction implements OmnipodAction<StatusResponse> {
         BolusDeliverySchedule bolusDeliverySchedule = new BolusDeliverySchedule(units, timeBetweenPulses);
         SetInsulinScheduleCommand setInsulinScheduleCommand = new SetInsulinScheduleCommand(
                 podState.getCurrentNonce(), bolusDeliverySchedule);
-        BolusExtraCommand bolusExtraCommand = new BolusExtraCommand(units, timeBetweenPulses);
+        BolusExtraCommand bolusExtraCommand = new BolusExtraCommand(units, timeBetweenPulses,
+                acknowledgementBeep, completionBeep);
         OmnipodMessage primeBolusMessage = new OmnipodMessage(podState.getAddress(),
                 Arrays.asList(setInsulinScheduleCommand, bolusExtraCommand), podState.getMessageNumber());
         return communicationService.exchangeMessages(StatusResponse.class, podState, primeBolusMessage);

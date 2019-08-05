@@ -12,8 +12,10 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionStat
 public class CancelDeliveryAction implements OmnipodAction<StatusResponse> {
     private final PodSessionState podState;
     private final EnumSet<DeliveryType> deliveryTypes;
+    private final BeepType beepType;
 
-    public CancelDeliveryAction(PodSessionState podState, EnumSet<DeliveryType> deliveryTypes) {
+    public CancelDeliveryAction(PodSessionState podState, EnumSet<DeliveryType> deliveryTypes,
+                                boolean acknowledgementBeep) {
         if(podState == null) {
             throw new IllegalArgumentException("Pod state cannot be null");
         }
@@ -22,15 +24,21 @@ public class CancelDeliveryAction implements OmnipodAction<StatusResponse> {
         }
         this.podState = podState;
         this.deliveryTypes = deliveryTypes;
+        if(acknowledgementBeep) {
+            beepType = BeepType.BIP_BIP;
+        } else {
+            beepType = BeepType.NO_BEEP;
+        }
     }
 
-    public CancelDeliveryAction(PodSessionState podState, DeliveryType deliveryType) {
-        this(podState, EnumSet.of(deliveryType));
+    public CancelDeliveryAction(PodSessionState podState, DeliveryType deliveryType,
+                                boolean acknowledgementBeep) {
+        this(podState, EnumSet.of(deliveryType), acknowledgementBeep);
     }
 
     @Override
     public StatusResponse execute(OmnipodCommunicationService communicationService) {
         return communicationService.sendCommand(StatusResponse.class, podState,
-                new CancelDeliveryCommand(podState.getCurrentNonce(), BeepType.BEEEP, deliveryTypes));
+                new CancelDeliveryCommand(podState.getCurrentNonce(), beepType, deliveryTypes));
     }
 }

@@ -17,9 +17,10 @@ public class SetBasalScheduleAction implements OmnipodAction<StatusResponse> {
     private final BasalSchedule basalSchedule;
     private final boolean confidenceReminder;
     private final Duration scheduleOffset;
+    private final boolean acknowledgementBeep;
 
     public SetBasalScheduleAction(PodSessionState podState, BasalSchedule basalSchedule,
-                                  boolean confidenceReminder, Duration scheduleOffset) {
+                                  boolean confidenceReminder, Duration scheduleOffset, boolean acknowledgementBeep) {
         if(podState == null) {
             throw new IllegalArgumentException("Pod state cannot be null");
         }
@@ -33,13 +34,14 @@ public class SetBasalScheduleAction implements OmnipodAction<StatusResponse> {
         this.basalSchedule = basalSchedule;
         this.confidenceReminder = confidenceReminder;
         this.scheduleOffset = scheduleOffset;
+        this.acknowledgementBeep = acknowledgementBeep;
     }
 
     @Override
     public StatusResponse execute(OmnipodCommunicationService communicationService) {
         SetInsulinScheduleCommand setBasal = new SetInsulinScheduleCommand(podState.getCurrentNonce(), basalSchedule, scheduleOffset);
         BasalScheduleExtraCommand extraCommand = new BasalScheduleExtraCommand(basalSchedule, scheduleOffset,
-                true, confidenceReminder, Duration.ZERO);
+                acknowledgementBeep, confidenceReminder, Duration.ZERO);
         OmnipodMessage basalMessage = new OmnipodMessage(podState.getAddress(), Arrays.asList(setBasal, extraCommand),
                 podState.getMessageNumber());
 

@@ -20,8 +20,8 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionStat
 public class InsertCannulaService {
     public StatusResponse programInitialBasalSchedule(OmnipodCommunicationService communicationService,
                                                       PodSessionState podState, BasalSchedule basalSchedule) {
-        return communicationService.executeAction(new SetBasalScheduleAction(podState, basalSchedule, true,
-                podState.getScheduleOffset()));
+        return communicationService.executeAction(new SetBasalScheduleAction(podState, basalSchedule,
+                true, podState.getScheduleOffset(), false));
     }
 
     public StatusResponse executeExpirationRemindersAlertCommand(OmnipodCommunicationService communicationService,
@@ -50,6 +50,7 @@ public class InsertCannulaService {
     }
 
     public StatusResponse executeInsertionBolusCommand(OmnipodCommunicationService communicationService, PodSessionState podState) {
-        return communicationService.executeAction(new BolusAction(podState, Constants.POD_CANNULA_INSERTION_BOLUS_UNITS, Duration.standardSeconds(1)));
+        return communicationService.executeAction(new BolusAction(podState, Constants.POD_CANNULA_INSERTION_BOLUS_UNITS,
+                Duration.standardSeconds(1), false, false));
     }
 }

@@ -34,7 +34,9 @@ public class CancelDeliveryCommand extends NonceResyncableMessageBlock {
         encodedData = new byte[5];
         System.arraycopy(ByteUtil.getBytesFromInt(nonce),0,encodedData,0,4);
         byte beepTypeValue = beepType.getValue();
-        if (beepTypeValue > 8) beepTypeValue = 0;
+        if (beepTypeValue > 8) {
+            beepTypeValue = 0;
+        }
         encodedData[4] = (byte)((beepTypeValue & 0x0F) << 4);
         if(deliveryTypes.contains(DeliveryType.BASAL)) {
             encodedData[4] |= 1;

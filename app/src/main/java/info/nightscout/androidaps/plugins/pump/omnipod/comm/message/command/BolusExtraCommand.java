@@ -16,12 +16,12 @@ public class BolusExtraCommand extends MessageBlock {
     private final double squareWaveUnits;
     private final Duration squareWaveDuration;
 
-    public BolusExtraCommand(double units) {
-        this(units, Duration.standardSeconds(2));
+    public BolusExtraCommand(double units, boolean acknowledgementBeep, boolean completionBeep) {
+        this(units, Duration.standardSeconds(2), acknowledgementBeep, completionBeep);
     }
 
-    public BolusExtraCommand(double units, Duration timeBetweenPulses) {
-        this(units, 0.0, Duration.ZERO, false, false, Duration.ZERO, timeBetweenPulses);
+    public BolusExtraCommand(double units, Duration timeBetweenPulses, boolean acknowledgementBeep, boolean completionBeep) {
+        this(units, 0.0, Duration.ZERO, acknowledgementBeep, completionBeep, Duration.ZERO, timeBetweenPulses);
     }
 
     public BolusExtraCommand(double units, double squareWaveUnits, Duration squareWaveDuration,

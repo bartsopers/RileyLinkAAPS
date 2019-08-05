@@ -29,10 +29,12 @@ public class PrimeService {
 
     public StatusResponse executeFinishSetupReminderAlertCommand(OmnipodCommunicationService communicationService, PodSessionState podState) {
         AlertConfiguration finishSetupReminderAlertConfiguration = AlertConfigurationFactory.createFinishSetupReminderAlertConfiguration();
-        return communicationService.executeAction(new ConfigureAlertsAction(podState, Collections.singletonList(finishSetupReminderAlertConfiguration)));
+        return communicationService.executeAction(new ConfigureAlertsAction(podState,
+                Collections.singletonList(finishSetupReminderAlertConfiguration)));
     }
 
     public StatusResponse executePrimeBolusCommand(OmnipodCommunicationService communicationService, PodSessionState podState) {
-        return communicationService.executeAction(new BolusAction(podState, Constants.POD_PRIME_BOLUS_UNITS, Duration.standardSeconds(1)));
+        return communicationService.executeAction(new BolusAction(podState, Constants.POD_PRIME_BOLUS_UNITS,
+                Duration.standardSeconds(1), false, false));
     }
 }

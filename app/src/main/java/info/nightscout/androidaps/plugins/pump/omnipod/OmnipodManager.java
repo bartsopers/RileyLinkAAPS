@@ -5,6 +5,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.Executors;
@@ -23,7 +24,6 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.PairAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.PrimeAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.SetBasalScheduleAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.SetTempBasalAction;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.SuspendDeliveryAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.InsertCannulaService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PairService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PrimeService;
@@ -107,7 +107,7 @@ public class OmnipodManager {
             throw new IllegalStateException("Pod should be initialized first");
         }
         communicationService.executeAction(new SetBasalScheduleAction(podState, basalSchedule,
-                confidenceReminder, podState.getScheduleOffset()));
+                confidenceReminder, podState.getScheduleOffset(), true));
     }
 
     public void setTempBasal(double rate, Duration duration) {
@@ -115,35 +115,35 @@ public class OmnipodManager {
             throw new IllegalStateException("Pod should be initialized first");
         }
         communicationService.executeAction(new SetTempBasalAction(new SetTempBasalService(),
-                podState, rate, duration));
+                podState, rate, duration, true, true));
     }
 
     public void cancelTempBasal() {
         if(!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
-        communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.TEMP_BASAL));
+        communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.TEMP_BASAL, true));
     }
 
     public void bolus(double units) {
         if (!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
-        communicationService.executeAction(new BolusAction(podState, units));
+        communicationService.executeAction(new BolusAction(podState, units, true, true));
     }
 
     public void cancelBolus() {
         if(!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
-        communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.BOLUS));
+        communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.BOLUS, true));
     }
 
     public void suspendDelivery() {
         if(!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
-        communicationService.executeAction(new SuspendDeliveryAction(podState));
+        communicationService.executeAction(new CancelDeliveryAction(podState, EnumSet.allOf(DeliveryType.class), true));
     }
 
     public void resumeDelivery() {
@@ -151,20 +151,23 @@ public class OmnipodManager {
             throw new IllegalStateException("Pod should be initialized first");
         }
         communicationService.executeAction(new SetBasalScheduleAction(podState, podState.getBasalSchedule(),
-                true, podState.getScheduleOffset()));
+                true, podState.getScheduleOffset(), true));
     }
 
     public void setTime() {
         if(!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
-        suspendDelivery();
+        // Suspend delivery
+        communicationService.executeAction(new CancelDeliveryAction(podState, EnumSet.allOf(DeliveryType.class), false));
 
         // Joda seems to cache the default time zone, so we use the JVM's
         DateTimeZone.setDefault(DateTimeZone.forTimeZone(TimeZone.getDefault()));
         podState.setTimeZone(DateTimeZone.getDefault());
 
-        resumeDelivery();
+        // Resume delivery
+        communicationService.executeAction(new SetBasalScheduleAction(podState, podState.getBasalSchedule(),
+                true, podState.getScheduleOffset(), true));
     }
 
     public DateTime getTime() {
@@ -175,7 +178,7 @@ public class OmnipodManager {
         if (podState == null) {
             throw new IllegalStateException("Pod should be paired first");
         }
-        communicationService.executeAction(new DeactivatePodAction(podState));
+        communicationService.executeAction(new DeactivatePodAction(podState, true));
         resetPodState();
     }
 

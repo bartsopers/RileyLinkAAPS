@@ -12,8 +12,11 @@ public class SetTempBasalAction implements OmnipodAction<StatusResponse> {
     private final PodSessionState podState;
     private final double rate;
     private final Duration duration;
+    private final boolean acknowledgementBeep;
+    private final boolean completionBeep;
 
-    public SetTempBasalAction(SetTempBasalService setTempBasalService, PodSessionState podState, double rate, Duration duration) {
+    public SetTempBasalAction(SetTempBasalService setTempBasalService, PodSessionState podState,
+                              double rate, Duration duration, boolean acknowledgementBeep, boolean completionBeep) {
         if(setTempBasalService == null) {
             throw new IllegalArgumentException("Set temp basal service cannot be null");
         }
@@ -27,6 +30,8 @@ public class SetTempBasalAction implements OmnipodAction<StatusResponse> {
         this.podState = podState;
         this.rate = rate;
         this.duration = duration;
+        this.acknowledgementBeep = acknowledgementBeep;
+        this.completionBeep = completionBeep;
     }
 
     @Override
@@ -38,6 +43,7 @@ public class SetTempBasalAction implements OmnipodAction<StatusResponse> {
                     statusResponse.getDeliveryStatus().name());
         }
 
-        return service.executeTempBasalCommand(communicationService, podState, rate, duration);
+        return service.executeTempBasalCommand(communicationService, podState, rate, duration,
+                acknowledgementBeep, completionBeep);
     }
 }

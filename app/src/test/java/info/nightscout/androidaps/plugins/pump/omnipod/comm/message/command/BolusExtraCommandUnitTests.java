@@ -22,7 +22,7 @@ public class BolusExtraCommandUnitTests {
 
     @Test
     public void testTypicalPrime() {
-        BolusExtraCommand bolusExtraCommand = new BolusExtraCommand(2.6, Duration.standardSeconds(1));
+        BolusExtraCommand bolusExtraCommand = new BolusExtraCommand(2.6, Duration.standardSeconds(1), false, false);
         assertArrayEquals(ByteUtil.fromHexString("170d000208000186a0000000000000"), //
                 bolusExtraCommand.getRawData());
     }

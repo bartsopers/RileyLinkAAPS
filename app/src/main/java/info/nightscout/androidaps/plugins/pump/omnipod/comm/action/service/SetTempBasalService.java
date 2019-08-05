@@ -17,14 +17,15 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionStat
 
 public class SetTempBasalService {
     public StatusResponse cancelTempBasal(OmnipodCommunicationService communicationService, PodSessionState podState) {
-        return communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.TEMP_BASAL));
+        return communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.TEMP_BASAL, false));
     }
 
     public StatusResponse executeTempBasalCommand(OmnipodCommunicationService communicationService,
-                                                  PodSessionState podState, double rate, Duration duration) {
+                                                  PodSessionState podState, double rate, Duration duration,
+                                                  boolean acknowledgementBeep, boolean completionBeep) {
         List<MessageBlock> messageBlocks = Arrays.asList( //
                 new SetInsulinScheduleCommand(podState.getCurrentNonce(), rate, duration),
-                new TempBasalExtraCommand(rate, duration, true, false, Duration.ZERO));
+                new TempBasalExtraCommand(rate, duration, acknowledgementBeep, completionBeep, Duration.ZERO));
 
         OmnipodMessage message = new OmnipodMessage(podState.getAddress(), messageBlocks, podState.getMessageNumber());
         return communicationService.exchangeMessages(StatusResponse.class, podState, message);
