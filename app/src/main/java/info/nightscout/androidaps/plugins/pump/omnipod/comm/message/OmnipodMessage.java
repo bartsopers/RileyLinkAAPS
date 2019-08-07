@@ -61,7 +61,7 @@ public class OmnipodMessage {
         int address = ByteUtil.toInt((int) data[0], (int) data[1], (int) data[2],
                 (int) data[3], ByteUtil.BitConversion.BIG_ENDIAN);
         byte b9 = data[4];
-        byte bodyLength = data[5];
+        int bodyLength = ByteUtil.convertUnsignedByteToInt(data[5]);
         if (data.length - 8 < bodyLength) {
             throw new NotEnoughDataException("not enough data: " + ByteUtil.shortHexString(data));
         }

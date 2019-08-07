@@ -26,6 +26,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PacketType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodInfoType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodState;
+import info.nightscout.androidaps.plugins.pump.omnipod.exception.CrcMismatchException;
 import info.nightscout.androidaps.plugins.pump.omnipod.exception.NotEnoughDataException;
 import info.nightscout.androidaps.plugins.pump.omnipod.exception.OmnipodException;
 import info.nightscout.androidaps.plugins.pump.omnipod.exception.PodFaultException;
@@ -162,6 +163,8 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
                 } catch (RileyLinkCommunicationException ex2) {
                     throw new OmnipodException("RileyLink communication failed", ex2);
                 }
+            } catch(CrcMismatchException ex) {
+                throw ex;
             } catch(Exception ex) {
                 LOG.debug("Ignoring exception in exchangeMessages: "+ ex.getClass().getName() +": "+ ex.getMessage());
                 ex.printStackTrace();
