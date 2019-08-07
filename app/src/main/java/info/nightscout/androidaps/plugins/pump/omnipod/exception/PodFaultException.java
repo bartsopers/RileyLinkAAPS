@@ -28,7 +28,7 @@ public class PodFaultException extends OmnipodException {
     }
 
     public static String describePodFault(PodInfoFaultEvent faultEvent) {
-        return String.format(Locale.getDefault(), "Pod fault (%d): %s", faultEvent.getCurrentStatus().getValue(),
-                faultEvent.getCurrentStatus().toString());
+        return String.format(Locale.getDefault(), "Pod fault (%d): %s", faultEvent.getFaultEventCode().getValue(),
+                faultEvent.getFaultEventCode().toString());
     }
 }

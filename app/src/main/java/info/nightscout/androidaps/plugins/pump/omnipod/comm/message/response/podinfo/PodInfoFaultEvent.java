@@ -21,17 +21,17 @@ public class PodInfoFaultEvent extends PodInfo {
     private final double insulinNotDelivered;
     private final byte podMessageCounter;
     private final double totalInsulinDelivered;
-    private final FaultEventCode currentStatus;
-    private final Duration faultEventTimeSinceActivation;
+    private final FaultEventCode faultEventCode;
+    private final Duration faultEventTime;
     private final Double reservoirLevel;
-    private final Duration timeActive;
+    private final Duration timeSinceActivation;
     private final AlertSet unacknowledgedAlerts;
     private final boolean faultAccessingTables;
     private final LogEventErrorCode logEventErrorType;
     private final PodProgressStatus logEventErrorPodProgressStatus;
     private final byte receiverLowGain;
     private final byte radioRSSI;
-    private final PodProgressStatus previousPodProgressStatus;
+    private final PodProgressStatus podProgressStatusAtTimeOfFirstLoggedFaultEvent;
     private final byte[] unknownValue;
 
     public PodInfoFaultEvent(byte[] encodedData) {
@@ -42,20 +42,21 @@ public class PodInfoFaultEvent extends PodInfo {
         }
 
         podProgressStatus = PodProgressStatus.fromByte(encodedData[1]);
-        deliveryStatus = DeliveryStatus.fromByte((byte)(encodedData[2] & 0x0f));
-        insulinNotDelivered = Constants.POD_PULSE_SIZE * (((encodedData[3] & 0x03) << 8) | ByteUtil.convertUnsignedByteToInt(encodedData[4]));
+        deliveryStatus = DeliveryStatus.fromByte(encodedData[2]);
+        insulinNotDelivered= Constants.POD_PULSE_SIZE * ByteUtil.toInt(encodedData[3], encodedData[4]);
         podMessageCounter = encodedData[5];
         totalInsulinDelivered = Constants.POD_PULSE_SIZE * ByteUtil.toInt(encodedData[6], encodedData[7]);
-        currentStatus = FaultEventCode.fromByte(encodedData[8]);
+        faultEventCode = FaultEventCode.fromByte(encodedData[8]);
 
-        int minutesSinceActivation = ByteUtil.toInt(encodedData[9], encodedData[10]);
+        int minutesSinceActivation = ByteUtil.toInt(encodedData[9],encodedData[10]);
         if(minutesSinceActivation == 0xffff) {
-            faultEventTimeSinceActivation = null;
+            faultEventTime = null;
         } else {
-            faultEventTimeSinceActivation = Duration.standardMinutes(minutesSinceActivation);
+            faultEventTime = Duration.standardMinutes(minutesSinceActivation);
         }
 
-        double reservoirValue = ((encodedData[11] & 0x03) << 8) + ByteUtil.convertUnsignedByteToInt(encodedData[12]) * Constants.POD_PULSE_SIZE;
+        double reservoirValue = ((encodedData[11] & 0x03) << 8) +
+                ByteUtil.convertUnsignedByteToInt(encodedData[12]) * Constants.POD_PULSE_SIZE;
         if(reservoirValue > Constants.MAX_RESERVOIR_READING) {
             reservoirLevel = null;
         } else {
@@ -63,7 +64,7 @@ public class PodInfoFaultEvent extends PodInfo {
         }
 
         int minutesActive = ByteUtil.toInt(encodedData[13], encodedData[14]);
-        timeActive = Duration.standardMinutes(minutesActive);
+        timeSinceActivation = Duration.standardMinutes(minutesActive);
 
         unacknowledgedAlerts = new AlertSet(encodedData[15]);
         faultAccessingTables = encodedData[16] == 0x02;
@@ -71,7 +72,7 @@ public class PodInfoFaultEvent extends PodInfo {
         logEventErrorPodProgressStatus = PodProgressStatus.fromByte((byte)(encodedData[17] & 0x0f));
         receiverLowGain = (byte)(ByteUtil.convertUnsignedByteToInt(encodedData[18]) >>> 6);
         radioRSSI = (byte)(encodedData[18] & 0x3f);
-        previousPodProgressStatus = PodProgressStatus.fromByte((byte)(encodedData[19] & 0x0f));
+        podProgressStatusAtTimeOfFirstLoggedFaultEvent = PodProgressStatus.fromByte((byte)(encodedData[19] & 0x0f));
         unknownValue = ByteUtil.substring(encodedData, 20, 2);
     }
 
@@ -100,20 +101,20 @@ public class PodInfoFaultEvent extends PodInfo {
         return totalInsulinDelivered;
     }
 
-    public FaultEventCode getCurrentStatus() {
-        return currentStatus;
+    public FaultEventCode getFaultEventCode() {
+        return faultEventCode;
     }
 
-    public Duration getFaultEventTimeSinceActivation() {
-        return faultEventTimeSinceActivation;
+    public Duration getFaultEventTime() {
+        return faultEventTime;
     }
 
     public Double getReservoirLevel() {
         return reservoirLevel;
     }
 
-    public Duration getTimeActive() {
-        return timeActive;
+    public Duration getTimeSinceActivation() {
+        return timeSinceActivation;
     }
 
     public AlertSet getUnacknowledgedAlerts() {
@@ -140,8 +141,8 @@ public class PodInfoFaultEvent extends PodInfo {
         return radioRSSI;
     }
 
-    public PodProgressStatus getPreviousPodProgressStatus() {
-        return previousPodProgressStatus;
+    public PodProgressStatus getPodProgressStatusAtTimeOfFirstLoggedFaultEvent() {
+        return podProgressStatusAtTimeOfFirstLoggedFaultEvent;
     }
 
     public byte[] getUnknownValue() {
@@ -156,18 +157,18 @@ public class PodInfoFaultEvent extends PodInfo {
                 ", insulinNotDelivered=" + insulinNotDelivered +
                 ", podMessageCounter=" + podMessageCounter +
                 ", totalInsulinDelivered=" + totalInsulinDelivered +
-                ", currentStatus=" + currentStatus +
-                ", faultEventTimeSinceActivation=" + faultEventTimeSinceActivation +
+                ", faultEventCode=" + faultEventCode +
+                ", faultEventTime=" + faultEventTime +
                 ", reservoirLevel=" + reservoirLevel +
-                ", timeActive=" + timeActive +
+                ", timeSinceActivation=" + timeSinceActivation +
                 ", unacknowledgedAlerts=" + unacknowledgedAlerts +
                 ", faultAccessingTables=" + faultAccessingTables +
                 ", logEventErrorType=" + logEventErrorType +
                 ", logEventErrorPodProgressStatus=" + logEventErrorPodProgressStatus +
                 ", receiverLowGain=" + receiverLowGain +
                 ", radioRSSI=" + radioRSSI +
-                ", previousPodProgressStatus=" + previousPodProgressStatus +
-                ", unknownValue=" + Arrays.toString(unknownValue) +
+                ", podProgressStatusAtTimeOfFirstLoggedFaultEvent=" + podProgressStatusAtTimeOfFirstLoggedFaultEvent +
+                ", unknownValue=" + ByteUtil.shortHexString(unknownValue) +
                 '}';
     }
 }

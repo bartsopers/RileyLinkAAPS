@@ -53,6 +53,6 @@ public class PodInfoResponseUnitTests {
         assertEquals(PodInfoType.FAULT_EVENT, podInfoResponse.getSubType());
 
         thrown.expect(ClassCastException.class);
-        PodInfoConfiguredAlerts podInfo = podInfoResponse.getPodInfo();
+        PodInfoActiveAlerts podInfo = podInfoResponse.getPodInfo();
     }
 }

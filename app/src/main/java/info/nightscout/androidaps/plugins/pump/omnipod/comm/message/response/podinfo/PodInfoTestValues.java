@@ -2,14 +2,14 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.po
 
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodInfoType;
 
-public class PodInfoTester extends PodInfo {
+public class PodInfoTestValues extends PodInfo {
     private static final int MINIMUM_MESSAGE_LENGTH = 5;
     private final byte byte1;
     private final byte byte2;
     private final byte byte3;
     private final byte byte4;
 
-    public PodInfoTester(byte[] encodedData) {
+    public PodInfoTestValues(byte[] encodedData) {
         super(encodedData);
 
         if(encodedData.length < MINIMUM_MESSAGE_LENGTH) {
@@ -45,7 +45,7 @@ public class PodInfoTester extends PodInfo {
 
     @Override
     public String toString() {
-        return "PodInfoTester{" +
+        return "PodInfoTestValues{" +
                 "byte1=" + byte1 +
                 ", byte2=" + byte2 +
                 ", byte3=" + byte3 +

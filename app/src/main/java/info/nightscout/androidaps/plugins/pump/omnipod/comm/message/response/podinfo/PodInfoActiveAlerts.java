@@ -1,5 +1,7 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo;
 
+import org.joda.time.Duration;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,17 +9,15 @@ import java.util.List;
 import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertSlot;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodInfoType;
 
-// TODO make this closer match the wiki description
-public class PodInfoConfiguredAlerts extends PodInfo {
+public class PodInfoActiveAlerts extends PodInfo {
     private static final int MINIMUM_MESSAGE_LENGTH = 11;
 
     private final byte[] word278; // Unknown use
     private final List<AlertActivation> alertActivations;
 
-    public PodInfoConfiguredAlerts(byte[] encodedData) {
+    public PodInfoActiveAlerts(byte[] encodedData) {
         super(encodedData);
 
         if(encodedData.length < MINIMUM_MESSAGE_LENGTH) {
@@ -28,17 +28,19 @@ public class PodInfoConfiguredAlerts extends PodInfo {
 
         alertActivations = new ArrayList<>();
 
-        for(byte alarmType = 0; alarmType < AlertSlot.values().length; alarmType++) {
-            BeepType beepType = BeepType.fromByte(alarmType);
-            byte timeFromStart = encodedData[3 + 2 * alarmType];
-            double unitsLeft = ByteUtil.convertUnsignedByteToInt(encodedData[4 + 2 * alarmType]) * Constants.POD_PULSE_SIZE;
-            alertActivations.add(new AlertActivation(beepType, timeFromStart, unitsLeft));
+        for(AlertSlot alertSlot : AlertSlot.values()) {
+            int valueHighBits = ByteUtil.convertUnsignedByteToInt(encodedData[3 + alertSlot.getValue() * 2]);
+            int valueLowBits = ByteUtil.convertUnsignedByteToInt(encodedData[4 + alertSlot.getValue() * 2]);
+            int value = (valueHighBits << 8) | valueLowBits;
+            if(value != 0) {
+                alertActivations.add(new AlertActivation(alertSlot, value));
+            }
         }
     }
 
     @Override
     public PodInfoType getType() {
-        return PodInfoType.CONFIGURED_ALERTS;
+        return PodInfoType.ACTIVE_ALERTS;
     }
 
     public byte[] getWord278() {
@@ -50,41 +52,39 @@ public class PodInfoConfiguredAlerts extends PodInfo {
     }
 
     public static class AlertActivation {
-        private final BeepType beepType;
-        private final byte timeFromPodStart;
-        private final double unitsLeft;
+        private final AlertSlot alertSlot;
+        private final int value;
 
-        private AlertActivation(BeepType beepType, byte timeFromPodStart, double unitsLeft) {
-            this.beepType = beepType;
-            this.timeFromPodStart = timeFromPodStart;
-            this.unitsLeft = unitsLeft;
+        private AlertActivation(AlertSlot alertSlot, int value) {
+            this.alertSlot = alertSlot;
+            this.value = value;
         }
 
-        public BeepType getBeepType() {
-            return beepType;
+        public double getValueAsUnits() {
+            return value * Constants.POD_PULSE_SIZE;
         }
 
-        public byte getTimeFromPodStart() {
-            return timeFromPodStart;
+        public Duration getValueAsDuration() {
+            return Duration.standardMinutes(value);
         }
 
-        public double getUnitsLeft() {
-            return unitsLeft;
+        public AlertSlot getAlertSlot() {
+            return alertSlot;
         }
 
         @Override
         public String toString() {
             return "AlertActivation{" +
-                    "beepType=" + beepType +
-                    ", timeFromPodStart=" + timeFromPodStart +
-                    ", unitsLeft=" + unitsLeft +
+                    "alertSlot=" + alertSlot +
+                    ", valueAsUnits=" + getValueAsUnits() +
+                    ", valueAsDuration=" + getValueAsDuration() +
                     '}';
         }
     }
 
     @Override
     public String toString() {
-        return "PodInfoConfiguredAlerts{" +
+        return "PodInfoActiveAlerts{" +
                 "word278=" + Arrays.toString(word278) +
                 ", alertActivations=" + alertActivations +
                 '}';

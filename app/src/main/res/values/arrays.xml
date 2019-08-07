@@ -16,6 +16,14 @@
         <item>@string/cmd_aaps_suspend_delivery</item>
         <item>@string/cmd_aaps_resume_delivery</item>
         <item>@string/cmd_aaps_set_time</item>
+        <item>@string/cmd_aaps_get_pod_info_active_alerts</item>
+        <item>@string/cmd_aaps_get_pod_info_data_log</item>
+        <item>@string/cmd_aaps_get_pod_info_fault_and_initialization_time</item>
+        <item>@string/cmd_aaps_get_pod_info_fault_event</item>
+        <item>@string/cmd_aaps_get_pod_info_low_flash_log_dump</item>
+        <item>@string/cmd_aaps_get_pod_info_recent_high_flash_log_dump</item>
+        <item>@string/cmd_aaps_get_pod_info_older_high_flash_log_dump</item>
+        <item>@string/cmd_aaps_get_pod_info_test_values</item>
         <item>@string/cmd_aaps_deactivate_pod</item>
         <!--<item>@string/cmd_aaps_get_model</item>-->
         <!--<item>@string/cmd_aaps_status_tbr</item>-->

@@ -18,6 +18,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.AcknowledgeAl
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.BolusAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.CancelDeliveryAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.DeactivatePodAction;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.GetPodInfoAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.GetStatusAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.InsertCannulaAction;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.PairAction;
@@ -29,7 +30,10 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PairS
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.PrimeService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.SetTempBasalService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfo;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryType;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodInfoType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.SetupProgress;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalSchedule;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalScheduleEntry;
@@ -55,6 +59,14 @@ public class OmnipodManager {
 
     public OmnipodCommunicationService getCommunicationService() {
         return communicationService;
+    }
+
+    public PodInfo getPodInfo(PodInfoType podInfoType) {
+        if(!isInitialized()) {
+            throw new IllegalStateException("Pod should be initialized first");
+        }
+        PodInfoResponse podInfoResponse = communicationService.executeAction(new GetPodInfoAction(podState, podInfoType));
+        return podInfoResponse.getPodInfo();
     }
 
     public StatusResponse getStatus() {

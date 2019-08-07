@@ -27,6 +27,7 @@ import java.util.Map;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.RileyLinkService;
 import info.nightscout.androidaps.plugins.pump.omnipod.OmnipodManager;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodInfoType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalSchedule;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalScheduleEntry;
 import info.nightscout.androidaps.plugins.pump.omnipod.service.RileyLinkOmnipodService;
@@ -71,6 +72,16 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         addCommandAction(getResources().getString(R.string.cmd_aaps_suspend_delivery), ImplementationStatus.Done, "RefreshData.SuspendDelivery");
         addCommandAction(getResources().getString(R.string.cmd_aaps_resume_delivery), ImplementationStatus.Done, "RefreshData.ResumeDelivery");
         addCommandAction(getResources().getString(R.string.cmd_aaps_set_time), ImplementationStatus.Done, "RefreshData.SetTime");
+
+        addCommandAction(getResources().getString(R.string.cmd_aaps_get_pod_info_active_alerts), ImplementationStatus.Done, "RefreshData.PodInfoActiveAlerts");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_get_pod_info_data_log), ImplementationStatus.Done, "RefreshData.PodInfoDataLog");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_get_pod_info_fault_and_initialization_time), ImplementationStatus.Done, "RefreshData.PodInfoFaultAndInitializationTime");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_get_pod_info_fault_event), ImplementationStatus.Done, "RefreshData.PodInfoFaultEvent");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_get_pod_info_low_flash_log_dump), ImplementationStatus.Done, "RefreshData.PodInfoLowFlashLogDump");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_get_pod_info_recent_high_flash_log_dump), ImplementationStatus.Done, "RefreshData.PodInfoRecentHighFlashLogDump");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_get_pod_info_older_high_flash_log_dump), ImplementationStatus.Done, "RefreshData.PodInfoOlderHighFlashLogDump");
+        addCommandAction(getResources().getString(R.string.cmd_aaps_get_pod_info_test_values), ImplementationStatus.Done, "RefreshData.PodInfoTestValues");
+
         addCommandAction(getResources().getString(R.string.cmd_aaps_deactivate_pod), ImplementationStatus.Done, "RefreshData.DeactivatePod");
 
         setContentView(R.layout.activity_show_aaps2);
@@ -269,6 +280,14 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             case "RefreshData.SuspendDelivery":
             case "RefreshData.ResumeDelivery":
             case "RefreshData.SetTime":
+            case "RefreshData.PodInfoActiveAlerts":
+            case "RefreshData.PodInfoDataLog":
+            case "RefreshData.PodInfoFaultAndInitializationTime":
+            case "RefreshData.PodInfoFaultEvent":
+            case "RefreshData.PodInfoLowFlashLogDump":
+            case "RefreshData.PodInfoRecentHighFlashLogDump":
+            case "RefreshData.PodInfoOlderHighFlashLogDump":
+            case "RefreshData.PodInfoTestValues":
             case "RefreshData.DeactivatePod":
                 putOnDisplay(data == null ? "null" : data.toString());
                 break;
@@ -347,9 +366,9 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                 case "RefreshData.SetBasalProfile":
                     try {
                         Double amount = getAmount();
-                        if(amount != null) {
+                        if (amount != null) {
                             List<BasalScheduleEntry> basalScheduleEntries = new ArrayList<>();
-                            for(int i = 0; i < 24; i++) {
+                            for (int i = 0; i < 24; i++) {
                                 basalScheduleEntries.add(new BasalScheduleEntry(i % 2 == 0 ? amount : (amount * 2), Duration.standardHours(i)));
                             }
                             BasalSchedule basalSchedule = new BasalSchedule(basalScheduleEntries);
@@ -365,7 +384,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                 case "RefreshData.SetTBR":
                     try {
                         TempBasalPair tempBasalPair = getTempBasalPair();
-                        if(tempBasalPair != null) {
+                        if (tempBasalPair != null) {
                             getOmnipodManager().setTempBasal(tempBasalPair.getRate(), tempBasalPair.getDuration());
                             data = getOmnipodManager().getPodStateAsString();
                         }
@@ -436,6 +455,30 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                         ex.printStackTrace();
                     }
                     break;
+                case "RefreshData.PodInfoActiveAlerts":
+                    getPodInfo(PodInfoType.ACTIVE_ALERTS);
+                    break;
+                case "RefreshData.PodInfoDataLog":
+                    getPodInfo(PodInfoType.DATA_LOG);
+                    break;
+                case "RefreshData.PodInfoFaultAndInitializationTime":
+                    getPodInfo(PodInfoType.FAULT_AND_INITIALIZATION_TIME);
+                    break;
+                case "RefreshData.PodInfoFaultEvent":
+                    getPodInfo(PodInfoType.FAULT_EVENT);
+                    break;
+                case "RefreshData.PodInfoLowFlashLogDump":
+                    getPodInfo(PodInfoType.LOW_FLASH_DUMP_LOG);
+                    break;
+                case "RefreshData.PodInfoRecentHighFlashLogDump":
+                    getPodInfo(PodInfoType.RECENT_HIGH_FLASH_LOG_DUMP);
+                    break;
+                case "RefreshData.PodInfoOlderHighFlashLogDump":
+                    getPodInfo(PodInfoType.OLDER_HIGH_FLASH_LOG_DUMP);
+                    break;
+                case "RefreshData.PodInfoTestValues":
+                    getPodInfo(PodInfoType.HARDCODED_TEST_VALUES);
+                    break;
                 case "RefreshData.DeactivatePod":
                     try {
                         getOmnipodManager().deactivatePod();
@@ -463,11 +506,21 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
     }
 
+    private void getPodInfo(PodInfoType infoType) {
+        try {
+            data = getOmnipodManager().getPodInfo(infoType);
+        } catch (RuntimeException ex) {
+            errorMessage = ex.getMessage();
+            LOG.error("Caught exception: " + errorMessage);
+            ex.printStackTrace();
+        }
+    }
+
     private TempBasalPair getTempBasalPair() {
         Double rate = getAmount();
         Integer durationInMinutes = getDuration();
 
-        if(rate != null && durationInMinutes != null) {
+        if (rate != null && durationInMinutes != null) {
             return new TempBasalPair(rate, Duration.standardMinutes(durationInMinutes));
         }
 

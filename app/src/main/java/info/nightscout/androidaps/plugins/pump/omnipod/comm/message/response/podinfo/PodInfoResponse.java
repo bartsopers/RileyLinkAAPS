@@ -14,7 +14,7 @@ public class PodInfoResponse extends MessageBlock {
 
         this.encodedData = ByteUtil.substring(encodedData, 2, bodyLength);
         subType = PodInfoType.fromByte(encodedData[2]);
-        podInfo = subType.decode(this.encodedData);
+        podInfo = subType.decode(this.encodedData, bodyLength);
     }
 
     public PodInfoType getSubType() {

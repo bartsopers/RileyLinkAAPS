@@ -104,7 +104,7 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
                     }
                 } else if(responseMessageBlock.getType() == MessageBlockType.POD_INFO_RESPONSE && ((PodInfoResponse)responseMessageBlock).getSubType() == PodInfoType.FAULT_EVENT) {
                     PodInfoFaultEvent faultEvent = ((PodInfoResponse) responseMessageBlock).getPodInfo();
-                    LOG.error("Pod fault: "+ faultEvent.getCurrentStatus().name());
+                    LOG.error("Pod fault: "+ faultEvent.getFaultEventCode().name());
                     podState.setFaultEvent(faultEvent);
                     throw new PodFaultException(faultEvent);
                 } else {

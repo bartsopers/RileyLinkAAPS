@@ -47,6 +47,15 @@
     <string name="cmd_aaps_insert_cannula">Insert Cannula</string>
     <string name="cmd_aaps_deactivate_pod">Deactivate Pod</string>
     <string name="cmd_aaps_get_status">Get Status</string>
+    <string name="cmd_aaps_get_pod_info_active_alerts">Pod Info - Active Alerts</string>
+    <string name="cmd_aaps_get_pod_info_data_log">Pod Info - Data Log</string>
+    <string name="cmd_aaps_get_pod_info_fault_and_initialization_time">Pod Info - Fault And Initialization Time</string>
+    <string name="cmd_aaps_get_pod_info_fault_event">Pod Info - Fault Event</string>
+    <string name="cmd_aaps_get_pod_info_low_flash_log_dump">Pod Info - Low Flash Log Dump</string>
+    <string name="cmd_aaps_get_pod_info_recent_high_flash_log_dump">Pod Info - Recent High Flash Log Dump</string>
+    <string name="cmd_aaps_get_pod_info_older_high_flash_log_dump">Pod Info - Older High Flash Log Dump</string>
+    <string name="cmd_aaps_get_pod_info_test_values">Pod Info - Test Values</string>
+
     <string name="cmd_aaps_get_time">Get Time</string>
     <string name="cmd_aaps_acknowledge_alerts">Acknowledge Alerts</string>
     <string name="cmd_aaps_suspend_delivery">Suspend Delivery</string>

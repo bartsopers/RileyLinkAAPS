@@ -17,7 +17,7 @@ public class GetStatusCommandUnitTests {
 
     @Test
     public void testPodInfoTypeConfiguredAlerts() {
-        GetStatusCommand getStatusCommand = new GetStatusCommand(PodInfoType.CONFIGURED_ALERTS);
+        GetStatusCommand getStatusCommand = new GetStatusCommand(PodInfoType.ACTIVE_ALERTS);
 
         assertArrayEquals(ByteUtil.fromHexString("0e0101"), getStatusCommand.getRawData());
     }
@@ -31,7 +31,7 @@ public class GetStatusCommandUnitTests {
 
     @Test
     public void testPodInfoTypeResetStatus() {
-        GetStatusCommand getStatusCommand = new GetStatusCommand(PodInfoType.RESET_STATUS);
+        GetStatusCommand getStatusCommand = new GetStatusCommand(PodInfoType.LOW_FLASH_DUMP_LOG);
 
         assertArrayEquals(ByteUtil.fromHexString("0e0146"), getStatusCommand.getRawData());
     }
