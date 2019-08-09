@@ -26,7 +26,6 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PacketType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodInfoType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodState;
-import info.nightscout.androidaps.plugins.pump.omnipod.exception.CrcMismatchException;
 import info.nightscout.androidaps.plugins.pump.omnipod.exception.NotEnoughDataException;
 import info.nightscout.androidaps.plugins.pump.omnipod.exception.OmnipodException;
 import info.nightscout.androidaps.plugins.pump.omnipod.exception.PodFaultException;
@@ -79,7 +78,7 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
     }
 
     public synchronized <T extends MessageBlock> T exchangeMessages(Class<T> responseClass, PodState podState, OmnipodMessage message, Integer addressOverride, Integer ackAddressOverride) {
-        for(int i = 0; 2 > i; i++) {
+        for (int i = 0; 2 > i; i++) {
 
             if (podState.hasNonceState() && message.isNonceResyncable()) {
                 podState.advanceToNextNonce();
@@ -87,12 +86,12 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
 
             MessageBlock responseMessageBlock = transportMessages(podState, message, addressOverride, ackAddressOverride);
 
-            if(responseMessageBlock instanceof StatusResponse) {
-                podState.updateFromStatusResponse((StatusResponse)responseMessageBlock);
+            if (responseMessageBlock instanceof StatusResponse) {
+                podState.updateFromStatusResponse((StatusResponse) responseMessageBlock);
             }
 
-            if(responseClass.isInstance(responseMessageBlock)) {
-                return (T)responseMessageBlock;
+            if (responseClass.isInstance(responseMessageBlock)) {
+                return (T) responseMessageBlock;
             } else {
                 if (responseMessageBlock.getType() == MessageBlockType.ERROR_RESPONSE) {
                     ErrorResponse error = (ErrorResponse) responseMessageBlock;
@@ -102,9 +101,9 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
                     } else {
                         throw new PodReturnedErrorResponseException((ErrorResponse) responseMessageBlock);
                     }
-                } else if(responseMessageBlock.getType() == MessageBlockType.POD_INFO_RESPONSE && ((PodInfoResponse)responseMessageBlock).getSubType() == PodInfoType.FAULT_EVENT) {
+                } else if (responseMessageBlock.getType() == MessageBlockType.POD_INFO_RESPONSE && ((PodInfoResponse) responseMessageBlock).getSubType() == PodInfoType.FAULT_EVENT) {
                     PodInfoFaultEvent faultEvent = ((PodInfoResponse) responseMessageBlock).getPodInfo();
-                    LOG.error("Pod fault: "+ faultEvent.getFaultEventCode().name());
+                    LOG.error("Pod fault: " + faultEvent.getFaultEventCode().name());
                     podState.setFaultEvent(faultEvent);
                     throw new PodFaultException(faultEvent);
                 } else {
@@ -151,7 +150,7 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
         while (receivedMessage == null) {
             try {
                 receivedMessage = OmnipodMessage.decodeMessage(receivedMessageData);
-            } catch(NotEnoughDataException ex) {
+            } catch (NotEnoughDataException ex) {
                 // Message is (probably) not complete yet
                 OmnipodPacket ackForCon = createAckPacket(podState, packetAddress, ackAddressOverride);
                 try {
@@ -163,11 +162,6 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
                 } catch (RileyLinkCommunicationException ex2) {
                     throw new OmnipodException("RileyLink communication failed", ex2);
                 }
-            } catch(CrcMismatchException ex) {
-                throw ex;
-            } catch(Exception ex) {
-                LOG.debug("Ignoring exception in exchangeMessages: "+ ex.getClass().getName() +": "+ ex.getMessage());
-                ex.printStackTrace();
             }
         }
 
@@ -179,8 +173,8 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
 
         if (messageBlocks.size() == 0) {
             throw new OmnipodException("Not enough data");
-        } else if(messageBlocks.size() > 1) {
-            LOG.error("received more than one message block: "+ messageBlocks.toString());
+        } else if (messageBlocks.size() > 1) {
+            LOG.error("received more than one message block: " + messageBlocks.toString());
         }
 
         return messageBlocks.get(0);
@@ -226,7 +220,13 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
         long timeoutTime = System.currentTimeMillis() + exchangeTimeoutMilliseconds;
 
         while (System.currentTimeMillis() < timeoutTime) {
-            OmnipodPacket response = sendAndListen(packet, responseTimeoutMilliseconds, repeatCount, 9, preambleExtensionMilliseconds, OmnipodPacket.class);
+            OmnipodPacket response = null;
+            try {
+                response = sendAndListen(packet, responseTimeoutMilliseconds, repeatCount, 9, preambleExtensionMilliseconds, OmnipodPacket.class);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                LOG.debug("Ignoring exception in exchangePackets: " + ex.getClass().getName() + ": " + ex.getMessage());
+            }
             if (response == null || !response.isValid()) {
                 continue;
             }

@@ -61,7 +61,7 @@ public class OmnipodManager {
         return communicationService;
     }
 
-    public PodInfo getPodInfo(PodInfoType podInfoType) {
+    public <T extends PodInfo> T getPodInfo(PodInfoType podInfoType) {
         if(!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
