@@ -31,14 +31,14 @@ public class ConfigurePodCommand extends MessageBlock {
     private void encode() {
         encodedData = new byte[0];
         encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt(address));
-        encodedData = ByteUtil.concat(encodedData, new byte[] { //
-                (byte)0x14, // unknown
+        encodedData = ByteUtil.concat(encodedData, new byte[]{ //
+                (byte) 0x14, // unknown
                 PACKET_TIMEOUT_LIMIT, //
-                (byte)date.monthOfYear().get(), //
-                (byte)date.dayOfMonth().get(), //
-                (byte)(date.year().get() - 2000), //
-                (byte)date.hourOfDay().get(), //
-                (byte)date.minuteOfHour().get() //
+                (byte) date.monthOfYear().get(), //
+                (byte) date.dayOfMonth().get(), //
+                (byte) (date.year().get() - 2000), //
+                (byte) date.hourOfDay().get(), //
+                (byte) date.minuteOfHour().get() //
         });
         encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt(lot));
         encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt(tid));

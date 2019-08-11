@@ -16,15 +16,15 @@ public class CancelDeliveryAction implements OmnipodAction<StatusResponse> {
 
     public CancelDeliveryAction(PodSessionState podState, EnumSet<DeliveryType> deliveryTypes,
                                 boolean acknowledgementBeep) {
-        if(podState == null) {
+        if (podState == null) {
             throw new IllegalArgumentException("Pod state cannot be null");
         }
-        if(deliveryTypes == null) {
+        if (deliveryTypes == null) {
             throw new IllegalArgumentException("Delivery types cannot be null");
         }
         this.podState = podState;
         this.deliveryTypes = deliveryTypes;
-        if(acknowledgementBeep) {
+        if (acknowledgementBeep) {
             beepType = BeepType.BIP_BIP;
         } else {
             beepType = BeepType.NO_BEEP;

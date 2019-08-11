@@ -8,8 +8,8 @@ public class AlertSet {
 
     public AlertSet(byte rawValue) {
         alertSlots = new ArrayList<>();
-        for(AlertSlot alertSlot : AlertSlot.values()) {
-            if((alertSlot.getBitMaskValue() & rawValue) != 0) {
+        for (AlertSlot alertSlot : AlertSlot.values()) {
+            if ((alertSlot.getBitMaskValue() & rawValue) != 0) {
                 alertSlots.add(alertSlot);
             }
         }
@@ -29,7 +29,7 @@ public class AlertSet {
 
     public byte getRawValue() {
         byte value = 0;
-        for(AlertSlot alertSlot : alertSlots) {
+        for (AlertSlot alertSlot : alertSlots) {
             value |= alertSlot.getBitMaskValue();
         }
         return value;

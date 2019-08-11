@@ -21,10 +21,10 @@ public class BolusAction implements OmnipodAction<StatusResponse> {
 
     public BolusAction(PodSessionState podState, double units, Duration timeBetweenPulses,
                        boolean acknowledgementBeep, boolean completionBeep) {
-        if(podState == null) {
+        if (podState == null) {
             throw new IllegalArgumentException("Pod state cannot be null");
         }
-        if(timeBetweenPulses == null) {
+        if (timeBetweenPulses == null) {
             throw new IllegalArgumentException("Time between pulses cannot be null");
         }
         this.podState = podState;

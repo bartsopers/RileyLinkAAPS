@@ -10,7 +10,7 @@ public class BasalSchedule {
     private final List<BasalScheduleEntry> entries;
 
     public BasalSchedule(List<BasalScheduleEntry> entries) {
-        if(entries == null) {
+        if (entries == null) {
             throw new IllegalArgumentException("Entries cannot be null");
         }
         this.entries = entries;
@@ -25,7 +25,7 @@ public class BasalSchedule {
     }
 
     public BasalScheduleLookupResult lookup(Duration offset) {
-        if(offset.isLongerThan(Duration.standardHours(24)) || offset.isShorterThan(Duration.ZERO)) {
+        if (offset.isLongerThan(Duration.standardHours(24)) || offset.isShorterThan(Duration.ZERO)) {
             throw new IllegalArgumentException("Invalid duration");
         }
 
@@ -33,8 +33,8 @@ public class BasalSchedule {
 
         Duration last = Duration.standardHours(24);
         int index = 0;
-        for(BasalScheduleEntry entry : reversedBasalScheduleEntries) {
-            if(entry.getStartTime().isShorterThan(offset) || entry.getStartTime().equals(offset)) {
+        for (BasalScheduleEntry entry : reversedBasalScheduleEntries) {
+            if (entry.getStartTime().isShorterThan(offset) || entry.getStartTime().equals(offset)) {
                 return new BasalScheduleLookupResult( //
                         reversedBasalScheduleEntries.size() - (index + 1), //
                         entry, //
@@ -49,8 +49,7 @@ public class BasalSchedule {
     }
 
     private List<BasalScheduleEntry> reversedBasalScheduleEntries() {
-        List<BasalScheduleEntry> reversedEntries = new ArrayList<>();
-        reversedEntries.addAll(entries);
+        List<BasalScheduleEntry> reversedEntries = new ArrayList<>(entries);
         Collections.reverse(reversedEntries);
         return reversedEntries;
     }
@@ -58,8 +57,8 @@ public class BasalSchedule {
     public List<BasalScheduleEntry> adjacentEqualRatesMergedEntries() {
         List<BasalScheduleEntry> mergedEntries = new ArrayList<>();
         Double lastRate = null;
-        for(BasalScheduleEntry entry : entries) {
-            if(lastRate == null || entry.getRate() != lastRate) {
+        for (BasalScheduleEntry entry : entries) {
+            if (lastRate == null || entry.getRate() != lastRate) {
                 mergedEntries.add(entry);
             }
             lastRate = entry.getRate();
@@ -71,7 +70,7 @@ public class BasalSchedule {
         List<BasalScheduleDurationEntry> durations = new ArrayList<>();
         Duration last = Duration.standardHours(24);
         List<BasalScheduleEntry> basalScheduleEntries = reversedBasalScheduleEntries();
-        for(BasalScheduleEntry entry : basalScheduleEntries) {
+        for (BasalScheduleEntry entry : basalScheduleEntries) {
             durations.add(new BasalScheduleDurationEntry( //
                     entry.getRate(), //
                     entry.getStartTime(), //
@@ -81,6 +80,11 @@ public class BasalSchedule {
 
         Collections.reverse(durations);
         return durations;
+    }
+
+    @Override
+    public String toString() {
+        return "BasalSchedule (" + entries.size() + " entries)";
     }
 
     public static class BasalScheduleDurationEntry {
@@ -135,10 +139,5 @@ public class BasalSchedule {
         public Duration getDuration() {
             return duration;
         }
-    }
-
-    @Override
-    public String toString() {
-        return "BasalSchedule ("+ entries.size() +" entries)";
     }
 }

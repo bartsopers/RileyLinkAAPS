@@ -8,11 +8,7 @@ public enum InsulinScheduleType {
     private byte value;
 
     InsulinScheduleType(int value) {
-        this.value = (byte)value;
-    }
-
-    public byte getValue() {
-        return value;
+        this.value = (byte) value;
     }
 
     public static InsulinScheduleType fromByte(byte input) {
@@ -22,5 +18,9 @@ public enum InsulinScheduleType {
             }
         }
         return null;
+    }
+
+    public byte getValue() {
+        return value;
     }
 }

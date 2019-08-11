@@ -12,7 +12,7 @@ public class PodInfoTestValues extends PodInfo {
     public PodInfoTestValues(byte[] encodedData) {
         super(encodedData);
 
-        if(encodedData.length < MINIMUM_MESSAGE_LENGTH) {
+        if (encodedData.length < MINIMUM_MESSAGE_LENGTH) {
             throw new IllegalArgumentException("Not enough data");
         }
 

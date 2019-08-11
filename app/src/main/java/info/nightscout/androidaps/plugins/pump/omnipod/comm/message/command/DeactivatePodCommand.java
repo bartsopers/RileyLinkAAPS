@@ -7,14 +7,14 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 public class DeactivatePodCommand extends NonceResyncableMessageBlock {
     private int nonce;
 
-    @Override
-    public MessageBlockType getType() {
-        return MessageBlockType.DEACTIVATE_POD;
-    }
-
     public DeactivatePodCommand(int nonce) {
         this.nonce = nonce;
         encode();
+    }
+
+    @Override
+    public MessageBlockType getType() {
+        return MessageBlockType.DEACTIVATE_POD;
     }
 
     private void encode() {

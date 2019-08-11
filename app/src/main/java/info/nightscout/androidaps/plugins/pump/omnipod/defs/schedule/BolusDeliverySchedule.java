@@ -12,9 +12,9 @@ public class BolusDeliverySchedule extends DeliverySchedule implements IRawRepre
     private final Duration timeBetweenPulses;
 
     public BolusDeliverySchedule(double units, Duration timeBetweenPulses) {
-        if(units <= 0D) {
+        if (units <= 0D) {
             throw new IllegalArgumentException("Units should be > 0");
-        } else if(units > Constants.MAX_BOLUS) {
+        } else if (units > Constants.MAX_BOLUS) {
             throw new IllegalArgumentException("Units exceeds max bolus");
         }
         this.units = units;
@@ -23,10 +23,10 @@ public class BolusDeliverySchedule extends DeliverySchedule implements IRawRepre
 
     @Override
     public byte[] getRawData() {
-        byte[] rawData = new byte[] { 1 }; // Number of half hour segments
+        byte[] rawData = new byte[]{1}; // Number of half hour segments
 
-        int pulseCount = (int)Math.round(units / Constants.POD_PULSE_SIZE);
-        int multiplier = (int)timeBetweenPulses.getStandardSeconds() * 8;
+        int pulseCount = (int) Math.round(units / Constants.POD_PULSE_SIZE);
+        int multiplier = (int) timeBetweenPulses.getStandardSeconds() * 8;
         int fieldA = pulseCount * multiplier;
 
         rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt16(fieldA));
@@ -44,7 +44,7 @@ public class BolusDeliverySchedule extends DeliverySchedule implements IRawRepre
     public int getChecksum() {
         int checksum = 0;
         byte[] rawData = getRawData();
-        for(int i = 0; i < rawData.length && i < 7; i++) {
+        for (int i = 0; i < rawData.length && i < 7; i++) {
             checksum += ByteUtil.convertUnsignedByteToInt(rawData[i]);
         }
         return checksum;

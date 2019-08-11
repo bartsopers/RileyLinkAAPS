@@ -17,7 +17,7 @@ public class PairAction implements OmnipodAction<PodSessionState> {
     private final int address;
 
     public PairAction(PairService pairService, int address) {
-        if(pairService == null) {
+        if (pairService == null) {
             throw new IllegalArgumentException("Pair service cannot be null");
         }
         this.service = pairService;
@@ -26,6 +26,10 @@ public class PairAction implements OmnipodAction<PodSessionState> {
 
     public PairAction(PairService service) {
         this(service, generateRandomAddress());
+    }
+
+    private static int generateRandomAddress() {
+        return 0x1f000000 | (new Random().nextInt() & 0x000fffff);
     }
 
     @Override
@@ -46,9 +50,5 @@ public class PairAction implements OmnipodAction<PodSessionState> {
         podState.setSetupProgress(SetupProgress.POD_CONFIGURED);
 
         return podState;
-    }
-
-    private static int generateRandomAddress() {
-        return 0x1f000000 | (new Random().nextInt() & 0x000fffff);
     }
 }

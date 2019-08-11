@@ -21,9 +21,9 @@ public class BasalDeliveryTable {
         TempSegment[] expandedSegments = new TempSegment[48];
 
         boolean halfPulseRemainder = false;
-        for(int i = 0; i < NUM_SEGMENTS; i++) {
+        for (int i = 0; i < NUM_SEGMENTS; i++) {
             double rate = schedule.rateAt(Duration.standardMinutes(i * 30));
-            int pulsesPerHour = (int)Math.round(rate / Constants.POD_PULSE_SIZE);
+            int pulsesPerHour = (int) Math.round(rate / Constants.POD_PULSE_SIZE);
             int pulsesPerSegment = pulsesPerHour >>> 1;
             boolean halfPulse = (pulsesPerHour & 0b1) != 0;
 
@@ -34,8 +34,8 @@ public class BasalDeliveryTable {
         List<TempSegment> segmentsToMerge = new ArrayList<>();
 
         boolean altSegmentPulse = false;
-        for(TempSegment segment : expandedSegments) {
-            if(segmentsToMerge.isEmpty()) {
+        for (TempSegment segment : expandedSegments) {
+            if (segmentsToMerge.isEmpty()) {
                 segmentsToMerge.add(segment);
                 continue;
             }
@@ -43,13 +43,13 @@ public class BasalDeliveryTable {
             TempSegment firstSegment = segmentsToMerge.get(0);
 
             int delta = segment.getPulses() - firstSegment.getPulses();
-            if(segmentsToMerge.size() == 1) {
+            if (segmentsToMerge.size() == 1) {
                 altSegmentPulse = delta == 1;
             }
 
             int expectedDelta = altSegmentPulse ? segmentsToMerge.size() % 2 : 0;
 
-            if(expectedDelta != delta || segmentsToMerge.size() == MAX_SEGMENTS_PER_ENTRY) {
+            if (expectedDelta != delta || segmentsToMerge.size() == MAX_SEGMENTS_PER_ENTRY) {
                 addBasalTableEntry(segmentsToMerge, altSegmentPulse);
                 segmentsToMerge.clear();
             }
@@ -61,13 +61,13 @@ public class BasalDeliveryTable {
     }
 
     public BasalDeliveryTable(double tempBasalRate, Duration duration) {
-        int pulsesPerHour = (int)Math.round(tempBasalRate / Constants.POD_PULSE_SIZE);
+        int pulsesPerHour = (int) Math.round(tempBasalRate / Constants.POD_PULSE_SIZE);
         int pulsesPerSegment = pulsesPerHour >> 1;
         boolean alternateSegmentPulse = (pulsesPerHour & 0b1) != 0;
 
         int remaining = (int) Math.round(duration.getStandardSeconds() / (double) BasalDeliveryTable.SEGMENT_DURATION);
 
-        while(remaining > 0) {
+        while (remaining > 0) {
             int segments = Math.min(MAX_SEGMENTS_PER_ENTRY, remaining);
             entries.add(new BasalTableEntry(segments, pulsesPerSegment, segments > 1 && alternateSegmentPulse));
             remaining -= segments;
@@ -84,7 +84,7 @@ public class BasalDeliveryTable {
 
     byte numSegments() {
         byte numSegments = 0;
-        for(BasalTableEntry entry : entries) {
+        for (BasalTableEntry entry : entries) {
             numSegments += entry.getSegments();
         }
         return numSegments;

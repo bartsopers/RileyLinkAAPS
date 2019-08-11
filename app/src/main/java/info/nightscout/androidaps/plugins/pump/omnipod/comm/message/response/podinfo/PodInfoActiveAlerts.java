@@ -20,7 +20,7 @@ public class PodInfoActiveAlerts extends PodInfo {
     public PodInfoActiveAlerts(byte[] encodedData) {
         super(encodedData);
 
-        if(encodedData.length < MINIMUM_MESSAGE_LENGTH) {
+        if (encodedData.length < MINIMUM_MESSAGE_LENGTH) {
             throw new IllegalArgumentException("Not enough data");
         }
 
@@ -28,11 +28,11 @@ public class PodInfoActiveAlerts extends PodInfo {
 
         alertActivations = new ArrayList<>();
 
-        for(AlertSlot alertSlot : AlertSlot.values()) {
+        for (AlertSlot alertSlot : AlertSlot.values()) {
             int valueHighBits = ByteUtil.convertUnsignedByteToInt(encodedData[3 + alertSlot.getValue() * 2]);
             int valueLowBits = ByteUtil.convertUnsignedByteToInt(encodedData[4 + alertSlot.getValue() * 2]);
             int value = (valueHighBits << 8) | valueLowBits;
-            if(value != 0) {
+            if (value != 0) {
                 alertActivations.add(new AlertActivation(alertSlot, value));
             }
         }
@@ -49,6 +49,14 @@ public class PodInfoActiveAlerts extends PodInfo {
 
     public List<AlertActivation> getAlertActivations() {
         return new ArrayList<>(alertActivations);
+    }
+
+    @Override
+    public String toString() {
+        return "PodInfoActiveAlerts{" +
+                "word278=" + Arrays.toString(word278) +
+                ", alertActivations=" + alertActivations +
+                '}';
     }
 
     public static class AlertActivation {
@@ -80,13 +88,5 @@ public class PodInfoActiveAlerts extends PodInfo {
                     ", valueAsDuration=" + getValueAsDuration() +
                     '}';
         }
-    }
-
-    @Override
-    public String toString() {
-        return "PodInfoActiveAlerts{" +
-                "word278=" + Arrays.toString(word278) +
-                ", alertActivations=" + alertActivations +
-                '}';
     }
 }

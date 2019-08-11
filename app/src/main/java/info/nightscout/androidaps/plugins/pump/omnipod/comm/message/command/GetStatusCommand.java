@@ -13,7 +13,7 @@ public class GetStatusCommand extends MessageBlock {
     }
 
     private void encode() {
-        encodedData = new byte[] {podInfoType.getValue()};
+        encodedData = new byte[]{podInfoType.getValue()};
     }
 
     @Override

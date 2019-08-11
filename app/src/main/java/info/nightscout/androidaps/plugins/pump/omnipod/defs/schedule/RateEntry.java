@@ -22,21 +22,21 @@ public class RateEntry implements IRawRepresentable {
 
     public static List<RateEntry> createEntries(double rate, Duration duration) {
         List<RateEntry> entries = new ArrayList<>();
-        int remainingSegments = (int)Math.round(duration.getStandardSeconds() / 1800.0);
-        double pulsesPerSegment = (int)Math.round(rate / Constants.POD_PULSE_SIZE) / 2.0;
-        int maxSegmentsPerEntry = pulsesPerSegment > 0 ? (int)(BasalDeliveryTable.MAX_PULSES_PER_RATE_ENTRY / pulsesPerSegment) : 1;
+        int remainingSegments = (int) Math.round(duration.getStandardSeconds() / 1800.0);
+        double pulsesPerSegment = (int) Math.round(rate / Constants.POD_PULSE_SIZE) / 2.0;
+        int maxSegmentsPerEntry = pulsesPerSegment > 0 ? (int) (BasalDeliveryTable.MAX_PULSES_PER_RATE_ENTRY / pulsesPerSegment) : 1;
 
         double durationInHours = duration.getStandardSeconds() / 3600.0;
 
         double remainingPulses = rate * durationInHours / Constants.POD_PULSE_SIZE;
         double delayBetweenPulses = 3600 / rate * Constants.POD_PULSE_SIZE;
 
-        while(remainingSegments > 0) {
-            if(rate == 0.0) {
+        while (remainingSegments > 0) {
+            if (rate == 0.0) {
                 entries.add(new RateEntry(0, 30D * 60));
                 remainingSegments -= 1;
             } else {
-                int numSegments = Math.min(maxSegmentsPerEntry, (int)Math.round(remainingPulses / pulsesPerSegment));
+                int numSegments = Math.min(maxSegmentsPerEntry, (int) Math.round(remainingPulses / pulsesPerSegment));
                 double totalPulses = pulsesPerSegment * numSegments;
                 entries.add(new RateEntry(totalPulses, delayBetweenPulses));
                 remainingSegments -= numSegments;
@@ -58,11 +58,11 @@ public class RateEntry implements IRawRepresentable {
     @Override
     public byte[] getRawData() {
         byte[] rawData = new byte[0];
-        rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt16((int)Math.round(totalPulses * 10)));
-        if(totalPulses == 0) {
+        rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt16((int) Math.round(totalPulses * 10)));
+        if (totalPulses == 0) {
             rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt((int) (delayBetweenPulsesInSeconds * 1000 * 1000)));
         } else {
-            rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt((int)(delayBetweenPulsesInSeconds * 1000 * 100)));
+            rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt((int) (delayBetweenPulsesInSeconds * 1000 * 100)));
         }
         return rawData;
     }

@@ -35,19 +35,19 @@ public class PodInfoFaultEvent extends PodInfo {
     public PodInfoFaultEvent(byte[] encodedData) {
         super(encodedData);
 
-        if(encodedData.length < MINIMUM_MESSAGE_LENGTH) {
+        if (encodedData.length < MINIMUM_MESSAGE_LENGTH) {
             throw new IllegalArgumentException("Not enough data");
         }
 
         podProgressStatus = PodProgressStatus.fromByte(encodedData[1]);
         deliveryStatus = DeliveryStatus.fromByte(encodedData[2]);
-        insulinNotDelivered= Constants.POD_PULSE_SIZE * ByteUtil.toInt(encodedData[3], encodedData[4]);
+        insulinNotDelivered = Constants.POD_PULSE_SIZE * ByteUtil.toInt(encodedData[3], encodedData[4]);
         podMessageCounter = encodedData[5];
         totalInsulinDelivered = Constants.POD_PULSE_SIZE * ByteUtil.toInt(encodedData[6], encodedData[7]);
         faultEventCode = FaultEventCode.fromByte(encodedData[8]);
 
-        int minutesSinceActivation = ByteUtil.toInt(encodedData[9],encodedData[10]);
-        if(minutesSinceActivation == 0xffff) {
+        int minutesSinceActivation = ByteUtil.toInt(encodedData[9], encodedData[10]);
+        if (minutesSinceActivation == 0xffff) {
             faultEventTime = null;
         } else {
             faultEventTime = Duration.standardMinutes(minutesSinceActivation);
@@ -55,7 +55,7 @@ public class PodInfoFaultEvent extends PodInfo {
 
         double reservoirValue = ((encodedData[11] & 0x03) << 8) +
                 ByteUtil.convertUnsignedByteToInt(encodedData[12]) * Constants.POD_PULSE_SIZE;
-        if(reservoirValue > Constants.MAX_RESERVOIR_READING) {
+        if (reservoirValue > Constants.MAX_RESERVOIR_READING) {
             reservoirLevel = null;
         } else {
             reservoirLevel = reservoirValue;
@@ -66,11 +66,11 @@ public class PodInfoFaultEvent extends PodInfo {
 
         unacknowledgedAlerts = new AlertSet(encodedData[15]);
         faultAccessingTables = encodedData[16] == 0x02;
-        logEventErrorType = LogEventErrorCode.fromByte((byte)(encodedData[17] >>> 4));
-        logEventErrorPodProgressStatus = PodProgressStatus.fromByte((byte)(encodedData[17] & 0x0f));
-        receiverLowGain = (byte)(ByteUtil.convertUnsignedByteToInt(encodedData[18]) >>> 6);
-        radioRSSI = (byte)(encodedData[18] & 0x3f);
-        podProgressStatusAtTimeOfFirstLoggedFaultEvent = PodProgressStatus.fromByte((byte)(encodedData[19] & 0x0f));
+        logEventErrorType = LogEventErrorCode.fromByte((byte) (encodedData[17] >>> 4));
+        logEventErrorPodProgressStatus = PodProgressStatus.fromByte((byte) (encodedData[17] & 0x0f));
+        receiverLowGain = (byte) (ByteUtil.convertUnsignedByteToInt(encodedData[18]) >>> 6);
+        radioRSSI = (byte) (encodedData[18] & 0x3f);
+        podProgressStatusAtTimeOfFirstLoggedFaultEvent = PodProgressStatus.fromByte((byte) (encodedData[19] & 0x0f));
         unknownValue = ByteUtil.substring(encodedData, 20, 2);
     }
 

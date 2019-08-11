@@ -9,9 +9,9 @@ public class BasalScheduleEntry {
     private final Duration startTime;
 
     public BasalScheduleEntry(double rate, Duration startTime) {
-        if(rate < 0D) {
+        if (rate < 0D) {
             throw new IllegalArgumentException("Rate should be >= 0");
-        } else if(rate > Constants.MAX_BASAL_RATE) {
+        } else if (rate > Constants.MAX_BASAL_RATE) {
             throw new IllegalArgumentException("Rate exceeds max basal rate");
         }
         this.rate = rate;

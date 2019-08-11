@@ -13,12 +13,12 @@ public class PodInfoLowFlashLogDump extends PodInfo {
     public PodInfoLowFlashLogDump(byte[] encodedData) {
         super(encodedData);
 
-        if(encodedData.length < MINIMUM_MESSAGE_LENGTH) {
+        if (encodedData.length < MINIMUM_MESSAGE_LENGTH) {
             throw new IllegalArgumentException("Not enough data");
         }
 
         numberOfBytes = encodedData[2];
-        podAddress = ByteUtil.toInt((int)encodedData[3], (int)encodedData[4], (int)encodedData[5], (int)encodedData[6], ByteUtil.BitConversion.BIG_ENDIAN);
+        podAddress = ByteUtil.toInt((int) encodedData[3], (int) encodedData[4], (int) encodedData[5], (int) encodedData[6], ByteUtil.BitConversion.BIG_ENDIAN);
         dataFromFlashMemory = ByteUtil.substring(encodedData, 3, ByteUtil.convertUnsignedByteToInt(encodedData[2]));
     }
 

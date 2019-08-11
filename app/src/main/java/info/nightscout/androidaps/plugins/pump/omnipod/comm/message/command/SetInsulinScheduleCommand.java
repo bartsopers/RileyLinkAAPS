@@ -15,8 +15,8 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.TempBasalDe
 
 public class SetInsulinScheduleCommand extends NonceResyncableMessageBlock {
 
-    private int nonce;
     private final DeliverySchedule schedule;
+    private int nonce;
 
     // Bolus
     public SetInsulinScheduleCommand(int nonce, BolusDeliverySchedule schedule) {
@@ -27,11 +27,11 @@ public class SetInsulinScheduleCommand extends NonceResyncableMessageBlock {
 
     // Basal schedule
     public SetInsulinScheduleCommand(int nonce, BasalSchedule schedule, Duration scheduleOffset) {
-        int scheduleOffsetInSeconds = (int)scheduleOffset.getStandardSeconds();
+        int scheduleOffsetInSeconds = (int) scheduleOffset.getStandardSeconds();
 
         BasalDeliveryTable table = new BasalDeliveryTable(schedule);
         double rate = schedule.rateAt(scheduleOffset);
-        byte segment = (byte)(scheduleOffsetInSeconds / BasalDeliveryTable.SEGMENT_DURATION);
+        byte segment = (byte) (scheduleOffsetInSeconds / BasalDeliveryTable.SEGMENT_DURATION);
         int segmentOffset = scheduleOffsetInSeconds % BasalDeliveryTable.SEGMENT_DURATION;
 
         int timeRemainingInSegment = BasalDeliveryTable.SEGMENT_DURATION - segmentOffset;
@@ -40,7 +40,7 @@ public class SetInsulinScheduleCommand extends NonceResyncableMessageBlock {
 
         double offsetToNextTenth = timeRemainingInSegment % (timeBetweenPulses / 10.0);
 
-        int pulsesRemainingInSegment  = (int)((timeRemainingInSegment + timeBetweenPulses / 10.0 - offsetToNextTenth) / timeBetweenPulses);
+        int pulsesRemainingInSegment = (int) ((timeRemainingInSegment + timeBetweenPulses / 10.0 - offsetToNextTenth) / timeBetweenPulses);
 
         this.nonce = nonce;
         this.schedule = new BasalDeliverySchedule(segment, timeRemainingInSegment, pulsesRemainingInSegment, table);
@@ -49,15 +49,15 @@ public class SetInsulinScheduleCommand extends NonceResyncableMessageBlock {
 
     // Temp basal
     public SetInsulinScheduleCommand(int nonce, double tempBasalRate, Duration duration) {
-        if(tempBasalRate < 0D) {
+        if (tempBasalRate < 0D) {
             throw new IllegalArgumentException("Rate should be >= 0");
-        } else if(tempBasalRate > Constants.MAX_BASAL_RATE) {
+        } else if (tempBasalRate > Constants.MAX_BASAL_RATE) {
             throw new IllegalArgumentException("Rate exceeds max basal rate");
         }
-        if(duration.isLongerThan(Constants.MAX_TEMP_BASAL_DURATION)) {
+        if (duration.isLongerThan(Constants.MAX_TEMP_BASAL_DURATION)) {
             throw new IllegalArgumentException("Duration exceeds max temp basal duration");
         }
-        int pulsesPerHour = (int)Math.round(tempBasalRate / Constants.POD_PULSE_SIZE);
+        int pulsesPerHour = (int) Math.round(tempBasalRate / Constants.POD_PULSE_SIZE);
         int pulsesPerSegment = pulsesPerHour / 2;
         this.nonce = nonce;
         this.schedule = new TempBasalDeliverySchedule(BasalDeliveryTable.SEGMENT_DURATION, pulsesPerSegment, new BasalDeliveryTable(tempBasalRate, duration));

@@ -10,14 +10,9 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 
 public class CancelDeliveryCommand extends NonceResyncableMessageBlock {
 
-    private int nonce;
     private final BeepType beepType;
     private final EnumSet<DeliveryType> deliveryTypes;
-
-    @Override
-    public MessageBlockType getType() {
-        return MessageBlockType.CANCEL_DELIVERY;
-    }
+    private int nonce;
 
     public CancelDeliveryCommand(int nonce, BeepType beepType, EnumSet<DeliveryType> deliveryTypes) {
         this.nonce = nonce;
@@ -30,21 +25,26 @@ public class CancelDeliveryCommand extends NonceResyncableMessageBlock {
         this(nonce, beepType, EnumSet.of(deliveryType));
     }
 
+    @Override
+    public MessageBlockType getType() {
+        return MessageBlockType.CANCEL_DELIVERY;
+    }
+
     private void encode() {
         encodedData = new byte[5];
-        System.arraycopy(ByteUtil.getBytesFromInt(nonce),0,encodedData,0,4);
+        System.arraycopy(ByteUtil.getBytesFromInt(nonce), 0, encodedData, 0, 4);
         byte beepTypeValue = beepType.getValue();
         if (beepTypeValue > 8) {
             beepTypeValue = 0;
         }
-        encodedData[4] = (byte)((beepTypeValue & 0x0F) << 4);
-        if(deliveryTypes.contains(DeliveryType.BASAL)) {
+        encodedData[4] = (byte) ((beepTypeValue & 0x0F) << 4);
+        if (deliveryTypes.contains(DeliveryType.BASAL)) {
             encodedData[4] |= 1;
         }
-        if(deliveryTypes.contains(DeliveryType.TEMP_BASAL)) {
+        if (deliveryTypes.contains(DeliveryType.TEMP_BASAL)) {
             encodedData[4] |= 2;
         }
-        if(deliveryTypes.contains(DeliveryType.BOLUS)) {
+        if (deliveryTypes.contains(DeliveryType.BOLUS)) {
             encodedData[4] |= 4;
         }
     }

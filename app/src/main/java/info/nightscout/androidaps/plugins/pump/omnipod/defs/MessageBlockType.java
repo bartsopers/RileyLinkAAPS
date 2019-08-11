@@ -30,11 +30,7 @@ public enum MessageBlockType {
     private byte value;
 
     MessageBlockType(int value) {
-        this.value = (byte)value;
-    }
-
-    public byte getValue() {
-        return value;
+        this.value = (byte) value;
     }
 
     public static MessageBlockType fromByte(byte value) {
@@ -43,7 +39,11 @@ public enum MessageBlockType {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Unknown MessageBlockType: "+ value);
+        throw new IllegalArgumentException("Unknown MessageBlockType: " + value);
+    }
+
+    public byte getValue() {
+        return value;
     }
 
     public MessageBlock decode(byte[] encodedData) {

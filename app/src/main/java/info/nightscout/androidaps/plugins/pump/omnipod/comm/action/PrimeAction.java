@@ -27,9 +27,18 @@ public class PrimeAction implements OmnipodAction<StatusResponse> {
         this.podState = podState;
     }
 
+    public static void updatePrimingStatus(PodSessionState podState, StatusResponse statusResponse) {
+        if (podState.getSetupProgress().equals(SetupProgress.PRIMING) && statusResponse.getPodProgressStatus().equals(PodProgressStatus.READY_FOR_BASAL_SCHEDULE)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Updating SetupProgress from PRIMING to PRIMING_FINISHED");
+            }
+            podState.setSetupProgress(SetupProgress.PRIMING_FINISHED);
+        }
+    }
+
     @Override
     public StatusResponse execute(OmnipodCommunicationService communicationService) {
-        if(podState.getSetupProgress().isBefore(SetupProgress.POD_CONFIGURED)) {
+        if (podState.getSetupProgress().isBefore(SetupProgress.POD_CONFIGURED)) {
             throw new IllegalStateException("Pod should be paired first");
         }
         if (podState.getSetupProgress().isBefore(SetupProgress.STARTING_PRIME)) {
@@ -38,26 +47,17 @@ public class PrimeAction implements OmnipodAction<StatusResponse> {
             podState.setSetupProgress(SetupProgress.STARTING_PRIME);
         }
 
-        if(podState.getSetupProgress().isBefore(SetupProgress.PRIMING)) {
+        if (podState.getSetupProgress().isBefore(SetupProgress.PRIMING)) {
             StatusResponse statusResponse = service.executePrimeBolusCommand(communicationService, podState);
             podState.setSetupProgress(SetupProgress.PRIMING);
             return statusResponse;
-        } else if(podState.getSetupProgress().equals(SetupProgress.PRIMING)) {
+        } else if (podState.getSetupProgress().equals(SetupProgress.PRIMING)) {
             // Check status
             StatusResponse statusResponse = communicationService.executeAction(new GetStatusAction(podState));
             updatePrimingStatus(podState, statusResponse);
             return statusResponse;
         } else {
-            throw new IllegalStateException("Illegal setup progress: "+ podState.getSetupProgress().name());
-        }
-    }
-
-    public static void updatePrimingStatus(PodSessionState podState, StatusResponse statusResponse) {
-        if(podState.getSetupProgress().equals(SetupProgress.PRIMING) && statusResponse.getPodProgressStatus().equals(PodProgressStatus.READY_FOR_BASAL_SCHEDULE)) {
-            if(LOG.isDebugEnabled()) {
-                LOG.debug("Updating SetupProgress from PRIMING to PRIMING_FINISHED");
-            }
-            podState.setSetupProgress(SetupProgress.PRIMING_FINISHED);
+            throw new IllegalStateException("Illegal setup progress: " + podState.getSetupProgress().name());
         }
     }
 }

@@ -47,15 +47,15 @@ public class BasalScheduleExtraCommand extends MessageBlock {
         BasalSchedule mergedSchedule = new BasalSchedule(schedule.adjacentEqualRatesMergedEntries());
         List<BasalSchedule.BasalScheduleDurationEntry> durations = mergedSchedule.getDurations();
 
-        for(BasalSchedule.BasalScheduleDurationEntry entry : durations) {
+        for (BasalSchedule.BasalScheduleDurationEntry entry : durations) {
             rateEntries.addAll(RateEntry.createEntries(entry.getRate(), entry.getDuration()));
         }
 
         BasalSchedule.BasalScheduleLookupResult entryLookupResult = mergedSchedule.lookup(scheduleOffsetNearestSecond);
-        currentEntryIndex = (byte)entryLookupResult.getIndex();
+        currentEntryIndex = (byte) entryLookupResult.getIndex();
         double timeRemainingInEntryInSeconds = entryLookupResult.getStartTime().minus(scheduleOffsetNearestSecond.minus(entryLookupResult.getDuration())).getMillis() / 1000.0;
         double rate = mergedSchedule.rateAt(scheduleOffsetNearestSecond);
-        int pulsesPerHour = (int)Math.round(rate / Constants.POD_PULSE_SIZE);
+        int pulsesPerHour = (int) Math.round(rate / Constants.POD_PULSE_SIZE);
         double timeBetweenPulses = 3600.0 / pulsesPerHour;
         delayUntilNextTenthOfPulseInSeconds = (timeRemainingInEntryInSeconds % (timeBetweenPulses / 10.0));
         remainingPulses = pulsesPerHour * (timeRemainingInEntryInSeconds - delayUntilNextTenthOfPulseInSeconds) / 3600.0 + 0.1;
@@ -64,17 +64,17 @@ public class BasalScheduleExtraCommand extends MessageBlock {
     }
 
     private void encode() {
-        byte beepOptions = (byte)((programReminderInterval.getStandardMinutes() & 0x3f) + (completionBeep ? 1 << 6 : 0) + (acknowledgementBeep ? 1 << 7 : 0));
+        byte beepOptions = (byte) ((programReminderInterval.getStandardMinutes() & 0x3f) + (completionBeep ? 1 << 6 : 0) + (acknowledgementBeep ? 1 << 7 : 0));
 
-        encodedData = new byte[] {
+        encodedData = new byte[]{
                 beepOptions,
                 currentEntryIndex
         };
 
-        encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt16((int)Math.round(remainingPulses * 10)));
-        encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt((int)Math.round(delayUntilNextTenthOfPulseInSeconds * 1000 * 1000)));
+        encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt16((int) Math.round(remainingPulses * 10)));
+        encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt((int) Math.round(delayUntilNextTenthOfPulseInSeconds * 1000 * 1000)));
 
-        for(RateEntry entry : rateEntries) {
+        for (RateEntry entry : rateEntries) {
             encodedData = ByteUtil.concat(encodedData, entry.getRawData());
         }
     }

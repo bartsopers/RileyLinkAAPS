@@ -20,7 +20,7 @@ public abstract class MessageBlock {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         try {
             stream.write(this.getType().getValue());
-            stream.write((byte)encodedData.length);
+            stream.write((byte) encodedData.length);
             stream.write(encodedData);
         } catch (IOException e) {
             e.printStackTrace();

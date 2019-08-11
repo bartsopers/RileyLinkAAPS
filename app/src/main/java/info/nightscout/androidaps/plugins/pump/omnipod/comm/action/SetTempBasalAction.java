@@ -18,13 +18,13 @@ public class SetTempBasalAction implements OmnipodAction<StatusResponse> {
 
     public SetTempBasalAction(SetTempBasalService setTempBasalService, PodSessionState podState,
                               double rate, Duration duration, boolean acknowledgementBeep, boolean completionBeep) {
-        if(setTempBasalService == null) {
+        if (setTempBasalService == null) {
             throw new IllegalArgumentException("Set temp basal service cannot be null");
         }
-        if(podState == null) {
+        if (podState == null) {
             throw new IllegalArgumentException("Pod state cannot be null");
         }
-        if(duration == null) {
+        if (duration == null) {
             throw new IllegalArgumentException("Duration cannot be null");
         }
         this.service = setTempBasalService;
@@ -39,8 +39,8 @@ public class SetTempBasalAction implements OmnipodAction<StatusResponse> {
     public StatusResponse execute(OmnipodCommunicationService communicationService) {
         StatusResponse statusResponse = service.cancelTempBasal(communicationService, podState);
 
-        if(statusResponse.getDeliveryStatus() != DeliveryStatus.NORMAL) {
-            throw new IllegalStateException("Illegal delivery status: "+
+        if (statusResponse.getDeliveryStatus() != DeliveryStatus.NORMAL) {
+            throw new IllegalStateException("Illegal delivery status: " +
                     statusResponse.getDeliveryStatus().name());
         }
 

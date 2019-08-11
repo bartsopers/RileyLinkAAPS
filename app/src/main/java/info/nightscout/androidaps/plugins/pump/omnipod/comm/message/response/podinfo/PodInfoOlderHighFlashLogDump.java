@@ -15,14 +15,14 @@ public class PodInfoOlderHighFlashLogDump extends PodInfo {
     public PodInfoOlderHighFlashLogDump(byte[] encodedData) {
         super(encodedData);
 
-        if(encodedData.length < MINIMUM_MESSAGE_LENGTH) {
+        if (encodedData.length < MINIMUM_MESSAGE_LENGTH) {
             throw new IllegalArgumentException("Not enough data");
         }
 
         dwords = new ArrayList<>();
 
         int numberOfDwordLogEntries = ByteUtil.toInt(encodedData[1], encodedData[2]);
-        for(int i = 0; numberOfDwordLogEntries > i; i++) {
+        for (int i = 0; numberOfDwordLogEntries > i; i++) {
             byte[] dword = ByteUtil.substring(encodedData, 3 + (4 * i), 4);
             dwords.add(dword);
         }

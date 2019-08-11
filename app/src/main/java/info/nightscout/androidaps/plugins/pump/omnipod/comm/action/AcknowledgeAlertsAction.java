@@ -14,12 +14,12 @@ public class AcknowledgeAlertsAction implements OmnipodAction<StatusResponse> {
     private final AlertSet alerts;
 
     public AcknowledgeAlertsAction(PodSessionState podState, AlertSet alerts) {
-        if(podState == null) {
+        if (podState == null) {
             throw new IllegalArgumentException("Pod state cannot be null");
         }
-        if(alerts == null) {
+        if (alerts == null) {
             throw new IllegalArgumentException("Alert set can not be null");
-        } else if(alerts.size() == 0) {
+        } else if (alerts.size() == 0) {
             throw new IllegalArgumentException("Alert set can not be empty");
         }
         this.podState = podState;

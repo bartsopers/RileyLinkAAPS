@@ -10,13 +10,8 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 
 public class AcknowledgeAlertsCommand extends NonceResyncableMessageBlock {
 
-    private int nonce;
     private final AlertSet alerts;
-
-    @Override
-    public MessageBlockType getType() {
-        return MessageBlockType.ACKNOWLEDGE_ALERT;
-    }
+    private int nonce;
 
     public AcknowledgeAlertsCommand(int nonce, AlertSet alerts) {
         this.nonce = nonce;
@@ -26,6 +21,11 @@ public class AcknowledgeAlertsCommand extends NonceResyncableMessageBlock {
 
     public AcknowledgeAlertsCommand(int nonce, AlertSlot alertSlot) {
         this(nonce, new AlertSet(Collections.singletonList(alertSlot)));
+    }
+
+    @Override
+    public MessageBlockType getType() {
+        return MessageBlockType.ACKNOWLEDGE_ALERT;
     }
 
     private void encode() {

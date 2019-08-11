@@ -8,6 +8,11 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 public class AssignAddressCommand extends MessageBlock {
     private final int address;
 
+    public AssignAddressCommand(int address) {
+        this.address = address;
+        encodedData = ByteBuffer.allocate(4).putInt(this.address).array();
+    }
+
     public int getAddress() {
         return address;
     }
@@ -15,11 +20,6 @@ public class AssignAddressCommand extends MessageBlock {
     @Override
     public MessageBlockType getType() {
         return MessageBlockType.ASSIGN_ADDRESS;
-    }
-
-    public AssignAddressCommand(int address) {
-        this.address = address;
-        encodedData = ByteBuffer.allocate(4).putInt(this.address).array();
     }
 
 }

@@ -17,7 +17,7 @@ public class PodInfoRecentHighFlashLogDump extends PodInfo {
     public PodInfoRecentHighFlashLogDump(byte[] encodedData, int bodyLength) {
         super(encodedData);
 
-        if(encodedData.length < MINIMUM_MESSAGE_LENGTH) {
+        if (encodedData.length < MINIMUM_MESSAGE_LENGTH) {
             throw new IllegalArgumentException("Not enough data");
         }
 
@@ -26,7 +26,7 @@ public class PodInfoRecentHighFlashLogDump extends PodInfo {
 
         int numberOfDwords = (bodyLength - 3) / 4;
 
-        for(int i = 0; numberOfDwords > i; i++) {
+        for (int i = 0; numberOfDwords > i; i++) {
             byte[] dword = ByteUtil.substring(encodedData, 3 + (4 * i), 4);
             dwords.add(dword);
         }
@@ -48,7 +48,7 @@ public class PodInfoRecentHighFlashLogDump extends PodInfo {
     @Override
     public String toString() {
         return "PodInfoRecentHighFlashLogDump{" +
-                "lastEntryIndex="+ lastEntryIndex +
+                "lastEntryIndex=" + lastEntryIndex +
                 ",dwords=" + dwords +
                 '}';
     }

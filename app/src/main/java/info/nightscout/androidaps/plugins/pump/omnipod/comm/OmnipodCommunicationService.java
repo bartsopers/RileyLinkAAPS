@@ -203,7 +203,7 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
             } else {
                 LOG.debug("Ignoring exception in ackUntilQuiet: " + ex.getClass().getSimpleName() + ": " + ex.getMessage());
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             LOG.debug("Ignoring exception in ackUntilQuiet: " + ex.getClass().getSimpleName() + ": " + ex.getMessage());
         }
 

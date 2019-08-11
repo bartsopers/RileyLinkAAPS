@@ -15,7 +15,7 @@ public class PodInfoFaultAndInitializationTime extends PodInfo {
     public PodInfoFaultAndInitializationTime(byte[] encodedData) {
         super(encodedData);
 
-        if(encodedData.length < MINIMUM_MESSAGE_LENGTH) {
+        if (encodedData.length < MINIMUM_MESSAGE_LENGTH) {
             throw new IllegalArgumentException("Not enough data");
         }
 

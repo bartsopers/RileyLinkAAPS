@@ -27,32 +27,6 @@ public class OmnipodMessage {
         this.sequenceNumber = sequenceNumber;
     }
 
-    public byte[] getEncoded() {
-        byte[] encodedData = new byte[0];
-        for (MessageBlock messageBlock : messageBlocks) {
-            encodedData = ByteUtil.concat(encodedData, messageBlock.getRawData());
-        }
-
-        byte[] header = new byte[0];
-        //right before the message blocks we have 6 bits of seqNum and 10 bits of length
-        header = ByteUtil.concat(header, ByteUtil.getBytesFromInt(address));
-        header = ByteUtil.concat(header, (byte) (((sequenceNumber & 0x1F) << 2) + ((encodedData.length >> 8) & 0x03)));
-        header = ByteUtil.concat(header, (byte) (encodedData.length & 0xFF));
-        encodedData = ByteUtil.concat(header, encodedData);
-        String myString = ByteUtil.shortHexString(encodedData);
-        int crc = OmniCRC.crc16(encodedData);
-        encodedData = ByteUtil.concat(encodedData, ByteUtil.substring(ByteUtil.getBytesFromInt(crc), 2, 2));
-        return encodedData;
-    }
-
-    public List<MessageBlock> getMessageBlocks() {
-        return messageBlocks;
-    }
-
-    public int getSequenceNumber() {
-        return sequenceNumber;
-    }
-
     public static OmnipodMessage decodeMessage(byte[] data) {
         if (data.length < 10) {
             throw new NotEnoughDataException("Not enough data");
@@ -98,6 +72,32 @@ public class OmnipodMessage {
         return blocks;
     }
 
+    public byte[] getEncoded() {
+        byte[] encodedData = new byte[0];
+        for (MessageBlock messageBlock : messageBlocks) {
+            encodedData = ByteUtil.concat(encodedData, messageBlock.getRawData());
+        }
+
+        byte[] header = new byte[0];
+        //right before the message blocks we have 6 bits of seqNum and 10 bits of length
+        header = ByteUtil.concat(header, ByteUtil.getBytesFromInt(address));
+        header = ByteUtil.concat(header, (byte) (((sequenceNumber & 0x1F) << 2) + ((encodedData.length >> 8) & 0x03)));
+        header = ByteUtil.concat(header, (byte) (encodedData.length & 0xFF));
+        encodedData = ByteUtil.concat(header, encodedData);
+        String myString = ByteUtil.shortHexString(encodedData);
+        int crc = OmniCRC.crc16(encodedData);
+        encodedData = ByteUtil.concat(encodedData, ByteUtil.substring(ByteUtil.getBytesFromInt(crc), 2, 2));
+        return encodedData;
+    }
+
+    public List<MessageBlock> getMessageBlocks() {
+        return messageBlocks;
+    }
+
+    public int getSequenceNumber() {
+        return sequenceNumber;
+    }
+
     @Override
     public String toString() {
         return "OmnipodMessage{" +
@@ -112,10 +112,10 @@ public class OmnipodMessage {
     }
 
     public int getSentNonce() {
-        if(!isNonceResyncable()) {
+        if (!isNonceResyncable()) {
             throw new UnsupportedOperationException("Message is not nonce resyncable");
         }
-        return ((NonceResyncableMessageBlock)messageBlocks.get(0)).getNonce();
+        return ((NonceResyncableMessageBlock) messageBlocks.get(0)).getNonce();
     }
 
     public void resyncNonce(int nonce) {

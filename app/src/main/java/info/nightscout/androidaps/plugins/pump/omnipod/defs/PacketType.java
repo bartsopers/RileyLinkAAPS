@@ -1,11 +1,11 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
 public enum PacketType {
-    INVALID((byte)0),
-    POD((byte)0b111),
-    PDM((byte)0b101),
-    CON((byte)0b100),
-    ACK((byte)0b010);
+    INVALID((byte) 0),
+    POD((byte) 0b111),
+    PDM((byte) 0b101),
+    CON((byte) 0b100),
+    ACK((byte) 0b010);
 
     private byte value;
 
@@ -19,11 +19,11 @@ public enum PacketType {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Unknown PacketType: "+ value);
+        throw new IllegalArgumentException("Unknown PacketType: " + value);
     }
 
     public int getMaxBodyLength() {
-        switch(this) {
+        switch (this) {
             case ACK:
                 return 4;
             case CON:

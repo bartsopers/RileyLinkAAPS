@@ -62,7 +62,7 @@ public class OmnipodManager {
     }
 
     public <T extends PodInfo> T getPodInfo(PodInfoType podInfoType) {
-        if(!isInitialized()) {
+        if (!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
         PodInfoResponse podInfoResponse = communicationService.executeAction(new GetPodInfoAction(podState, podInfoType));
@@ -70,14 +70,14 @@ public class OmnipodManager {
     }
 
     public StatusResponse getStatus() {
-        if(podState == null) {
+        if (podState == null) {
             throw new IllegalStateException("Pod should be paired first");
         }
         return communicationService.executeAction(new GetStatusAction(podState));
     }
 
     public void acknowledgeAlerts() {
-        if(!isInitialized()) {
+        if (!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
         communicationService.executeAction(new AcknowledgeAlertsAction(podState, podState.getActiveAlerts()));
@@ -109,8 +109,8 @@ public class OmnipodManager {
         communicationService.executeAction(new InsertCannulaAction(new InsertCannulaService(), podState, createStubBasalSchedule()));
 
         executeDelayed(() -> {
-                StatusResponse delayedStatusResponse = communicationService.executeAction(new GetStatusAction(podState));
-                InsertCannulaAction.updateCannulaInsertionStatus(podState, delayedStatusResponse);
+            StatusResponse delayedStatusResponse = communicationService.executeAction(new GetStatusAction(podState));
+            InsertCannulaAction.updateCannulaInsertionStatus(podState, delayedStatusResponse);
         }, Constants.POD_CANNULA_INSERTION_DURATION);
     }
 
@@ -131,7 +131,7 @@ public class OmnipodManager {
     }
 
     public void cancelTempBasal() {
-        if(!isInitialized()) {
+        if (!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
         communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.TEMP_BASAL, true));
@@ -145,21 +145,21 @@ public class OmnipodManager {
     }
 
     public void cancelBolus() {
-        if(!isInitialized()) {
+        if (!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
         communicationService.executeAction(new CancelDeliveryAction(podState, DeliveryType.BOLUS, true));
     }
 
     public void suspendDelivery() {
-        if(!isInitialized()) {
+        if (!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
         communicationService.executeAction(new CancelDeliveryAction(podState, EnumSet.allOf(DeliveryType.class), true));
     }
 
     public void resumeDelivery() {
-        if(!isInitialized()) {
+        if (!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
         communicationService.executeAction(new SetBasalScheduleAction(podState, podState.getBasalSchedule(),
@@ -167,7 +167,7 @@ public class OmnipodManager {
     }
 
     public void setTime() {
-        if(!isInitialized()) {
+        if (!isInitialized()) {
             throw new IllegalStateException("Pod should be initialized first");
         }
         // Suspend delivery

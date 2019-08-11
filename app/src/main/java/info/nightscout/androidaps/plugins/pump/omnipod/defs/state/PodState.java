@@ -34,20 +34,20 @@ public abstract class PodState {
         return messageNumber;
     }
 
-    public int getPacketNumber() {
-        return packetNumber;
-    }
-
     public void setMessageNumber(int messageNumber) {
         this.messageNumber = messageNumber;
     }
 
-    public void increaseMessageNumber(int increment) {
-        setMessageNumber((messageNumber + increment) & 0b1111);
+    public int getPacketNumber() {
+        return packetNumber;
     }
 
     public void setPacketNumber(int packetNumber) {
         this.packetNumber = packetNumber;
+    }
+
+    public void increaseMessageNumber(int increment) {
+        setMessageNumber((messageNumber + increment) & 0b1111);
     }
 
     public void increasePacketNumber(int increment) {

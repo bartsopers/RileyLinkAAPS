@@ -21,7 +21,7 @@ public class TempBasalDeliverySchedule extends DeliverySchedule implements IRawR
         rawData = ByteUtil.concat(rawData, basalTable.numSegments());
         rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt16(secondsRemaining << 3));
         rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt16(firstSegmentPulses));
-        for (BasalTableEntry entry: basalTable.getEntries()) {
+        for (BasalTableEntry entry : basalTable.getEntries()) {
             rawData = ByteUtil.concat(rawData, entry.getRawData());
         }
         return rawData;
@@ -36,10 +36,10 @@ public class TempBasalDeliverySchedule extends DeliverySchedule implements IRawR
     public int getChecksum() {
         int checksum = 0;
         byte[] rawData = getRawData();
-        for(int i = 0; i < rawData.length && i < 5; i++) {
+        for (int i = 0; i < rawData.length && i < 5; i++) {
             checksum += ByteUtil.convertUnsignedByteToInt(rawData[i]);
         }
-        for(BasalTableEntry entry : basalTable.getEntries()) {
+        for (BasalTableEntry entry : basalTable.getEntries()) {
             checksum += entry.getChecksum();
         }
 

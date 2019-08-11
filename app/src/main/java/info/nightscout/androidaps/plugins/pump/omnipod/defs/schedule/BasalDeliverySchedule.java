@@ -24,7 +24,7 @@ public class BasalDeliverySchedule extends DeliverySchedule implements IRawRepre
         rawData = ByteUtil.concat(rawData, currentSegment);
         rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt16(secondsRemaining << 3));
         rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt16(pulsesRemaining));
-        for (BasalTableEntry entry: basalTable.getEntries()) {
+        for (BasalTableEntry entry : basalTable.getEntries()) {
             rawData = ByteUtil.concat(rawData, entry.getRawData());
         }
         return rawData;
@@ -39,10 +39,10 @@ public class BasalDeliverySchedule extends DeliverySchedule implements IRawRepre
     public int getChecksum() {
         int checksum = 0;
         byte[] rawData = getRawData();
-        for(int i = 0; i < rawData.length && i < 5; i++) {
+        for (int i = 0; i < rawData.length && i < 5; i++) {
             checksum += ByteUtil.convertUnsignedByteToInt(rawData[i]);
         }
-        for(BasalTableEntry entry : basalTable.getEntries()) {
+        for (BasalTableEntry entry : basalTable.getEntries()) {
             checksum += entry.getChecksum();
         }
 

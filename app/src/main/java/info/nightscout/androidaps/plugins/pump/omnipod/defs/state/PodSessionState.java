@@ -42,7 +42,7 @@ public class PodSessionState extends PodState {
     public PodSessionState(DateTimeZone timeZone, int address, DateTime activatedAt, FirmwareVersion piVersion,
                            FirmwareVersion pmVersion, int lot, int tid, int packetNumber, int messageNumber) {
         super(address, messageNumber, packetNumber);
-        if(timeZone == null) {
+        if (timeZone == null) {
             throw new IllegalArgumentException("Time zone can not be null");
         }
 
@@ -126,6 +126,7 @@ public class PodSessionState extends PodState {
         this.setupProgress = setupProgress;
         store();
     }
+
     public boolean isSuspended() {
         return suspended;
     }
@@ -142,16 +143,16 @@ public class PodSessionState extends PodState {
         return timeZone;
     }
 
-    public DateTime getTime() {
-        return DateTime.now().withZone(timeZone);
-    }
-
     public void setTimeZone(DateTimeZone timeZone) {
-        if(timeZone == null) {
+        if (timeZone == null) {
             throw new IllegalArgumentException("Time zone can not be null");
         }
         this.timeZone = timeZone;
         store();
+    }
+
+    public DateTime getTime() {
+        return DateTime.now().withZone(timeZone);
     }
 
     public Duration getScheduleOffset() {
@@ -218,7 +219,7 @@ public class PodSessionState extends PodState {
                 ", configuredAlerts=" + configuredAlerts +
                 ", activeAlerts=" + activeAlerts +
                 ", basalSchedule=" + basalSchedule +
-                ", lastDeliveryStatus="+ lastDeliveryStatus +
+                ", lastDeliveryStatus=" + lastDeliveryStatus +
                 ", address=" + address +
                 ", packetNumber=" + packetNumber +
                 ", messageNumber=" + messageNumber +

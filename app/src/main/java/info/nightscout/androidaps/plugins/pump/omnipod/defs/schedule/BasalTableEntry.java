@@ -20,13 +20,13 @@ public class BasalTableEntry implements IRawRepresentable {
         byte[] rawData = new byte[2];
         byte pulsesHighByte = (byte) ((pulses >>> 8) & 0b11);
         byte pulsesLowByte = (byte) pulses;
-        rawData[0] = (byte) ((byte)((segments - 1) << 4) + (byte)((alternateSegmentPulse ? 1 : 0) << 3) + pulsesHighByte);
+        rawData[0] = (byte) ((byte) ((segments - 1) << 4) + (byte) ((alternateSegmentPulse ? 1 : 0) << 3) + pulsesHighByte);
         rawData[1] = pulsesLowByte;
         return rawData;
     }
 
     public int getChecksum() {
-        int checksumPerSegment = ByteUtil.convertUnsignedByteToInt((byte)pulses) + (pulses >>> 8);
+        int checksumPerSegment = ByteUtil.convertUnsignedByteToInt((byte) pulses) + (pulses >>> 8);
         return (checksumPerSegment * segments + (alternateSegmentPulse ? segments / 2 : 0));
     }
 

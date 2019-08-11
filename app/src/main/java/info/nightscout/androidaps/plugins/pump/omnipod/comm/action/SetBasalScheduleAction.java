@@ -21,13 +21,13 @@ public class SetBasalScheduleAction implements OmnipodAction<StatusResponse> {
 
     public SetBasalScheduleAction(PodSessionState podState, BasalSchedule basalSchedule,
                                   boolean confidenceReminder, Duration scheduleOffset, boolean acknowledgementBeep) {
-        if(podState == null) {
+        if (podState == null) {
             throw new IllegalArgumentException("Pod state cannot be null");
         }
-        if(basalSchedule == null) {
+        if (basalSchedule == null) {
             throw new IllegalArgumentException("Basal schedule cannot be null");
         }
-        if(scheduleOffset == null) {
+        if (scheduleOffset == null) {
             throw new IllegalArgumentException("Schedule offset cannot be null");
         }
         this.podState = podState;

@@ -11,10 +11,10 @@ public class GetPodInfoAction implements OmnipodAction<PodInfoResponse> {
     private final PodInfoType podInfoType;
 
     public GetPodInfoAction(PodSessionState podState, PodInfoType podInfoType) {
-        if(podState == null) {
+        if (podState == null) {
             throw new IllegalArgumentException("Pod state cannot be null");
         }
-        if(podInfoType == null) {
+        if (podInfoType == null) {
             throw new IllegalArgumentException("Pod info type cannot be null");
         }
         this.podState = podState;

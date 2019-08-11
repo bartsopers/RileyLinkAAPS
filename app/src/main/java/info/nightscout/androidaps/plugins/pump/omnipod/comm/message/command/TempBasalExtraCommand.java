@@ -22,12 +22,12 @@ public class TempBasalExtraCommand extends MessageBlock {
 
     public TempBasalExtraCommand(double rate, Duration duration, boolean acknowledgementBeep, boolean completionBeep,
                                  Duration programReminderInterval) {
-        if(rate < 0D) {
+        if (rate < 0D) {
             throw new IllegalArgumentException("Rate should be >= 0");
-        } else if(rate > Constants.MAX_BASAL_RATE) {
+        } else if (rate > Constants.MAX_BASAL_RATE) {
             throw new IllegalArgumentException("Rate exceeds max basal rate");
         }
-        if(duration.isLongerThan(Constants.MAX_TEMP_BASAL_DURATION)) {
+        if (duration.isLongerThan(Constants.MAX_TEMP_BASAL_DURATION)) {
             throw new IllegalArgumentException("Duration exceeds max temp basal duration");
         }
 
@@ -45,21 +45,21 @@ public class TempBasalExtraCommand extends MessageBlock {
     }
 
     private void encode() {
-        byte beepOptions = (byte)((programReminderInterval.getStandardMinutes() & 0x3f) + (completionBeep ? 1 << 6 : 0) + (acknowledgementBeep ? 1 << 7 : 0));
+        byte beepOptions = (byte) ((programReminderInterval.getStandardMinutes() & 0x3f) + (completionBeep ? 1 << 6 : 0) + (acknowledgementBeep ? 1 << 7 : 0));
 
-        encodedData = new byte[] {
+        encodedData = new byte[]{
                 beepOptions,
-                (byte)0x00
+                (byte) 0x00
         };
 
-        encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt16((int)Math.round(remainingPulses * 10)));
-        if(remainingPulses == 0) {
-            encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt((int)(delayUntilNextPulse * 1000 * 100) * 10));
+        encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt16((int) Math.round(remainingPulses * 10)));
+        if (remainingPulses == 0) {
+            encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt((int) (delayUntilNextPulse * 1000 * 100) * 10));
         } else {
-            encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt((int)(delayUntilNextPulse * 1000 * 100)));
+            encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt((int) (delayUntilNextPulse * 1000 * 100)));
         }
 
-        for(RateEntry entry : rateEntries) {
+        for (RateEntry entry : rateEntries) {
             encodedData = ByteUtil.concat(encodedData, entry.getRawData());
         }
     }

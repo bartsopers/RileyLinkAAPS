@@ -17,6 +17,11 @@ public class PodFaultException extends OmnipodException {
         this.faultEvent = faultEvent;
     }
 
+    public static String describePodFault(PodInfoFaultEvent faultEvent) {
+        return String.format(Locale.getDefault(), "Pod fault (%d): %s", faultEvent.getFaultEventCode().getValue(),
+                faultEvent.getFaultEventCode().toString());
+    }
+
     public PodInfoFaultEvent getFaultEvent() {
         return faultEvent;
     }
@@ -25,10 +30,5 @@ public class PodFaultException extends OmnipodException {
     public void printStackTrace() {
         System.out.println(faultEvent.toString());
         super.printStackTrace();
-    }
-
-    public static String describePodFault(PodInfoFaultEvent faultEvent) {
-        return String.format(Locale.getDefault(), "Pod fault (%d): %s", faultEvent.getFaultEventCode().getValue(),
-                faultEvent.getFaultEventCode().toString());
     }
 }

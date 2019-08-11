@@ -78,13 +78,13 @@ public class RileyLinkOmnipodService extends RileyLinkService {
         RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
 
         PodSessionState podState = null;
-        if(SP.contains(OmniPodConst.Prefs.POD_STATE)) {
+        if (SP.contains(OmniPodConst.Prefs.POD_STATE)) {
             try {
                 Gson gson = Utils.gsonDateTime();
                 String storedPodState = SP.getString(OmniPodConst.Prefs.POD_STATE, null);
                 podState = gson.fromJson(storedPodState, PodSessionState.class);
             } catch (Exception ex) {
-                LOG.error("Could not deserialize Pod state: "+ ex.getClass().getSimpleName() +": "+ ex.getMessage());
+                LOG.error("Could not deserialize Pod state: " + ex.getClass().getSimpleName() + ": " + ex.getMessage());
             }
         }
 

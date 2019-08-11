@@ -5,9 +5,9 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.NonceResynca
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 
 public class FaultConfigCommand extends NonceResyncableMessageBlock {
-    private int nonce;
     private final byte tab5sub16;
     private final byte tab5sub17;
+    private int nonce;
 
     public FaultConfigCommand(int nonce, byte tab5sub16, byte tab5sub17) {
         this.nonce = nonce;

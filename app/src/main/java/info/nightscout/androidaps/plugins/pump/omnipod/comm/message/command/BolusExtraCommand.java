@@ -27,9 +27,9 @@ public class BolusExtraCommand extends MessageBlock {
     public BolusExtraCommand(double units, double squareWaveUnits, Duration squareWaveDuration,
                              boolean acknowledgementBeep, boolean completionBeep,
                              Duration programReminderInterval, Duration timeBetweenPulses) {
-        if(units <= 0D) {
+        if (units <= 0D) {
             throw new IllegalArgumentException("Units should be > 0");
-        } else if(units > Constants.MAX_BOLUS) {
+        } else if (units > Constants.MAX_BOLUS) {
             throw new IllegalArgumentException("Units exceeds max bolus");
         }
         this.units = units;
@@ -43,14 +43,14 @@ public class BolusExtraCommand extends MessageBlock {
     }
 
     private void encode() {
-        byte beepOptions = (byte)((programReminderInterval.getStandardMinutes() & 0x3f) + (completionBeep ? 1 << 6 : 0) + (acknowledgementBeep ? 1 << 7 : 0));
+        byte beepOptions = (byte) ((programReminderInterval.getStandardMinutes() & 0x3f) + (completionBeep ? 1 << 6 : 0) + (acknowledgementBeep ? 1 << 7 : 0));
 
         int squareWavePulseCountCountX10 = (int) Math.round(squareWaveUnits * 200);
-        int timeBetweenExtendedPulses = squareWavePulseCountCountX10 > 0 ? (int)squareWaveDuration.getMillis() * 100 / squareWavePulseCountCountX10 : 0;
+        int timeBetweenExtendedPulses = squareWavePulseCountCountX10 > 0 ? (int) squareWaveDuration.getMillis() * 100 / squareWavePulseCountCountX10 : 0;
 
         encodedData = ByteUtil.concat(encodedData, beepOptions);
-        encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt16((int)Math.round(units * 200)));
-        encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt((int)timeBetweenPulses.getMillis() * 100));
+        encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt16((int) Math.round(units * 200)));
+        encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt((int) timeBetweenPulses.getMillis() * 100));
         encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt16(squareWavePulseCountCountX10));
         encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt(timeBetweenExtendedPulses));
     }

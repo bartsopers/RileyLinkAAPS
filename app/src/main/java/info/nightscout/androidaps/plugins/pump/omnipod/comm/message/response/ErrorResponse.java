@@ -12,7 +12,7 @@ public class ErrorResponse extends MessageBlock {
     private final int nonceSearchKey;
 
     public ErrorResponse(byte[] encodedData) {
-        if(encodedData.length < MESSAGE_LENGTH) {
+        if (encodedData.length < MESSAGE_LENGTH) {
             throw new IllegalArgumentException("Not enough data");
         }
         this.encodedData = ByteUtil.substring(encodedData, 2, MESSAGE_LENGTH - 2);
@@ -20,11 +20,11 @@ public class ErrorResponse extends MessageBlock {
         ErrorResponseType errorResponseType = null;
         try {
             errorResponseType = ErrorResponseType.fromByte(encodedData[2]);
-        } catch(IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
         }
 
         this.errorResponseType = errorResponseType;
-        this.nonceSearchKey = ByteUtil.makeUnsignedShort((int)encodedData[3], (int)encodedData[4]);
+        this.nonceSearchKey = ByteUtil.makeUnsignedShort((int) encodedData[3], (int) encodedData[4]);
     }
 
     @Override
@@ -35,6 +35,7 @@ public class ErrorResponse extends MessageBlock {
     public ErrorResponseType getErrorResponseType() {
         return errorResponseType;
     }
+
     public int getNonceSearchKey() {
         return nonceSearchKey;
     }

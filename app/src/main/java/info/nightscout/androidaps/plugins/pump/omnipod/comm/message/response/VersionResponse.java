@@ -31,7 +31,7 @@ public class VersionResponse extends MessageBlock {
                 extraByte = false;
                 break;
             default:
-                throw new IllegalArgumentException("Unrecognized VersionResponse message length: "+ length);
+                throw new IllegalArgumentException("Unrecognized VersionResponse message length: " + length);
         }
 
         this.podProgressStatus = PodProgressStatus.fromByte(truncatedData[7]);

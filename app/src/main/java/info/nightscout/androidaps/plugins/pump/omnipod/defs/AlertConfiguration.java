@@ -40,26 +40,26 @@ public class AlertConfiguration {
         int firstByte = (alertSlot.getValue() << 4);
         firstByte += active ? (1 << 3) : 0;
 
-        if(alertTrigger instanceof UnitsRemainingAlertTrigger) {
+        if (alertTrigger instanceof UnitsRemainingAlertTrigger) {
             firstByte += 1 << 2;
         }
 
-        if(autoOffModifier) {
+        if (autoOffModifier) {
             firstByte += 1 << 1;
         }
 
-        firstByte += ((int)duration.getStandardMinutes() >>> 8) & 0x1;
+        firstByte += ((int) duration.getStandardMinutes() >>> 8) & 0x1;
 
-        byte[] encodedData = new byte[] {
-                (byte)firstByte,
-                (byte)duration.getStandardMinutes()
+        byte[] encodedData = new byte[]{
+                (byte) firstByte,
+                (byte) duration.getStandardMinutes()
         };
 
-        if(alertTrigger instanceof UnitsRemainingAlertTrigger) {
-            int ticks = (int)(((UnitsRemainingAlertTrigger)alertTrigger).getValue() / Constants.POD_PULSE_SIZE / 2);
+        if (alertTrigger instanceof UnitsRemainingAlertTrigger) {
+            int ticks = (int) (((UnitsRemainingAlertTrigger) alertTrigger).getValue() / Constants.POD_PULSE_SIZE / 2);
             encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt16(ticks));
-        } else if(alertTrigger instanceof TimerAlertTrigger) {
-            int durationInMinutes = (int) ((TimerAlertTrigger)alertTrigger).getValue().getStandardMinutes();
+        } else if (alertTrigger instanceof TimerAlertTrigger) {
+            int durationInMinutes = (int) ((TimerAlertTrigger) alertTrigger).getValue().getStandardMinutes();
             encodedData = ByteUtil.concat(encodedData, ByteUtil.getBytesFromInt16(durationInMinutes));
         }
 

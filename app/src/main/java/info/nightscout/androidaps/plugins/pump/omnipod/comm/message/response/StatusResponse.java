@@ -26,7 +26,7 @@ public class StatusResponse extends MessageBlock {
     private final AlertSet alerts;
 
     public StatusResponse(byte[] encodedData) {
-        if(encodedData.length < MESSAGE_LENGTH) {
+        if (encodedData.length < MESSAGE_LENGTH) {
             throw new IllegalArgumentException("Not enough data");
         }
         this.encodedData = ByteUtil.substring(encodedData, 1, MESSAGE_LENGTH - 1);
@@ -47,7 +47,7 @@ public class StatusResponse extends MessageBlock {
         this.alerts = new AlertSet((byte) (((encodedData[6] & 0x7f) << 1) | (ByteUtil.convertUnsignedByteToInt(encodedData[7]) >>> 7)));
 
         double reservoirValue = (((encodedData[8] & 0x3) << 8) + ByteUtil.convertUnsignedByteToInt(encodedData[9])) * Constants.POD_PULSE_SIZE;
-        if(reservoirValue > Constants.MAX_RESERVOIR_READING) {
+        if (reservoirValue > Constants.MAX_RESERVOIR_READING) {
             reservoirLevel = null;
         } else {
             reservoirLevel = reservoirValue;

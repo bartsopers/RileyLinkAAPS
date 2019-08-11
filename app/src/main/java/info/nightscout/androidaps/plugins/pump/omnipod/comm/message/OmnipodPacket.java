@@ -34,14 +34,10 @@ public class OmnipodPacket implements RLMessage {
             throw new CrcMismatchException("CRC mismatch: " +
                     ByteUtil.shortHexString(new byte[]{crc}) + " <> " +
                     ByteUtil.shortHexString(new byte[]{encoded[encoded.length - 1]}) +
-                    " (packetType=" + packetType.name() + ",packetLength=" + encoded.length +")");
+                    " (packetType=" + packetType.name() + ",packetLength=" + encoded.length + ")");
         }
         this.encodedMessage = ByteUtil.substring(encoded, 5, encoded.length - 1 - 5);
         valid = true;
-    }
-
-    public PacketType getPacketType() {
-        return packetType;
     }
 
     public OmnipodPacket(int packetAddress, PacketType packetType, int packetNumber, byte[] encodedMessage) {
@@ -53,6 +49,10 @@ public class OmnipodPacket implements RLMessage {
             this.encodedMessage = ByteUtil.substring(encodedMessage, 0, packetType.getMaxBodyLength());
         }
         this.valid = true;
+    }
+
+    public PacketType getPacketType() {
+        return packetType;
     }
 
     public int getAddress() {

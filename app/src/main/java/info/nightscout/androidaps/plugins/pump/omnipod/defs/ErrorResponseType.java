@@ -1,16 +1,12 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
 public enum ErrorResponseType {
-    BAD_NONCE((byte)0x14);
+    BAD_NONCE((byte) 0x14);
 
     private byte value;
 
     ErrorResponseType(byte value) {
         this.value = value;
-    }
-
-    public byte getValue() {
-        return value;
     }
 
     public static ErrorResponseType fromByte(byte value) {
@@ -19,6 +15,10 @@ public enum ErrorResponseType {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Unknown ErrorResponseType: "+ value);
+        throw new IllegalArgumentException("Unknown ErrorResponseType: " + value);
+    }
+
+    public byte getValue() {
+        return value;
     }
 }

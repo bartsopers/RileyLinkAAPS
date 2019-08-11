@@ -14,7 +14,7 @@ public class DeactivatePodAction implements OmnipodAction<StatusResponse> {
 
     public DeactivatePodAction(PodSessionState podState, boolean acknowledgementBeep) {
         this.acknowledgementBeep = acknowledgementBeep;
-        if(podState == null) {
+        if (podState == null) {
             throw new IllegalArgumentException("Pod state cannot be null");
         }
         this.podState = podState;
@@ -22,7 +22,7 @@ public class DeactivatePodAction implements OmnipodAction<StatusResponse> {
 
     @Override
     public StatusResponse execute(OmnipodCommunicationService communicationService) {
-        if(!podState.isSuspended() && !podState.hasFaultEvent()) {
+        if (!podState.isSuspended() && !podState.hasFaultEvent()) {
             communicationService.executeAction(new CancelDeliveryAction(podState,
                     EnumSet.allOf(DeliveryType.class), acknowledgementBeep));
         }

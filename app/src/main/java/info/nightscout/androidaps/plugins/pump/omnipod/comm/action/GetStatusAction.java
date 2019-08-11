@@ -10,7 +10,7 @@ public class GetStatusAction implements OmnipodAction<StatusResponse> {
     private final PodSessionState podState;
 
     public GetStatusAction(PodSessionState podState) {
-        if(podState == null) {
+        if (podState == null) {
             throw new IllegalArgumentException("Pod state cannot be null");
         }
         this.podState = podState;

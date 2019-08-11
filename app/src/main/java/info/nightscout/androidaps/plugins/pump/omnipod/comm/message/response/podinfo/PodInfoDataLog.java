@@ -22,7 +22,7 @@ public class PodInfoDataLog extends PodInfo {
     public PodInfoDataLog(byte[] encodedData, int bodyLength) {
         super(encodedData);
 
-        if(encodedData.length < MINIMUM_MESSAGE_LENGTH) {
+        if (encodedData.length < MINIMUM_MESSAGE_LENGTH) {
             throw new IllegalArgumentException("Not enough data");
         }
 
@@ -35,7 +35,7 @@ public class PodInfoDataLog extends PodInfo {
         dwords = new ArrayList<>();
 
         int numberOfDwords = (bodyLength - 8) / 4;
-        for(int i = 0; i < numberOfDwords; i++) {
+        for (int i = 0; i < numberOfDwords; i++) {
             dwords.add(ByteUtil.substring(encodedData, 8 + (4 * i), 4));
         }
     }
@@ -77,7 +77,7 @@ public class PodInfoDataLog extends PodInfo {
                 ", timeSinceActivation=" + timeSinceActivation +
                 ", dataChunkSize=" + dataChunkSize +
                 ", maximumNumberOfDwords=" + maximumNumberOfDwords +
-                ", dwords="+ dwords +
+                ", dwords=" + dwords +
                 '}';
     }
 }

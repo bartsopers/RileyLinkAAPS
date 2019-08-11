@@ -22,7 +22,7 @@ public class PodInfoResponse extends MessageBlock {
     }
 
     public <T extends PodInfo> T getPodInfo() {
-        return (T)podInfo;
+        return (T) podInfo;
     }
 
     @Override
