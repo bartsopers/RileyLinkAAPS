@@ -8,8 +8,8 @@ import java.util.List;
 import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.RateEntry;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.RateEntry;
 
 public class TempBasalExtraCommand extends MessageBlock {
     private final boolean acknowledgementBeep;

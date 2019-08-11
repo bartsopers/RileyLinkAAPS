@@ -2,8 +2,6 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.po
 
 import org.joda.time.Duration;
 
-import java.util.Arrays;
-
 import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertSet;

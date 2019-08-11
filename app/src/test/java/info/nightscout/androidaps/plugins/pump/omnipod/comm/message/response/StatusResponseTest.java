@@ -3,11 +3,10 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response;
 import org.joda.time.Duration;
 import org.junit.Test;
 
+import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryStatus;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressStatus;
-
-import info.nightscout.androidaps.Constants;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;

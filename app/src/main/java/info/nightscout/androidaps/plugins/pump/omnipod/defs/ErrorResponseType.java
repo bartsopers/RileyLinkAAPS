@@ -1,6 +1,5 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
-// https://github.com/openaps/openomni/wiki/Command-06-Error-response-bad-nonce
 public enum ErrorResponseType {
     BAD_NONCE((byte)0x14);
 

@@ -5,7 +5,8 @@ import org.joda.time.Duration;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service.SetTempBasalService;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryStatus;import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionState;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryStatus;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionState;
 
 public class SetTempBasalAction implements OmnipodAction<StatusResponse> {
     private final SetTempBasalService service;

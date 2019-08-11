@@ -5,7 +5,6 @@ import java.util.List;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.NonceResyncableMessageBlock;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertConfiguration;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 
 public class ConfigureAlertsCommand extends NonceResyncableMessageBlock {

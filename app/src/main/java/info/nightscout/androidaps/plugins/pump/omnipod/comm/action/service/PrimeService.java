@@ -3,7 +3,6 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.action.service;
 import org.joda.time.Duration;
 
 import java.util.Collections;
-import java.util.List;
 
 import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
@@ -14,9 +13,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.command.Faul
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertConfiguration;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertConfigurationFactory;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.AlertType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionState;
-import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniPodConst;
 
 public class PrimeService {
 

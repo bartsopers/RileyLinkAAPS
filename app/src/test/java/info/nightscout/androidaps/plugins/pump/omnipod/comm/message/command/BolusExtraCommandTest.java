@@ -6,7 +6,6 @@ import org.junit.Test;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 
 public class BolusExtraCommandTest {
     @Test

@@ -1,6 +1,5 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
-// https://github.com/openaps/openomni/wiki/Pod-Progress-State
 public enum PodProgressStatus {
     INITIAL_VALUE((byte)0x00),
     TANK_POWER_ACTIVATED((byte)0x01),

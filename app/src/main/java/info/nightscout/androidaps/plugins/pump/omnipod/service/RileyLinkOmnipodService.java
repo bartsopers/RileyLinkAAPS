@@ -27,7 +27,6 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.
 import info.nightscout.androidaps.plugins.pump.omnipod.OmnipodManager;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationService;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodSessionState;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.state.PodState;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.OmniPodConst;
 import info.nightscout.androidaps.plugins.pump.omnipod.util.Utils;
 import info.nightscout.androidaps.utils.SP;

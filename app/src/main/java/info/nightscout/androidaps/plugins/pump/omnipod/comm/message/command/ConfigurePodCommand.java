@@ -6,7 +6,6 @@ import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 
-// https://github.com/openaps/openomni/wiki/Command-03-Setup-Pod
 public class ConfigurePodCommand extends MessageBlock {
 
     private static final byte PACKET_TIMEOUT_LIMIT = 0x04;

@@ -2,11 +2,10 @@ package info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response;
 
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
-import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.FirmwareVersion;
+import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressStatus;
 
-// https://github.com/openaps/openomni/wiki/Command-01-Version-response
 public class VersionResponse extends MessageBlock {
     private final PodProgressStatus podProgressStatus;
     private final FirmwareVersion pmVersion;

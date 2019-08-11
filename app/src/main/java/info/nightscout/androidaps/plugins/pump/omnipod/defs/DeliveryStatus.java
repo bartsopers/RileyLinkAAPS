@@ -1,6 +1,5 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
-// https://github.com/openaps/openomni/wiki/Command-1D-Status-response
 public enum DeliveryStatus {
     SUSPENDED((byte)0x00),
     NORMAL((byte)0x01),

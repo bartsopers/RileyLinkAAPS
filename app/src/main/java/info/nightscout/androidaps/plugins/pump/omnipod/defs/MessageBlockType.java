@@ -3,11 +3,10 @@ package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 import org.apache.commons.lang3.NotImplementedException;
 
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.MessageBlock;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoResponse;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.VersionResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.ErrorResponse;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.StatusResponse;
-
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.VersionResponse;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoResponse;
 
 public enum MessageBlockType {
     VERSION_RESPONSE(0x01),

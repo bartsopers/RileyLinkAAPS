@@ -5,12 +5,11 @@ import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.pod
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoDataLog;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoFaultAndInitializationTime;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoFaultEvent;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoLowFlashLogDump;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoOlderHighFlashLogDump;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoRecentHighFlashLogDump;
-import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoLowFlashLogDump;
 import info.nightscout.androidaps.plugins.pump.omnipod.comm.message.response.podinfo.PodInfoTestValues;
 
-// https://github.com/openaps/openomni/wiki/Command-0E-Status-Request
 public enum PodInfoType {
     NORMAL((byte)0x00),
     ACTIVE_ALERTS((byte)0x01),
