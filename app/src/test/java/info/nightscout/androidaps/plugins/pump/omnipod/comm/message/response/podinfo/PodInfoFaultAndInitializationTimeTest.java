@@ -18,7 +18,7 @@ public class PodInfoFaultAndInitializationTimeTest {
         assertEquals(FaultEventCode.BAD_PUMP_REQ_2_STATE, podInfoFaultAndInitializationTime.getFaultEventCode());
         assertTrue(Duration.standardMinutes(1).isEqual(podInfoFaultAndInitializationTime.getTimeFaultEvent()));
 
-        DateTime dateTime = podInfoFaultAndInitializationTime.getDateTime();
+        DateTime dateTime = podInfoFaultAndInitializationTime.getInitializationTime();
         assertEquals(2018, dateTime.getYear());
         assertEquals(9, dateTime.getMonthOfYear());
         assertEquals(25, dateTime.getDayOfMonth());

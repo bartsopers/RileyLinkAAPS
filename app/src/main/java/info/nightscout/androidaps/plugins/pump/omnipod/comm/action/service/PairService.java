@@ -27,7 +27,6 @@ public class PairService {
     public VersionResponse executeConfigurePodCommand(OmnipodCommunicationService communicationService,
                                                       PodSetupState setupState, int lot, int tid, DateTime activationDate) {
         // at this point for an unknown reason PDM starts counting messages from 0 again
-        // FIXME ... but should we also do it?
         setupState.setMessageNumber(0x00);
 
         ConfigurePodCommand configurePodCommand = new ConfigurePodCommand(setupState.getAddress(), activationDate,

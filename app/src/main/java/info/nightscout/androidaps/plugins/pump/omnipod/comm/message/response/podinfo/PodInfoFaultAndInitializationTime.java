@@ -10,7 +10,7 @@ public class PodInfoFaultAndInitializationTime extends PodInfo {
     private static final int MINIMUM_MESSAGE_LENGTH = 17;
     private final FaultEventCode faultEventCode;
     private final Duration timeFaultEvent;
-    private final DateTime dateTime;
+    private final DateTime initializationTime;
 
     public PodInfoFaultAndInitializationTime(byte[] encodedData) {
         super(encodedData);
@@ -21,8 +21,9 @@ public class PodInfoFaultAndInitializationTime extends PodInfo {
 
         faultEventCode = FaultEventCode.fromByte(encodedData[1]);
         timeFaultEvent = Duration.standardMinutes(((encodedData[2] & 0b1) << 8) + encodedData[3]);
-        // FIXME take care of time zone
-        dateTime = new DateTime(2000 + encodedData[14], encodedData[12], encodedData[13], encodedData[15], encodedData[16]);
+        // We ignore time zones here because we don't keep the time zone in which the pod was initially set up
+        // Which is fine because we don't use the initialization time for anything important anyway
+        initializationTime = new DateTime(2000 + encodedData[14], encodedData[12], encodedData[13], encodedData[15], encodedData[16]);
     }
 
     @Override
@@ -38,8 +39,8 @@ public class PodInfoFaultAndInitializationTime extends PodInfo {
         return timeFaultEvent;
     }
 
-    public DateTime getDateTime() {
-        return dateTime;
+    public DateTime getInitializationTime() {
+        return initializationTime;
     }
 
     @Override
@@ -47,7 +48,7 @@ public class PodInfoFaultAndInitializationTime extends PodInfo {
         return "PodInfoFaultAndInitializationTime{" +
                 "faultEventCode=" + faultEventCode +
                 ", timeFaultEvent=" + timeFaultEvent +
-                ", dateTime=" + dateTime +
+                ", initializationTime=" + initializationTime +
                 '}';
     }
 }
