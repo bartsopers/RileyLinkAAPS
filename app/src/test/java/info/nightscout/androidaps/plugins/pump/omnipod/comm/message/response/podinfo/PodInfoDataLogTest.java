@@ -9,7 +9,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.FaultEventCode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class PodInfoDataLogUnitTests {
+public class PodInfoDataLogTest {
     @Test
     public void testDecoding() {
         PodInfoDataLog podInfoDataLog = new PodInfoDataLog(ByteUtil.fromHexString("030100010001043c"), 8); // From https://github.com/ps2/rileylink_ios/blob/omnipod-testing/OmniKitTests/PodInfoTests.swift

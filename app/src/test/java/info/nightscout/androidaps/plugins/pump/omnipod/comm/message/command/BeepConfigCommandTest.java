@@ -8,7 +8,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.BeepType;
 
 import static org.junit.Assert.assertArrayEquals;
 
-public class BeepConfigCommandUnitTests {
+public class BeepConfigCommandTest {
     @Test
     public void testConfidenceReminders() {
         BeepConfigCommand beepConfigCommand = new BeepConfigCommand(BeepType.BIP_BEEP_BIP_BEEP_BIP_BEEP_BIP_BEEP, true,

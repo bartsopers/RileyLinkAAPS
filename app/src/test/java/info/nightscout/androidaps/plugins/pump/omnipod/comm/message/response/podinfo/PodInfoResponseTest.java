@@ -12,7 +12,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-public class PodInfoResponseUnitTests {
+public class PodInfoResponseTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 

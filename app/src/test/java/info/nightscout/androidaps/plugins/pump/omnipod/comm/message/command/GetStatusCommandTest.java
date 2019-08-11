@@ -7,7 +7,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodInfoType;
 
 import static org.junit.Assert.assertArrayEquals;
 
-public class GetStatusCommandUnitTests {
+public class GetStatusCommandTest {
     @Test
     public void testPodInfoTypeNormal() {
         GetStatusCommand getStatusCommand = new GetStatusCommand(PodInfoType.NORMAL);

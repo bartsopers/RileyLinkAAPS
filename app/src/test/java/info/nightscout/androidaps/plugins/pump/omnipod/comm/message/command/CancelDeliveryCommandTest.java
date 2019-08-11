@@ -11,7 +11,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.DeliveryType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 
-public class CancelDeliveryCommandUnitTests {
+public class CancelDeliveryCommandTest {
 
     @Test
     public void testCancelBolusAndBasalWithBeep() {

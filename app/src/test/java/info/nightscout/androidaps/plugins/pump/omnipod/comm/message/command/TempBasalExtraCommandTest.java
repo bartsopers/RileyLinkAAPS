@@ -7,7 +7,7 @@ import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 
 import static org.junit.Assert.assertArrayEquals;
 
-public class TempBasalExtraCommandUnitTests {
+public class TempBasalExtraCommandTest {
     @Test
     public void testTempBasalExtraCommand() {
         TempBasalExtraCommand tempBasalExtraCommand = new TempBasalExtraCommand(30D, Duration.standardMinutes(30),

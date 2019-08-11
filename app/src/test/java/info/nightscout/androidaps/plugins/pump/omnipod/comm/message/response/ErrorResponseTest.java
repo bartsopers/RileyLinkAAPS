@@ -9,7 +9,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class ErrorResponseUnitTests {
+public class ErrorResponseTest {
     @Test
     public void testGetRawData() {
         byte[] encodedData = ByteUtil.fromHexString("060314fa92");

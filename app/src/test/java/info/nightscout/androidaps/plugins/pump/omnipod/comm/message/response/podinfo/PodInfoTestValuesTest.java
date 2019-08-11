@@ -6,7 +6,7 @@ import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 
 import static org.junit.Assert.assertEquals;
 
-public class PodInfoTestValuesUnitTests {
+public class PodInfoTestValuesTest {
     @Test
     public void testDecoding() {
         PodInfoTestValues podInfoTestValues = new PodInfoTestValues(ByteUtil.fromHexString("0601003FA8"));

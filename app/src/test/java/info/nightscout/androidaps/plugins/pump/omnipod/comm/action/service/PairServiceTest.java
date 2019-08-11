@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PairServiceUnitTests {
+public class PairServiceTest {
     @Mock
     private OmnipodCommunicationService communicationService;
 

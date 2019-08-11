@@ -15,7 +15,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.TimerAlertTrigger;
 
 import static org.junit.Assert.assertArrayEquals;
 
-public class ConfigureAlertsCommandUnitTests {
+public class ConfigureAlertsCommandTest {
     @Test
     public void testEncoding() {
         // from https://github.com/ps2/rileylink_ios/blob/master/OmniKitTests/MessageTests.swift

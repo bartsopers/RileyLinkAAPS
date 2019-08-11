@@ -14,7 +14,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BolusDelive
 
 import static org.junit.Assert.assertArrayEquals;
 
-public class SetInsulinScheduleCommandUnitTests {
+public class SetInsulinScheduleCommandTest {
     @Test
     public void testTemporaryBasalScheduleAlternatingSegmentFlag() {
         SetInsulinScheduleCommand setInsulinScheduleCommand = new SetInsulinScheduleCommand(0x9746c65b, //

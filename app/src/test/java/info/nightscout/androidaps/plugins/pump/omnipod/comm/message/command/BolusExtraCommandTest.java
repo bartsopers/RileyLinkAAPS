@@ -8,7 +8,7 @@ import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-public class BolusExtraCommandUnitTests {
+public class BolusExtraCommandTest {
     @Test
     public void testBolusExtraCommand() {
         BolusExtraCommand bolusExtraCommand = new BolusExtraCommand(1.25, 0.0,

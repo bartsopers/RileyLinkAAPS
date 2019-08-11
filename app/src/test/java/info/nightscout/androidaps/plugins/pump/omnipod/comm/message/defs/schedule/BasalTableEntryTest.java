@@ -6,7 +6,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.schedule.BasalTableE
 
 import static junit.framework.Assert.assertEquals;
 
-public class BasalTableEntryUnitTests {
+public class BasalTableEntryTest {
     @Test
     public void testChecksum() {
         BasalTableEntry basalTableEntry = new BasalTableEntry(2, 300, false);

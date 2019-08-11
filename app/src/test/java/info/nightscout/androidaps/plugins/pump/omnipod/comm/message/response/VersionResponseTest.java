@@ -8,7 +8,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.PodProgressStatus;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-public class VersionResponseUnitTests {
+public class VersionResponseTest {
     @Test
     public void testRawDataShortResponse() {
         byte[] encodedData = ByteUtil.fromHexString("011502070002070002020000a64000097c279c1f08ced2");

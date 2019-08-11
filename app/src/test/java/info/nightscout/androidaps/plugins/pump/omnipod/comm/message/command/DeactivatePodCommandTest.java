@@ -4,7 +4,7 @@ import org.junit.Test;
 import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 import static org.junit.Assert.assertArrayEquals;
 
-public class DeactivatePodCommandUnitTests {
+public class DeactivatePodCommandTest {
 
     @Test
     public void testEncoding() {

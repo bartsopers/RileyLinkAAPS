@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class BasalScheduleExtraCommandUnitTests {
+public class BasalScheduleExtraCommandTest {
     @Test
     public void testEncodingFromRateEntries() {
         List<RateEntry> rateEntries = RateEntry.createEntries(3.0, Duration.standardHours(24));

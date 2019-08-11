@@ -10,7 +10,7 @@ import info.nightscout.androidaps.plugins.pump.omnipod.defs.MessageBlockType;
 
 import static org.junit.Assert.assertArrayEquals;
 
-public class AcknowledgeAlertsCommandUnitTests {
+public class AcknowledgeAlertsCommandTest {
 
     @Test
     public void testEncodingMultipleAlerts() {

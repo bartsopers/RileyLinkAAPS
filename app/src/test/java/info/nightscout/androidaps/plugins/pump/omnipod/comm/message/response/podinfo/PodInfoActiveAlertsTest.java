@@ -10,7 +10,7 @@ import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class PodInfoActiveAlertsUnitTests {
+public class PodInfoActiveAlertsTest {
     @Test
     public void testNoActiveAlerts() {
         byte[] encodedMessage = ByteUtil.fromHexString("01000000000000000000000000000000000000"); // from https://github.com/ps2/rileylink_ios/blob/omnipod-testing/OmniKitTests/PodInfoTests.swift

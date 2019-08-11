@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class AssignAddressCommandUnitTests {
+public class AssignAddressCommandTest {
 
     @Test
     public void testEncoding() {

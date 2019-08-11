@@ -15,7 +15,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 // From https://github.com/ps2/rileylink_ios/blob/omnipod-testing/OmniKitTests/PodInfoTests.swift
-public class PodInfoFaultEventUnitTests {
+public class PodInfoFaultEventTest {
     @Test
     public void testPodInfoFaultEventNoFaultAlerts() {
         PodInfoFaultEvent podInfoFaultEvent = new PodInfoFaultEvent(ByteUtil.fromHexString("02080100000a003800000003ff008700000095ff0000"));
