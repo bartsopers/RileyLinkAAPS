@@ -85,11 +85,10 @@ public class RileyLinkOmnipodService extends RileyLinkService {
                 String storedPodState = SP.getString(OmniPodConst.Prefs.POD_STATE, null);
                 podState = gson.fromJson(storedPodState, PodSessionState.class);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                LOG.error("Could not deserialize Pod state: "+ ex.getClass().getSimpleName() +": "+ ex.getMessage());
             }
         }
 
-        // TODO obtain and pass saved podstate
         omnipodManager = new OmnipodManager(new OmnipodCommunicationService(rfspy), podState);
     }
 

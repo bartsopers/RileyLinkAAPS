@@ -201,12 +201,10 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
             if (RileyLinkBLEError.Timeout.equals(ex.getErrorCode())) {
                 quiet = true;
             } else {
-                ex.printStackTrace();
-                LOG.debug("Ignoring exception in ackUntilQuiet: " + ex.getClass().getName() + ": " + ex.getMessage());
+                LOG.debug("Ignoring exception in ackUntilQuiet: " + ex.getClass().getSimpleName() + ": " + ex.getMessage());
             }
         } catch(Exception ex) {
-            ex.printStackTrace();
-            LOG.debug("Ignoring exception in ackUntilQuiet: " + ex.getClass().getName() + ": " + ex.getMessage());
+            LOG.debug("Ignoring exception in ackUntilQuiet: " + ex.getClass().getSimpleName() + ": " + ex.getMessage());
         }
 
         podState.increasePacketNumber(1);
@@ -228,8 +226,7 @@ public class OmnipodCommunicationService extends RileyLinkCommunicationManager {
             try {
                 response = sendAndListen(packet, responseTimeoutMilliseconds, repeatCount, 9, preambleExtensionMilliseconds, OmnipodPacket.class);
             } catch (Exception ex) {
-                ex.printStackTrace();
-                LOG.debug("Ignoring exception in exchangePackets: " + ex.getClass().getName() + ": " + ex.getMessage());
+                LOG.debug("Ignoring exception in exchangePackets: " + ex.getClass().getSimpleName() + ": " + ex.getMessage());
             }
             if (response == null || !response.isValid()) {
                 continue;
